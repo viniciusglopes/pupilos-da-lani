@@ -2,7 +2,7 @@ import Link from 'next/link'
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-900 text-white mt-16">
+    <footer className="bg-black text-white mt-16">
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Logo e descrição */}
@@ -12,7 +12,7 @@ export default function Footer() {
               Conectando talentos com oportunidades. 
               Plataforma profissional para modelos em Minas Gerais.
             </p>
-            <p className="text-gray-400 text-sm">
+            <p className="text-gray-500 text-sm">
               Em conformidade com a LGPD - Lei Geral de Proteção de Dados
             </p>
           </div>
@@ -50,12 +50,12 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-gray-700 mt-8 pt-8">
+        <div className="border-t border-gray-800 mt-8 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <p className="text-gray-400 text-sm">
+            <p className="text-gray-500 text-sm">
               © 2026 Pupilos da Lani. Todos os direitos reservados.
             </p>
-            <p className="text-gray-400 text-sm mt-2 md:mt-0">
+            <p className="text-gray-500 text-sm mt-2 md:mt-0">
               Desenvolvido com ❤️ em Minas Gerais
             </p>
           </div>

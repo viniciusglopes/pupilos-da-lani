@@ -2,41 +2,41 @@ import Link from 'next/link'
 
 export default function Header() {
   return (
-    <header className="bg-white shadow-sm border-b">
+    <header className="bg-black shadow-lg border-b border-gray-800">
       <div className="container mx-auto px-4 py-4">
         <div className="flex justify-between items-center">
-          <Link href="/" className="text-2xl font-bold text-gray-900">
+          <Link href="/" className="text-2xl font-bold text-white">
             Pupilos da Lani
           </Link>
           
           <nav className="hidden md:flex space-x-6">
             <Link 
               href="/" 
-              className="text-gray-700 hover:text-gray-900 font-medium transition-colors"
+              className="text-gray-300 hover:text-white font-medium transition-colors"
             >
               Início
             </Link>
             <Link 
               href="/busca" 
-              className="text-gray-700 hover:text-gray-900 font-medium transition-colors"
+              className="text-gray-300 hover:text-white font-medium transition-colors"
             >
               Buscar
             </Link>
             <Link 
               href="/parceria" 
-              className="text-gray-700 hover:text-gray-900 font-medium transition-colors"
+              className="text-gray-300 hover:text-white font-medium transition-colors"
             >
               Parceiros
             </Link>
             <Link 
               href="/privacidade" 
-              className="text-gray-700 hover:text-gray-900 font-medium transition-colors"
+              className="text-gray-300 hover:text-white font-medium transition-colors"
             >
               Privacidade
             </Link>
             <Link 
               href="/login" 
-              className="text-blue-600 hover:text-blue-800 font-medium transition-colors"
+              className="text-white hover:text-gray-300 font-medium transition-colors bg-gray-800 px-3 py-1 rounded"
             >
               Admin
             </Link>

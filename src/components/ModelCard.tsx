@@ -19,10 +19,10 @@ export default function ModelCard({ pessoa, isParceiro = false }: ModelCardProps
     .join('-')
 
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+    <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow border border-gray-200">
       {/* Badge Parceiro */}
       {isParceiro && (
-        <div className="absolute top-2 right-2 bg-blue-600 text-white px-2 py-1 rounded-full text-xs font-medium z-10">
+        <div className="absolute top-2 right-2 bg-black text-white px-2 py-1 rounded-full text-xs font-medium z-10">
           Parceiro
         </div>
       )}
@@ -52,11 +52,11 @@ export default function ModelCard({ pessoa, isParceiro = false }: ModelCardProps
       {/* Informações */}
       <div className="p-4">
         <div className="flex justify-between items-start mb-2">
-          <h3 className="text-lg font-semibold text-gray-900 truncate">
+          <h3 className="text-lg font-semibold text-black truncate">
             {pessoa.nome}
           </h3>
           {pessoa.altura && (
-            <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded">
+            <span className="text-sm text-gray-700 bg-gray-100 px-2 py-1 rounded">
               {pessoa.altura}cm
             </span>
           )}
@@ -64,14 +64,14 @@ export default function ModelCard({ pessoa, isParceiro = false }: ModelCardProps
 
         {/* Localização */}
         {pessoa.localizacao && (
-          <p className="text-sm text-gray-600 mb-2">
+          <p className="text-sm text-gray-700 mb-2">
             📍 {pessoa.localizacao}
           </p>
         )}
 
         {/* Medidas */}
         {medidas && (
-          <p className="text-sm text-gray-600 mb-2">
+          <p className="text-sm text-gray-700 mb-2">
             📏 {medidas}
           </p>
         )}
@@ -82,7 +82,7 @@ export default function ModelCard({ pessoa, isParceiro = false }: ModelCardProps
             {pessoa.especializacoes.slice(0, 2).map((spec, index) => (
               <span 
                 key={index}
-                className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full"
+                className="text-xs bg-gray-900 text-white px-2 py-1 rounded-full"
               >
                 {spec}
               </span>
@@ -97,7 +97,7 @@ export default function ModelCard({ pessoa, isParceiro = false }: ModelCardProps
 
         {/* Descrição resumida */}
         {pessoa.descricao && (
-          <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+          <p className="text-sm text-gray-700 mb-3 line-clamp-2">
             {pessoa.descricao}
           </p>
         )}
@@ -109,7 +109,7 @@ export default function ModelCard({ pessoa, isParceiro = false }: ModelCardProps
               href={pessoa.instagram_url}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-center py-2 px-3 rounded text-sm font-medium hover:from-purple-600 hover:to-pink-600 transition-colors"
+              className="flex-1 bg-black text-white text-center py-2 px-3 rounded text-sm font-medium hover:bg-gray-800 transition-colors"
             >
               Instagram
             </a>
@@ -120,7 +120,7 @@ export default function ModelCard({ pessoa, isParceiro = false }: ModelCardProps
               href={`https://wa.me/${pessoa.telefone.replace(/\D/g, '')}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex-1 bg-green-500 text-white text-center py-2 px-3 rounded text-sm font-medium hover:bg-green-600 transition-colors"
+              className="flex-1 bg-gray-800 text-white text-center py-2 px-3 rounded text-sm font-medium hover:bg-gray-700 transition-colors"
             >
               WhatsApp
             </a>

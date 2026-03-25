@@ -24,15 +24,15 @@ export default async function HomePage() {
   const pessoasCompletas = pessoas as PessoaCompleta[]
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white">
       <Header />
       
       <main className="container mx-auto px-4 py-8">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+          <h1 className="text-4xl font-bold text-black mb-4">
             Pupilos da Lani
           </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          <p className="text-xl text-gray-700 max-w-2xl mx-auto">
             Conectando talentos com oportunidades. 
             Descubra modelos profissionais em Minas Gerais.
           </p>

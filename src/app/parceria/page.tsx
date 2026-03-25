@@ -26,7 +26,7 @@ export default async function ParceriaPage() {
   const pessoasCompletas = pessoas as PessoaCompleta[]
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white">
       <Header />
       
       <main className="container mx-auto px-4 py-8">
