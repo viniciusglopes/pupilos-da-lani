@@ -14,7 +14,13 @@ export default function Header() {
               href="/" 
               className="text-gray-700 hover:text-gray-900 font-medium transition-colors"
             >
-              Todos os Modelos
+              Início
+            </Link>
+            <Link 
+              href="/busca" 
+              className="text-gray-700 hover:text-gray-900 font-medium transition-colors"
+            >
+              Buscar
             </Link>
             <Link 
               href="/parceria" 
@@ -27,6 +33,12 @@ export default function Header() {
               className="text-gray-700 hover:text-gray-900 font-medium transition-colors"
             >
               Privacidade
+            </Link>
+            <Link 
+              href="/login" 
+              className="text-blue-600 hover:text-blue-800 font-medium transition-colors"
+            >
+              Admin
             </Link>
           </nav>
 
