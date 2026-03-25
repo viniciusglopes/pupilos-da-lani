@@ -1,6 +1,49 @@
 {
+  "name": "pupilos-da-lani",
+  "version": "1.0.0",
+  "description": "🌟 Portal profissional para modelos MG - Next.js + Supabase + LGPD compliance",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "type-check": "tsc --noEmit",
+    "health": "curl -f http://localhost:3000/api/health || exit 1"
+  },
   "dependencies": {
-    "@supabase/auth-helpers-nextjs": "^0.15.0",
-    "@supabase/supabase-js": "^2.100.0"
+    "next": "^14.2.18",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "@supabase/supabase-js": "^2.100.0",
+    "@supabase/auth-helpers-nextjs": "^0.15.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3",
+    "@types/node": "^20.17.9",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "tailwindcss": "^3.4.14",
+    "postcss": "^8.4.49",
+    "autoprefixer": "^10.4.20",
+    "eslint": "^9.15.0",
+    "eslint-config-next": "^14.2.18"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "keywords": [
+    "nextjs",
+    "supabase",
+    "modelos",
+    "portfolio",
+    "minas-gerais",
+    "lgpd"
+  ],
+  "author": "viniciusglopes",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/viniciusglopes/pupilos-da-lani.git"
   }
 }
