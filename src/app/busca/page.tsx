@@ -46,7 +46,15 @@ export default function BuscaPage() {
       }
       
       console.log(`✅ ${result.modelos.length} modelos carregados`)
-      setPessoas(result.modelos as PessoaCompleta[])
+      
+      // Adicionar campos fotos/videos vazios para compatibilidade  
+      const modelosCompleitos = result.modelos.map((modelo: any) => ({
+        ...modelo,
+        fotos: modelo.fotos || [],
+        videos: modelo.videos || []
+      }))
+      
+      setPessoas(modelosCompleitos as PessoaCompleta[])
       
     } catch (error) {
       console.error('❌ Erro ao carregar pessoas:', error)
@@ -56,7 +64,11 @@ export default function BuscaPage() {
       try {
         const { data, error } = await supabase
           .from('pessoas')
-          .select(`*`)
+          .select(`
+            *,
+            fotos (*),
+            videos (*)
+          `)
           .eq('ativo', true)
           .order('created_at', { ascending: false })
 
