@@ -1,9 +1,8 @@
 import { NextResponse } from 'next/server'
-import { supabaseAdmin } from '@/lib/supabase'
 
 export async function POST(request: Request) {
   try {
-    console.log('🚀 API /modelos iniciada')
+    console.log('🚀 API /modelos iniciada (FETCH DIRETO)')
     
     const formData = await request.json()
     console.log('📝 Dados recebidos:', { nome: formData.nome, email: formData.email })
@@ -25,41 +24,48 @@ export async function POST(request: Request) {
       }, { status: 400 })
     }
 
-    console.log('🔑 Verificando supabaseAdmin...')
-    console.log('🔑 URL:', process.env.NEXT_PUBLIC_SUPABASE_URL || 'fallback')
-    console.log('🔑 Service Key existe:', !!process.env.SUPABASE_SERVICE_ROLE_KEY)
-    
-    // Inserir pessoa usando supabaseAdmin (bypassa RLS)
-    console.log('💾 Tentando inserir no Supabase...')
-    const { data: pessoa, error: pessoaError } = await supabaseAdmin
-      .from('pessoas')
-      .insert([{
-        ...formData,
-        data_consentimento: formData.consentimento_contato ? new Date().toISOString() : null
-      }])
-      .select()
-      .single()
-
-    if (pessoaError) {
-      console.error('❌ Erro Supabase:', pessoaError)
-      return NextResponse.json({ 
-        error: pessoaError.message,
-        debug_hint: pessoaError.hint || 'Erro no banco de dados'
-      }, { status: 500 })
+    // Usar FETCH direto ao Supabase (bypass biblioteca com bug)
+    console.log('💾 Inserindo via FETCH direto...')
+    const payload = {
+      ...formData,
+      data_consentimento: formData.consentimento_contato ? new Date().toISOString() : null
     }
-
-    console.log('✅ Pessoa criada com sucesso:', pessoa.id)
+    
+    const response = await fetch('https://ljttishwndzkcytkdsrc.supabase.co/rest/v1/pessoas', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxqdHRpc2h3bmR6a2N5dGtkc3JjIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NDQ3MDY2MywiZXhwIjoyMDkwMDQ2NjYzfQ.1AWXeQ-0WtWsSRyOtQoh8YJR6hiz9nn-5wV6A86ifuk',
+        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxqdHRpc2h3bmR6a2N5dGtkc3JjIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NDQ3MDY2MywiZXhwIjoyMDkwMDQ2NjYzfQ.1AWXeQ-0WtWsSRyOtQoh8YJR6hiz9nn-5wV6A86ifuk',
+        'Prefer': 'return=representation'  // Retorna o objeto criado
+      },
+      body: JSON.stringify(payload)
+    })
+    
+    if (!response.ok) {
+      const errorText = await response.text()
+      console.error('❌ Fetch error:', response.status, errorText)
+      return NextResponse.json({ 
+        error: `Erro ${response.status}: ${errorText}`,
+        method: 'fetch_direto'
+      }, { status: response.status })
+    }
+    
+    const pessoa = await response.json()
+    console.log('✅ Pessoa criada com sucesso (fetch):', pessoa[0]?.id)
+    
     return NextResponse.json({ 
-      success: true, 
-      pessoa,
-      message: `Modelo "${pessoa.nome}" cadastrado com sucesso!`
+      success: true,
+      pessoa: pessoa[0] || pessoa,
+      message: `Modelo "${pessoa[0]?.nome || pessoa.nome}" cadastrado com sucesso!`,
+      method: 'fetch_direto'
     })
 
   } catch (error: any) {
     console.error('💥 Erro geral na API:', error)
     return NextResponse.json({ 
       error: error.message || 'Erro interno do servidor',
-      debug_stack: error.stack?.split('\n')[0] || 'No stack trace'
+      method: 'fetch_direto'
     }, { status: 500 })
   }
 }
