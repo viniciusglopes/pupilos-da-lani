@@ -464,9 +464,9 @@ export default function ModelosPage() {
                     <div className="space-y-2 text-sm">
                       <p><strong>Localização:</strong> {selectedPessoa.localizacao || 'Não informado'}</p>
                       <p><strong>Altura:</strong> {selectedPessoa.altura ? `${selectedPessoa.altura}cm` : 'Não informado'}</p>
-                      <p><strong>Peso:</strong> {selectedPessoa.peso ? `${selectedPessoa.peso}kg` : 'Não informado'}</p>
-                      <p><strong>WhatsApp:</strong> {selectedPessoa.whatsapp || 'Não informado'}</p>
-                      <p><strong>Instagram:</strong> {selectedPessoa.instagram || 'Não informado'}</p>
+                      <p><strong>Telefone:</strong> {selectedPessoa.telefone || 'Não informado'}</p>
+                      <p><strong>Email:</strong> {selectedPessoa.email || 'Não informado'}</p>
+                      <p><strong>Instagram:</strong> {selectedPessoa.instagram_url || 'Não informado'}</p>
                     </div>
                   </div>
 
