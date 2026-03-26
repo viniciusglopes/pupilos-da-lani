@@ -11,6 +11,8 @@ export default function EditModelPage() {
   const [pessoa, setPessoa] = useState<PessoaCompleta | null>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [uploadingFiles, setUploadingFiles] = useState(false)
+  const [novasFotos, setNovasFotos] = useState<File[]>([])
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
   const router = useRouter()
   const params = useParams()
@@ -220,6 +222,75 @@ export default function EditModelPage() {
     } catch (error) {
       console.error('Erro ao definir foto principal:', error)
       setMessage({ type: 'error', text: 'Erro ao definir foto principal' })
+    }
+  }
+
+  const uploadArquivo = async (arquivo: File, bucket: string): Promise<string | null> => {
+    const fileName = `${Date.now()}_${arquivo.name.replace(/[^a-zA-Z0-9.]/g, '_')}`
+    
+    const { data, error } = await supabase.storage
+      .from(bucket)
+      .upload(fileName, arquivo)
+
+    if (error) {
+      console.error(`Erro ao fazer upload do ${bucket.slice(0, -1)}:`, error)
+      return null
+    }
+
+    const { data: publicData } = supabase.storage
+      .from(bucket)
+      .getPublicUrl(fileName)
+
+    return publicData.publicUrl
+  }
+
+  const handleNovasFotos = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const arquivos = Array.from(e.target.files)
+      setNovasFotos(prev => [...prev, ...arquivos])
+    }
+  }
+
+  const removerNovaFoto = (index: number) => {
+    setNovasFotos(prev => prev.filter((_, i) => i !== index))
+  }
+
+  const uploadNovasFotos = async () => {
+    if (novasFotos.length === 0) return
+
+    setUploadingFiles(true)
+    setMessage(null)
+
+    try {
+      for (const foto of novasFotos) {
+        // Upload da foto
+        const url = await uploadArquivo(foto, 'fotos')
+        if (!url) throw new Error('Erro no upload da foto')
+
+        // Salvar no banco
+        const { error } = await supabase
+          .from('fotos')
+          .insert({
+            pessoa_id: id,
+            url_arquivo: url,
+            caminho_storage: url.split('/').pop(),
+            eh_principal: false,
+            ordem: 999
+          })
+
+        if (error) throw error
+      }
+
+      // Recarregar dados da pessoa
+      await loadPessoa()
+      setNovasFotos([])
+      setMessage({ type: 'success', text: `${novasFotos.length} foto(s) adicionada(s) com sucesso!` })
+
+    } catch (error: any) {
+      console.error('Erro ao fazer upload:', error)
+      setMessage({ type: 'error', text: 'Erro ao fazer upload das fotos' })
+    } finally {
+      setUploadingFiles(false)
     }
   }
 
@@ -512,52 +583,119 @@ export default function EditModelPage() {
             <div className="space-y-6">
               {/* Fotos */}
               <div className="bg-white rounded-lg shadow-md p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                  Fotos ({pessoa.fotos.length})
+                <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-semibold text-gray-900">
+                  Galeria de Fotos ({pessoa.fotos.length})
                 </h3>
+                <span className="text-sm text-gray-500">
+                  Passe o mouse sobre as fotos para ver opções
+                </span>
+              </div>
                 
                 {pessoa.fotos.length === 0 ? (
                   <p className="text-gray-500 text-sm">Nenhuma foto cadastrada</p>
                 ) : (
-                  <div className="space-y-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {pessoa.fotos.map((foto) => (
-                      <div key={foto.id} className="flex items-center space-x-3 p-3 border rounded-lg">
+                      <div key={foto.id} className="relative group">
                         <Image
                           src={foto.url_arquivo}
                           alt="Foto"
-                          width={60}
-                          height={60}
-                          className="w-15 h-15 rounded object-cover"
+                          width={200}
+                          height={200}
+                          className="w-full h-48 rounded-lg object-cover"
                         />
-                        <div className="flex-grow">
-                          <div className="flex items-center space-x-2">
+                        
+                        {/* Overlay com controles */}
+                        <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
+                          <div className="text-center space-y-2">
                             {foto.eh_principal && (
-                              <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">
-                                Principal
+                              <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-medium">
+                                Foto Principal
                               </span>
                             )}
+                            
+                            <div className="space-x-2">
+                              {!foto.eh_principal && (
+                                <button
+                                  onClick={() => setFotoPrincipal(foto.id, foto.url_arquivo)}
+                                  className="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700 transition-colors"
+                                >
+                                  Definir Principal
+                                </button>
+                              )}
+                              
+                              <button
+                                onClick={() => deleteFoto(foto.id, foto.caminho_storage)}
+                                className="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700 transition-colors"
+                              >
+                                🗑️ Excluir
+                              </button>
+                            </div>
                           </div>
-                        </div>
-                        <div className="space-x-1">
-                          {!foto.eh_principal && (
-                            <button
-                              onClick={() => setFotoPrincipal(foto.id, foto.url_arquivo)}
-                              className="text-blue-600 text-xs hover:text-blue-800"
-                            >
-                              Definir principal
-                            </button>
-                          )}
-                          <button
-                            onClick={() => deleteFoto(foto.id, foto.caminho_storage)}
-                            className="text-red-600 text-xs hover:text-red-800"
-                          >
-                            Excluir
-                          </button>
                         </div>
                       </div>
                     ))}
                   </div>
                 )}
+
+                {/* Upload de novas fotos */}
+                <div className="mt-6 border-t pt-6">
+                  <h4 className="text-md font-semibold text-gray-900 mb-3">
+                    Adicionar Novas Fotos
+                  </h4>
+                  
+                  <div className="space-y-4">
+                    {/* Input de arquivo */}
+                    <div>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        onChange={handleNovasFotos}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                      <p className="text-xs text-gray-500 mt-1">
+                        Selecione múltiplas fotos (JPEG, PNG, etc.)
+                      </p>
+                    </div>
+
+                    {/* Preview das fotos selecionadas */}
+                    {novasFotos.length > 0 && (
+                      <div className="space-y-2">
+                        <p className="text-sm font-medium text-gray-700">
+                          Fotos selecionadas ({novasFotos.length}):
+                        </p>
+                        <div className="space-y-2 max-h-32 overflow-y-auto">
+                          {novasFotos.map((foto, index) => (
+                            <div key={index} className="flex items-center justify-between bg-gray-50 px-3 py-2 rounded">
+                              <span className="text-sm text-gray-700 truncate">
+                                {foto.name}
+                              </span>
+                              <button
+                                onClick={() => removerNovaFoto(index)}
+                                className="text-red-600 text-sm hover:text-red-800"
+                              >
+                                ✕
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Botão de upload */}
+                    {novasFotos.length > 0 && (
+                      <button
+                        onClick={uploadNovasFotos}
+                        disabled={uploadingFiles}
+                        className="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {uploadingFiles ? 'Fazendo upload...' : `Adicionar ${novasFotos.length} foto(s)`}
+                      </button>
+                    )}
+                  </div>
+                </div>
               </div>
 
               {/* Vídeos */}
