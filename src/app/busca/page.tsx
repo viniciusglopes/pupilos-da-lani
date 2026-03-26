@@ -30,20 +30,42 @@ export default function BuscaPage() {
 
   const loadPessoas = async () => {
     try {
-      const { data, error } = await supabase
-        .from('pessoas')
-        .select(`
-          *,
-          fotos (*),
-          videos (*)
-        `)
-        .eq('ativo', true)
-        .order('created_at', { ascending: false })
-
-      if (error) throw error
-      setPessoas(data as PessoaCompleta[])
+      console.log('🔍 Carregando pessoas via API...')
+      
+      // Usar nossa nova API GET /modelos
+      const response = await fetch('/api/modelos')
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+      }
+      
+      const result = await response.json()
+      
+      if (!result.success) {
+        throw new Error(result.error || 'Erro na API')
+      }
+      
+      console.log(`✅ ${result.modelos.length} modelos carregados`)
+      setPessoas(result.modelos as PessoaCompleta[])
+      
     } catch (error) {
-      console.error('Erro ao carregar pessoas:', error)
+      console.error('❌ Erro ao carregar pessoas:', error)
+      
+      // FALLBACK: Se API falhar, tenta Supabase direto
+      console.log('🔄 Tentando fallback Supabase direto...')
+      try {
+        const { data, error } = await supabase
+          .from('pessoas')
+          .select(`*`)
+          .eq('ativo', true)
+          .order('created_at', { ascending: false })
+
+        if (error) throw error
+        console.log(`✅ Fallback: ${data.length} modelos carregados`)
+        setPessoas(data as PessoaCompleta[])
+      } catch (fallbackError) {
+        console.error('❌ Fallback também falhou:', fallbackError)
+      }
     } finally {
       setLoading(false)
     }
