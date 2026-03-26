@@ -3,8 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
-import Header from '@/components/Header'
-import Footer from '@/components/Footer'
+import AdminSidebar from '@/components/AdminSidebar'
 import { PessoaForm } from '@/types/database'
 
 export default function CadastroPage() {
@@ -250,10 +249,11 @@ export default function CadastroPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Header />
+    <div className="min-h-screen bg-gray-50 flex">
+      <AdminSidebar />
       
-      <main className="container mx-auto px-4 py-8">
+      <main className="flex-1 lg:ml-0 p-8">
+        <div className="max-w-4xl mx-auto">
         <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-md p-8">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
@@ -624,16 +624,15 @@ export default function CadastroPage() {
 
           <div className="mt-6 text-center">
             <button
-              onClick={() => router.push('/')}
+              onClick={() => router.push('/admin')}
               className="text-blue-600 hover:text-blue-800 font-medium"
             >
-              ← Voltar à lista de modelos
+              ← Voltar ao Dashboard
             </button>
           </div>
         </div>
+        </div>
       </main>
-
-      <Footer />
     </div>
   )
 }

@@ -4,8 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { PessoaCompleta, Foto, Video } from '@/types/database'
-import Header from '@/components/Header'
-import Footer from '@/components/Footer'
+import AdminSidebar from '@/components/AdminSidebar'
 import Image from 'next/image'
 
 export default function EditModelPage() {
@@ -256,10 +255,10 @@ export default function EditModelPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Header />
+    <div className="min-h-screen bg-gray-50 flex">
+      <AdminSidebar />
       
-      <main className="container mx-auto px-4 py-8">
+      <main className="flex-1 lg:ml-0 p-8">
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center justify-between mb-8">
             <h1 className="text-3xl font-bold text-gray-900">
@@ -602,8 +601,6 @@ export default function EditModelPage() {
           </div>
         </div>
       </main>
-
-      <Footer />
     </div>
   )
 }
