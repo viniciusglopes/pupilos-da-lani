@@ -1,3 +1,5 @@
+"use client"
+
 import { supabase } from '@/lib/supabase'
 import { PessoaCompleta } from '@/types/database'
 import ModelCard from '@/components/ModelCard'
