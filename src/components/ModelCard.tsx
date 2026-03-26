@@ -1,6 +1,8 @@
 import { PessoaCompleta } from '@/types/database'
 import Image from 'next/image'
 import Link from 'next/link'
+import { useState } from 'react'
+import ModalGallery from './ModalGallery'
 
 interface ModelCardProps {
   pessoa: PessoaCompleta
@@ -8,6 +10,8 @@ interface ModelCardProps {
 }
 
 export default function ModelCard({ pessoa, isParceiro = false }: ModelCardProps) {
+  const [isModalOpen, setIsModalOpen] = useState(false)
+
   // Foto principal ou primeira foto disponível
   const fotoUrl = pessoa.foto_principal || 
                   pessoa.fotos.find(f => f.eh_principal)?.url_arquivo || 
@@ -19,7 +23,11 @@ export default function ModelCard({ pessoa, isParceiro = false }: ModelCardProps
     .join('-')
 
   return (
-    <div className="group relative bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 border border-gray-100 hover:-translate-y-2">
+    <>
+      <div 
+        className="group relative bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 border border-gray-100 hover:-translate-y-2 cursor-pointer"
+        onClick={() => setIsModalOpen(true)}
+      >
       {/* Foto principal com overlay */}
       <div className="relative h-80 overflow-hidden">
         {fotoUrl ? (
@@ -47,12 +55,22 @@ export default function ModelCard({ pessoa, isParceiro = false }: ModelCardProps
                 </div>
                 
                 <div className="flex gap-2">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setIsModalOpen(true)
+                    }}
+                    className="flex-1 bg-white/90 backdrop-blur-sm text-gray-900 text-center py-2 px-3 rounded-lg text-sm font-semibold hover:bg-white transition-colors"
+                  >
+                    🖼️ Ver Fotos ({pessoa.fotos.length})
+                  </button>
+                  
                   {pessoa.instagram_url && (
                     <a
                       href={pessoa.instagram_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex-1 bg-white/90 backdrop-blur-sm text-gray-900 text-center py-2 px-3 rounded-lg text-sm font-semibold hover:bg-white transition-colors"
+                      className="flex-1 bg-purple-600/90 backdrop-blur-sm text-white text-center py-2 px-3 rounded-lg text-sm font-semibold hover:bg-purple-600 transition-colors"
                       onClick={(e) => e.stopPropagation()}
                     >
                       📷 Instagram
@@ -140,7 +158,19 @@ export default function ModelCard({ pessoa, isParceiro = false }: ModelCardProps
             {pessoa.descricao}
           </p>
         )}
+
+        {/* Click indicator */}
+        <div className="absolute bottom-3 right-3 bg-purple-600 text-white text-xs px-2 py-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+          👆 Clique para ver mais
+        </div>
       </div>
-    </div>
+
+      {/* Modal Gallery */}
+      <ModalGallery 
+        pessoa={pessoa}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
+    </>
   )
 }

@@ -169,47 +169,73 @@ export default function BuscaPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
       <Header />
       
-      <main className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">
-            Buscar Modelos
+      {/* Hero Section */}
+      <section className="bg-gradient-to-r from-purple-600 to-purple-800 text-white py-16">
+        <div className="container mx-auto px-6 text-center">
+          <h1 className="text-5xl font-bold mb-4">
+            Descobrir Talentos
           </h1>
-          <p className="text-gray-600">
-            Use os filtros abaixo para encontrar o modelo ideal para seu projeto
+          <p className="text-xl text-purple-100 mb-8 max-w-2xl mx-auto">
+            Encontre o modelo ideal para seu projeto usando nossos filtros avançados
           </p>
+          
+          {/* Quick Search */}
+          <div className="max-w-2xl mx-auto relative">
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="🔍 Buscar por nome, especialidade ou localização..."
+              className="w-full px-6 py-4 text-gray-900 rounded-full text-lg focus:outline-none focus:ring-4 focus:ring-purple-300 shadow-lg"
+            />
+            {searchTerm && (
+              <button
+                onClick={() => setSearchTerm('')}
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
+              >
+                ✕
+              </button>
+            )}
+          </div>
         </div>
-
-        {/* Filtros */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
-            {/* Busca geral */}
-            <div className="md:col-span-2 lg:col-span-1">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Busca Geral
-              </label>
-              <input
-                type="text"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                placeholder="Nome, descrição, localização..."
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+      </section>
+      
+      <main className="container mx-auto px-6 -mt-8 relative z-10">
+        {/* Filtros Avançados */}
+        <div className="bg-white rounded-2xl shadow-xl p-8 mb-12">
+          <div className="flex items-center justify-between mb-8">
+            <h2 className="text-2xl font-bold text-gray-900">Filtros Avançados</h2>
+            <div className="flex items-center space-x-4">
+              <span className="text-sm text-gray-600 bg-purple-50 px-4 py-2 rounded-full">
+                {filteredPessoas.length} resultado{filteredPessoas.length !== 1 ? 's' : ''}
+              </span>
+              {(searchTerm || Object.values(filters).some(v => v && v !== 'todos')) && (
+                <button
+                  onClick={clearFilters}
+                  className="text-purple-600 hover:text-purple-800 text-sm font-medium bg-purple-50 px-4 py-2 rounded-full hover:bg-purple-100 transition-colors"
+                >
+                  🗑️ Limpar Filtros
+                </button>
+              )}
             </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
 
             {/* Especialidade */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Especialidade
+            <div className="space-y-2">
+              <label className="block text-sm font-semibold text-gray-700">
+                🎭 Especialidade
               </label>
               <select
                 value={filters.especialidade}
                 onChange={(e) => setFilters(prev => ({ ...prev, especialidade: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
               >
-                <option value="">Todas</option>
+                <option value="">Todas as especialidades</option>
                 {especialidadesUnicas.map(esp => (
                   <option key={esp} value={esp}>{esp}</option>
                 ))}
@@ -217,132 +243,161 @@ export default function BuscaPage() {
             </div>
 
             {/* Localização */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Localização
+            <div className="space-y-2">
+              <label className="block text-sm font-semibold text-gray-700">
+                📍 Localização
               </label>
               <select
                 value={filters.localizacao}
                 onChange={(e) => setFilters(prev => ({ ...prev, localizacao: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
               >
-                <option value="">Todas</option>
+                <option value="">Todas as cidades</option>
                 {localizacoesUnicas.map(loc => (
                   <option key={loc} value={loc}>{loc}</option>
                 ))}
               </select>
             </div>
 
-            {/* Altura mínima */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Altura Mínima (cm)
+            {/* Faixa de Altura */}
+            <div className="space-y-2">
+              <label className="block text-sm font-semibold text-gray-700">
+                📏 Altura (cm)
               </label>
-              <input
-                type="number"
-                value={filters.alturaMin}
-                onChange={(e) => setFilters(prev => ({ ...prev, alturaMin: e.target.value }))}
-                placeholder="Ex: 160"
-                min="100"
-                max="250"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-
-            {/* Altura máxima */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Altura Máxima (cm)
-              </label>
-              <input
-                type="number"
-                value={filters.alturaMax}
-                onChange={(e) => setFilters(prev => ({ ...prev, alturaMax: e.target.value }))}
-                placeholder="Ex: 180"
-                min="100"
-                max="250"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+              <div className="flex space-x-2">
+                <input
+                  type="number"
+                  value={filters.alturaMin}
+                  onChange={(e) => setFilters(prev => ({ ...prev, alturaMin: e.target.value }))}
+                  placeholder="Mín"
+                  min="100"
+                  max="250"
+                  className="flex-1 px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                />
+                <span className="flex items-center px-2 text-gray-500">-</span>
+                <input
+                  type="number"
+                  value={filters.alturaMax}
+                  onChange={(e) => setFilters(prev => ({ ...prev, alturaMax: e.target.value }))}
+                  placeholder="Máx"
+                  min="100"
+                  max="250"
+                  className="flex-1 px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                />
+              </div>
             </div>
 
             {/* Tipo de parceria */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Tipo de Parceria
+            <div className="space-y-2">
+              <label className="block text-sm font-semibold text-gray-700">
+                🤝 Parceria
               </label>
-              <select
-                value={filters.parceria}
-                onChange={(e) => setFilters(prev => ({ ...prev, parceria: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="todos">Todos</option>
-                <option value="parceiro">Apenas Parceiros</option>
-                <option value="nao-parceiro">Não Parceiros</option>
-              </select>
+              <div className="flex space-x-2">
+                {[
+                  { key: 'todos', label: 'Todos', color: 'gray' },
+                  { key: 'parceiro', label: 'Parceiros', color: 'blue' },
+                  { key: 'nao-parceiro', label: 'Freelancers', color: 'green' }
+                ].map(option => (
+                  <button
+                    key={option.key}
+                    onClick={() => setFilters(prev => ({ ...prev, parceria: option.key }))}
+                    className={`flex-1 px-4 py-3 rounded-lg font-medium transition-all ${
+                      filters.parceria === option.key
+                        ? `bg-${option.color}-600 text-white shadow-lg`
+                        : `bg-${option.color}-50 text-${option.color}-700 hover:bg-${option.color}-100`
+                    }`}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
 
-          {/* Botões de ação */}
-          <div className="flex flex-wrap gap-2 justify-between items-center pt-4 border-t">
-            <div className="text-sm text-gray-600">
-              {filteredPessoas.length} modelo{filteredPessoas.length !== 1 ? 's' : ''} encontrado{filteredPessoas.length !== 1 ? 's' : ''}
+            {/* Quick Stats */}
+            <div className="md:col-span-2 lg:col-span-3">
+              <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-6">
+                <h3 className="text-sm font-semibold text-gray-700 mb-4">📊 Estatísticas dos Resultados</h3>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {[
+                    { label: 'Total', value: filteredPessoas.length, icon: '👥', color: 'purple' },
+                    { label: 'Parceiros', value: filteredPessoas.filter(p => p.parceria).length, icon: '🤝', color: 'blue' },
+                    { label: 'Com Fotos', value: filteredPessoas.filter(p => p.fotos.length > 0).length, icon: '📸', color: 'green' },
+                    { label: 'Com Vídeos', value: filteredPessoas.filter(p => p.videos.length > 0).length, icon: '🎬', color: 'orange' }
+                  ].map(stat => (
+                    <div key={stat.label} className="text-center">
+                      <div className={`text-2xl text-${stat.color}-600 font-bold`}>
+                        {stat.icon} {stat.value}
+                      </div>
+                      <div className="text-sm text-gray-600">{stat.label}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
-            <button
-              onClick={clearFilters}
-              className="text-blue-600 hover:text-blue-800 text-sm font-medium"
-            >
-              Limpar Filtros
-            </button>
           </div>
         </div>
 
         {/* Resultados */}
-        {filteredPessoas.length === 0 ? (
-          <div className="text-center py-12">
-            <svg className="mx-auto h-16 w-16 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              Nenhum modelo encontrado
-            </h3>
-            <p className="text-gray-500 mb-4">
-              Tente ajustar os filtros para encontrar outros modelos
-            </p>
-            <button
-              onClick={clearFilters}
-              className="text-blue-600 hover:text-blue-800 font-medium"
-            >
-              Limpar todos os filtros
-            </button>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredPessoas.map((pessoa) => (
-              <ModelCard key={pessoa.id} pessoa={pessoa} />
-            ))}
-          </div>
-        )}
-
-        {/* Estatísticas dos filtros */}
-        {filteredPessoas.length > 0 && (
-          <div className="mt-8 bg-gray-100 rounded-lg p-4">
-            <h4 className="font-medium text-gray-900 mb-2">Resumo da Busca:</h4>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-gray-600">
-              <div>
-                <span className="font-medium">Total:</span> {filteredPessoas.length}
-              </div>
-              <div>
-                <span className="font-medium">Parceiros:</span> {filteredPessoas.filter(p => p.parceria).length}
-              </div>
-              <div>
-                <span className="font-medium">Com Fotos:</span> {filteredPessoas.filter(p => p.fotos.length > 0).length}
-              </div>
-              <div>
-                <span className="font-medium">Com Vídeos:</span> {filteredPessoas.filter(p => p.videos.length > 0).length}
+        <section className="mb-16">
+          {filteredPessoas.length === 0 ? (
+            <div className="bg-white rounded-2xl shadow-lg p-12 text-center">
+              <div className="text-8xl mb-6">🔍</div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                Nenhum modelo encontrado
+              </h3>
+              <p className="text-gray-600 mb-8 max-w-md mx-auto">
+                Não encontramos modelos que atendam aos seus critérios. Tente ajustar os filtros ou fazer uma busca mais ampla.
+              </p>
+              <div className="space-y-4">
+                <button
+                  onClick={clearFilters}
+                  className="bg-gradient-to-r from-purple-600 to-purple-700 text-white font-semibold px-8 py-3 rounded-full hover:from-purple-700 hover:to-purple-800 transition-all transform hover:scale-105"
+                >
+                  🗑️ Limpar Filtros
+                </button>
+                <div className="text-sm text-gray-500">
+                  Ou explore todas as categorias na <a href="/" className="text-purple-600 hover:text-purple-800 font-medium">página inicial</a>
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          ) : (
+            <>
+              {/* Header dos Resultados */}
+              <div className="flex items-center justify-between mb-8">
+                <h2 className="text-3xl font-bold text-gray-900">
+                  Resultados da Busca
+                </h2>
+                <div className="flex space-x-3">
+                  {/* Views Toggle */}
+                  <div className="bg-white rounded-lg shadow-md p-1 flex">
+                    <button className="bg-purple-600 text-white px-4 py-2 rounded-md text-sm font-medium">
+                      📱 Grid
+                    </button>
+                    <button className="text-gray-600 px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-100">
+                      📋 Lista
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Grid de Modelos */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                {filteredPessoas.map((pessoa) => (
+                  <ModelCard key={pessoa.id} pessoa={pessoa} />
+                ))}
+              </div>
+
+              {/* Load More Button */}
+              {filteredPessoas.length > 8 && (
+                <div className="text-center mt-12">
+                  <button className="bg-white text-purple-700 font-semibold px-8 py-3 rounded-full border-2 border-purple-200 hover:bg-purple-50 transition-all">
+                    Ver Mais Modelos
+                  </button>
+                </div>
+              )}
+            </>
+          )}
+        </section>
       </main>
 
       <Footer />

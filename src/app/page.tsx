@@ -6,6 +6,7 @@ import ModelCard from '@/components/ModelCard'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import DestaqueCarousel from '@/components/DestaqueCarousel'
+import ScrollAnimation from '@/components/ScrollAnimation'
 import Link from 'next/link'
 
 export default async function HomePage() {
@@ -166,71 +167,86 @@ export default async function HomePage() {
       <main className="container mx-auto px-4 py-16">
 
         {/* Categorias de Talentos */}
-        <section className="mb-16">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Nossos Talentos
-            </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Descubra modelos profissionais categorizados por especialidade
-            </p>
-          </div>
-
-          {/* Grid de Categorias */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-            {[
-              { name: 'Infantil', icon: '👶', color: 'from-blue-400 to-blue-600', count: pessoasCompletas.filter(p => p.especializacoes?.includes('Infantil')).length },
-              { name: 'Teen', icon: '🧑‍🎓', color: 'from-green-400 to-green-600', count: pessoasCompletas.filter(p => p.especializacoes?.includes('Teen')).length },
-              { name: 'Adulto', icon: '👩‍💼', color: 'from-purple-400 to-purple-600', count: pessoasCompletas.filter(p => p.especializacoes?.includes('Adulto')).length },
-              { name: 'Comercial', icon: '📺', color: 'from-orange-400 to-orange-600', count: pessoasCompletas.filter(p => p.especializacoes?.includes('Comercial')).length }
-            ].map((categoria) => (
-              <div 
-                key={categoria.name}
-                className={`bg-gradient-to-br ${categoria.color} text-white p-6 rounded-xl cursor-pointer transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl`}
-              >
-                <div className="text-center">
-                  <div className="text-4xl mb-3">{categoria.icon}</div>
-                  <h3 className="text-xl font-bold mb-2">{categoria.name}</h3>
-                  <p className="text-white/90 text-sm mb-3">
-                    {categoria.count} {categoria.count === 1 ? 'modelo' : 'modelos'}
-                  </p>
-                  <div className="bg-white/20 backdrop-blur-sm px-4 py-1 rounded-full text-sm font-medium">
-                    Ver Talentos →
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* Galeria de Modelos */}
-        <section>
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-2">
-              Galeria de Modelos
-            </h2>
-            <p className="text-gray-600">
-              Conheça nosso catálogo completo de talentos
-            </p>
-          </div>
-
-          {pessoasCompletas.length === 0 ? (
-            <div className="text-center py-12">
-              <h3 className="text-xl font-semibold text-gray-700 mb-4">
-                {destaquesCompletos.length > 0 ? 'Nenhum modelo adicional cadastrado' : 'Ainda não temos modelos cadastrados'}
-              </h3>
-              <p className="text-gray-500">
-                {destaquesCompletos.length > 0 ? 'Apenas modelos em destaque disponíveis no momento' : 'Em breve teremos nosso primeiro catálogo!'}
+        <ScrollAnimation animation="slideUp">
+          <section className="mb-16">
+            <div className="text-center mb-12">
+              <h2 className="text-4xl font-bold text-gray-900 mb-4">
+                Nossos Talentos
+              </h2>
+              <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+                Descubra modelos profissionais categorizados por especialidade
               </p>
             </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {pessoasCompletas.map((pessoa) => (
-                <ModelCard key={pessoa.id} pessoa={pessoa} />
+
+            {/* Grid de Categorias */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+              {[
+                { name: 'Infantil', icon: '👶', color: 'from-blue-400 to-blue-600', count: pessoasCompletas.filter(p => p.especializacoes?.includes('Infantil')).length },
+                { name: 'Teen', icon: '🧑‍🎓', color: 'from-green-400 to-green-600', count: pessoasCompletas.filter(p => p.especializacoes?.includes('Teen')).length },
+                { name: 'Adulto', icon: '👩‍💼', color: 'from-purple-400 to-purple-600', count: pessoasCompletas.filter(p => p.especializacoes?.includes('Adulto')).length },
+                { name: 'Comercial', icon: '📺', color: 'from-orange-400 to-orange-600', count: pessoasCompletas.filter(p => p.especializacoes?.includes('Comercial')).length }
+              ].map((categoria, index) => (
+                <ScrollAnimation 
+                  key={categoria.name}
+                  animation="slideUp"
+                  delay={index * 100}
+                >
+                  <div 
+                    className={`bg-gradient-to-br ${categoria.color} text-white p-6 rounded-xl cursor-pointer transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl`}
+                  >
+                    <div className="text-center">
+                      <div className="text-4xl mb-3">{categoria.icon}</div>
+                      <h3 className="text-xl font-bold mb-2">{categoria.name}</h3>
+                      <p className="text-white/90 text-sm mb-3">
+                        {categoria.count} {categoria.count === 1 ? 'modelo' : 'modelos'}
+                      </p>
+                      <div className="bg-white/20 backdrop-blur-sm px-4 py-1 rounded-full text-sm font-medium">
+                        Ver Talentos →
+                      </div>
+                    </div>
+                  </div>
+                </ScrollAnimation>
               ))}
             </div>
-          )}
-        </section>
+          </section>
+        </ScrollAnimation>
+
+        {/* Galeria de Modelos */}
+        <ScrollAnimation animation="slideUp">
+          <section>
+            <div className="text-center mb-8">
+              <h2 className="text-3xl font-bold text-gray-900 mb-2">
+                Galeria de Modelos
+              </h2>
+              <p className="text-gray-600">
+                Conheça nosso catálogo completo de talentos
+              </p>
+            </div>
+
+            {pessoasCompletas.length === 0 ? (
+              <div className="text-center py-12">
+                <h3 className="text-xl font-semibold text-gray-700 mb-4">
+                  {destaquesCompletos.length > 0 ? 'Nenhum modelo adicional cadastrado' : 'Ainda não temos modelos cadastrados'}
+                </h3>
+                <p className="text-gray-500">
+                  {destaquesCompletos.length > 0 ? 'Apenas modelos em destaque disponíveis no momento' : 'Em breve teremos nosso primeiro catálogo!'}
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {pessoasCompletas.map((pessoa, index) => (
+                  <ScrollAnimation 
+                    key={pessoa.id}
+                    animation="slideUp"
+                    delay={index * 100}
+                  >
+                    <ModelCard pessoa={pessoa} />
+                  </ScrollAnimation>
+                ))}
+              </div>
+            )}
+          </section>
+        </ScrollAnimation>
 
         <div className="text-center mt-12">
           <div className="bg-gray-50 rounded-lg p-6">
