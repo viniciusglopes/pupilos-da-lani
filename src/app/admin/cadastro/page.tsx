@@ -117,17 +117,22 @@ export default function CadastroPage() {
         throw new Error('Para cadastrar telefone, é necessário consentimento de contato')
       }
 
-      // Inserir pessoa
-      const { data: pessoa, error: pessoaError } = await supabase
-        .from('pessoas')
-        .insert([{
-          ...formData,
-          data_consentimento: formData.consentimento_contato ? new Date().toISOString() : null
-        }])
-        .select()
-        .single()
+      // Inserir pessoa via API (bypassa RLS)
+      const response = await fetch('/api/modelos', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+      })
 
-      if (pessoaError) throw pessoaError
+      const result = await response.json()
+      
+      if (!response.ok) {
+        throw new Error(result.error || 'Erro ao cadastrar modelo')
+      }
+
+      const pessoa = result.pessoa
 
       setUploadingFiles(true)
 
@@ -136,17 +141,25 @@ export default function CadastroPage() {
       for (let i = 0; i < fotos.length; i++) {
         const fotoUrl = await uploadFile(fotos[i], 'fotos', pessoa.id)
         if (fotoUrl) {
-          const { error: fotoError } = await supabase
-            .from('fotos')
-            .insert({
+          // Inserir foto via API (bypassa RLS)
+          const fotoResponse = await fetch('/api/fotos', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
               pessoa_id: pessoa.id,
               url_arquivo: fotoUrl,
               caminho_storage: fotoUrl,
               eh_principal: i === 0, // Primeira foto é principal
               ordem: i
             })
+          })
 
-          if (fotoError) console.error('Erro inserir foto:', fotoError)
+          if (!fotoResponse.ok) {
+            console.error('Erro inserir foto via API')
+          }
+          
           if (i === 0) fotoPrincipal = fotoUrl
         }
       }
@@ -156,33 +169,44 @@ export default function CadastroPage() {
       for (let i = 0; i < videos.length; i++) {
         const videoUrl = await uploadFile(videos[i], 'videos', pessoa.id)
         if (videoUrl) {
-          const { error: videoError } = await supabase
-            .from('videos')
-            .insert({
+          // Inserir vídeo via API (bypassa RLS)
+          const videoResponse = await fetch('/api/videos', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
               pessoa_id: pessoa.id,
               url_arquivo: videoUrl,
               caminho_storage: videoUrl,
               eh_principal: i === 0, // Primeiro vídeo é principal
               ordem: i
             })
+          })
 
-          if (videoError) console.error('Erro inserir vídeo:', videoError)
+          if (!videoResponse.ok) {
+            console.error('Erro inserir vídeo via API')
+          }
+
           if (i === 0) videoPrincipal = videoUrl
         }
       }
 
       // Atualizar pessoa com foto/vídeo principal
       if (fotoPrincipal || videoPrincipal) {
-        await supabase
-          .from('pessoas')
-          .update({
+        await fetch(`/api/modelos/${pessoa.id}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
             foto_principal: fotoPrincipal,
             video_principal: videoPrincipal
           })
-          .eq('id', pessoa.id)
+        })
       }
 
-      setMessage({ type: 'success', text: `Modelo "${pessoa.nome}" cadastrado com sucesso!` })
+      setMessage({ type: 'success', text: result.message || `Modelo "${pessoa.nome}" cadastrado com sucesso!` })
       
       // Reset form
       setFormData({
