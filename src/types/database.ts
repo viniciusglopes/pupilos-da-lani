@@ -18,6 +18,7 @@ export interface Pessoa {
   consentimento_contato: boolean;
   data_consentimento?: string;
   parceria: boolean;
+  destaque: boolean;  // NOVO: Marcar pessoa como destaque na tela principal
   foto_principal?: string;
   video_principal?: string;
   ativo: boolean;
@@ -67,4 +68,5 @@ export interface PessoaForm {
   telefone?: string;
   consentimento_contato: boolean;
   parceria: boolean;
+  destaque?: boolean;  // NOVO: Campo destaque no form
 }

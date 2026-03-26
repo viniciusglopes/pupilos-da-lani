@@ -27,7 +27,8 @@ export default function CadastroPage() {
     email: '',
     telefone: '',
     consentimento_contato: false,
-    parceria: false
+    parceria: false,
+    destaque: false
   })
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
   const router = useRouter()
@@ -546,6 +547,22 @@ export default function CadastroPage() {
                 />
                 <label className="text-sm text-blue-800">
                   <strong>Modelo Parceiro:</strong> Marcar como modelo em parceria exclusiva
+                </label>
+              </div>
+            </div>
+
+            {/* Destaque */}
+            <div className="bg-purple-50 border border-purple-200 p-4 rounded-lg">
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  name="destaque"
+                  checked={formData.destaque || false}
+                  onChange={handleInputChange}
+                  className="mr-3"
+                />
+                <label className="text-sm text-purple-800">
+                  <strong>⭐ Modelo Destaque:</strong> Exibir na área de destaques da tela principal
                 </label>
               </div>
             </div>
