@@ -22,7 +22,7 @@ export default function LoginPage() {
     if (password === adminPassword) {
       // Salvar no localStorage (em produção, usar JWT ou session)
       localStorage.setItem('admin_authenticated', 'true')
-      router.push('/admin/cadastro')
+      router.push('/admin')
     } else {
       setError('Senha incorreta')
     }
