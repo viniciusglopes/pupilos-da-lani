@@ -81,14 +81,14 @@ export default function ModelosPage() {
     }
   }
 
-  const deleteFoto = async (fotoId: string, caminho: string) => {
+  const deleteFoto = async (fotoId: string, caminho: string | null) => {
     if (!confirm('Tem certeza que deseja excluir esta foto?')) {
       return
     }
 
     try {
       // Deletar do storage
-      if (caminho) {
+      if (caminho && caminho.trim() !== '') {
         await supabase.storage.from('fotos').remove([caminho])
       }
 
@@ -441,7 +441,7 @@ export default function ModelosPage() {
                           />
                           <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-lg">
                             <button
-                              onClick={() => deleteFoto(foto.id, foto.caminho_storage)}
+                              onClick={() => deleteFoto(foto.id, foto.caminho_storage || '')}
                               className="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700"
                             >
                               🗑️ Excluir
