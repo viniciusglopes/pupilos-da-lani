@@ -1,5 +1,51 @@
 import { NextResponse } from 'next/server'
 
+export async function GET(request: Request) {
+  try {
+    console.log('📋 API GET /modelos - Listando modelos')
+    
+    const { searchParams } = new URL(request.url)
+    const limit = searchParams.get('limit') || '50'
+    const offset = searchParams.get('offset') || '0'
+    
+    // Buscar pessoas ativas via fetch direto
+    const response = await fetch(`https://ljttishwndzkcytkdsrc.supabase.co/rest/v1/pessoas?select=*&ativo=eq.true&order=created_at.desc&limit=${limit}&offset=${offset}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxqdHRpc2h3bmR6a2N5dGtkc3JjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0NzA2NjMsImV4cCI6MjA5MDA0NjY2M30.4lH691aAK1hdIhFXVQxmzvyGTxTnGuVnTZEMN_8clpA',
+        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxqdHRpc2h3bmR6a2N5dGtkc3JjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0NzA2NjMsImV4cCI6MjA5MDA0NjY2M30.4lH691aAK1hdIhFXVQxmzvyGTxTnGuVnTZEMN_8clpA'
+      }
+    })
+    
+    if (!response.ok) {
+      const errorText = await response.text()
+      console.error('❌ Erro listagem:', response.status, errorText)
+      return NextResponse.json({ 
+        error: `Erro ${response.status}: ${errorText}`,
+        method: 'fetch_direto_get'
+      }, { status: response.status })
+    }
+    
+    const modelos = await response.json()
+    console.log(`✅ ${modelos.length} modelos encontrados`)
+    
+    return NextResponse.json({ 
+      success: true,
+      modelos,
+      total: modelos.length,
+      method: 'fetch_direto_get'
+    })
+
+  } catch (error: any) {
+    console.error('💥 Erro GET modelos:', error)
+    return NextResponse.json({ 
+      error: error.message || 'Erro interno do servidor',
+      method: 'fetch_direto_get'
+    }, { status: 500 })
+  }
+}
+
 export async function POST(request: Request) {
   try {
     console.log('🚀 API /modelos iniciada (FETCH DIRETO)')
