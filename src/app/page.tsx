@@ -6,6 +6,7 @@ import ModelCard from '@/components/ModelCard'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import DestaqueCarousel from '@/components/DestaqueCarousel'
+import Link from 'next/link'
 
 export default async function HomePage() {
   // Buscar pessoas em destaque
@@ -95,47 +96,121 @@ export default async function HomePage() {
       
       <Header />
       
-      <main className="container mx-auto px-4 py-8">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-black mb-4">
-            Pupilos da Lani
-          </h1>
-          <p className="text-xl text-gray-700 max-w-2xl mx-auto">
-            Conectando talentos com oportunidades. 
-            Descubra modelos profissionais em Minas Gerais.
-          </p>
-        </div>
-
-        {/* Área de Destaques */}
-        {destaquesCompletos.length > 0 && (
-          <section className="mb-16">
-            <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold text-purple-600 mb-2">
-                ⭐ Modelos em Destaque
-              </h2>
-              <p className="text-gray-600">
-                Nossos principais talentos selecionados
+      {/* Hero Section - Half Screen */}
+      <section className="min-h-screen flex">
+        {/* Left Side - Content */}
+        <div className="w-1/2 bg-gradient-to-br from-purple-600 to-purple-800 flex items-center justify-center">
+          <div className="text-center text-white px-12">
+            <div className="mb-8">
+              <div className="w-32 h-32 mx-auto mb-6 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                <span className="text-4xl font-bold text-white">PL</span>
+              </div>
+              <h1 className="text-5xl font-bold mb-4">
+                Pupilos da Lani
+              </h1>
+              <p className="text-xl text-purple-100 mb-8 leading-relaxed">
+                Conectando talentos com oportunidades.<br />
+                Descubra modelos profissionais em Minas Gerais.
               </p>
             </div>
+            
+            <div className="space-y-4">
+              <Link
+                href="/busca"
+                className="block w-full bg-white text-purple-700 font-bold py-4 px-8 rounded-lg hover:bg-purple-50 transition-colors"
+              >
+                🔍 Descobrir Talentos
+              </Link>
+              <Link
+                href="/parceria"
+                className="block w-full border-2 border-white text-white font-bold py-4 px-8 rounded-lg hover:bg-white hover:text-purple-700 transition-colors"
+              >
+                🌟 Seja um Modelo
+              </Link>
+            </div>
+          </div>
+        </div>
 
-            <div className="bg-gradient-to-r from-purple-50 to-pink-50 p-8 rounded-2xl">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {destaquesCompletos.map((pessoa) => (
-                  <DestaqueCarousel key={pessoa.id} pessoa={pessoa} />
-                ))}
+        {/* Right Side - Featured Model */}
+        <div className="w-1/2 relative overflow-hidden">
+          {destaquesCompletos.length > 0 && destaquesCompletos[0].fotos.length > 0 ? (
+            <div className="h-full relative">
+              <img 
+                src={destaquesCompletos[0].fotos[0].url_arquivo}
+                alt={destaquesCompletos[0].nome}
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
+              <div className="absolute bottom-8 left-8 text-white">
+                <h3 className="text-3xl font-bold mb-2">{destaquesCompletos[0].nome}</h3>
+                <p className="text-lg text-white/90">{destaquesCompletos[0].localizacao}</p>
+                <div className="mt-4">
+                  <span className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-medium">
+                    ⭐ Modelo em Destaque
+                  </span>
+                </div>
               </div>
             </div>
-          </section>
-        )}
+          ) : (
+            <div className="h-full bg-gradient-to-br from-purple-200 to-pink-200 flex items-center justify-center">
+              <div className="text-center text-purple-800">
+                <div className="text-8xl mb-4">📸</div>
+                <h3 className="text-2xl font-bold mb-2">Aguardando Talentos</h3>
+                <p className="text-lg">Seja o primeiro modelo em destaque!</p>
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
 
-        {/* Todos os Modelos */}
+      <main className="container mx-auto px-4 py-16">
+
+        {/* Categorias de Talentos */}
+        <section className="mb-16">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              Nossos Talentos
+            </h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Descubra modelos profissionais categorizados por especialidade
+            </p>
+          </div>
+
+          {/* Grid de Categorias */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+            {[
+              { name: 'Infantil', icon: '👶', color: 'from-blue-400 to-blue-600', count: pessoasCompletas.filter(p => p.especializacoes?.includes('Infantil')).length },
+              { name: 'Teen', icon: '🧑‍🎓', color: 'from-green-400 to-green-600', count: pessoasCompletas.filter(p => p.especializacoes?.includes('Teen')).length },
+              { name: 'Adulto', icon: '👩‍💼', color: 'from-purple-400 to-purple-600', count: pessoasCompletas.filter(p => p.especializacoes?.includes('Adulto')).length },
+              { name: 'Comercial', icon: '📺', color: 'from-orange-400 to-orange-600', count: pessoasCompletas.filter(p => p.especializacoes?.includes('Comercial')).length }
+            ].map((categoria) => (
+              <div 
+                key={categoria.name}
+                className={`bg-gradient-to-br ${categoria.color} text-white p-6 rounded-xl cursor-pointer transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl`}
+              >
+                <div className="text-center">
+                  <div className="text-4xl mb-3">{categoria.icon}</div>
+                  <h3 className="text-xl font-bold mb-2">{categoria.name}</h3>
+                  <p className="text-white/90 text-sm mb-3">
+                    {categoria.count} {categoria.count === 1 ? 'modelo' : 'modelos'}
+                  </p>
+                  <div className="bg-white/20 backdrop-blur-sm px-4 py-1 rounded-full text-sm font-medium">
+                    Ver Talentos →
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* Galeria de Modelos */}
         <section>
           <div className="text-center mb-8">
-            <h2 className="text-2xl font-bold text-gray-800 mb-2">
-              📋 Todos os Modelos
+            <h2 className="text-3xl font-bold text-gray-900 mb-2">
+              Galeria de Modelos
             </h2>
             <p className="text-gray-600">
-              Explore nosso catálogo completo
+              Conheça nosso catálogo completo de talentos
             </p>
           </div>
 

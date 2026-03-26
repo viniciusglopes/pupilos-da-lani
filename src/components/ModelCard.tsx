@@ -19,44 +19,100 @@ export default function ModelCard({ pessoa, isParceiro = false }: ModelCardProps
     .join('-')
 
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow border border-gray-200">
-      {/* Badge Parceiro */}
-      {isParceiro && (
-        <div className="absolute top-2 right-2 bg-black text-white px-2 py-1 rounded-full text-xs font-medium z-10">
-          Parceiro
-        </div>
-      )}
-
-      {/* Foto principal */}
-      <div className="relative h-80 bg-gray-200">
+    <div className="group relative bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 border border-gray-100 hover:-translate-y-2">
+      {/* Foto principal com overlay */}
+      <div className="relative h-80 overflow-hidden">
         {fotoUrl ? (
-          <Image
-            src={fotoUrl}
-            alt={pessoa.nome}
-            fill
-            className="object-cover"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-          />
+          <>
+            <Image
+              src={fotoUrl}
+              alt={pessoa.nome}
+              fill
+              className="object-cover transition-transform duration-500 group-hover:scale-110"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+            />
+            
+            {/* Overlay que aparece no hover */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <div className="absolute bottom-4 left-4 right-4">
+                <div className="flex flex-wrap gap-2 mb-3">
+                  {pessoa.especializacoes?.slice(0, 3).map((spec, index) => (
+                    <span 
+                      key={index}
+                      className="bg-white/20 backdrop-blur-sm text-white px-2 py-1 rounded-full text-xs font-medium"
+                    >
+                      {spec}
+                    </span>
+                  ))}
+                </div>
+                
+                <div className="flex gap-2">
+                  {pessoa.instagram_url && (
+                    <a
+                      href={pessoa.instagram_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-1 bg-white/90 backdrop-blur-sm text-gray-900 text-center py-2 px-3 rounded-lg text-sm font-semibold hover:bg-white transition-colors"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      📷 Instagram
+                    </a>
+                  )}
+                  
+                  {pessoa.telefone && pessoa.consentimento_contato && (
+                    <a
+                      href={`https://wa.me/${pessoa.telefone.replace(/\D/g, '')}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-1 bg-green-600/90 backdrop-blur-sm text-white text-center py-2 px-3 rounded-lg text-sm font-semibold hover:bg-green-600 transition-colors"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      💬 WhatsApp
+                    </a>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Badges top */}
+            <div className="absolute top-3 left-3 right-3 flex justify-between">
+              <div className="flex gap-2">
+                {pessoa.destaque && (
+                  <span className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
+                    ⭐ Destaque
+                  </span>
+                )}
+                {isParceiro && (
+                  <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
+                    🤝 Parceiro
+                  </span>
+                )}
+              </div>
+              
+              <div className="flex gap-1 text-white text-xs bg-black/50 backdrop-blur-sm px-2 py-1 rounded-full">
+                <span>{pessoa.fotos.length}📸</span>
+                <span>{pessoa.videos.length}🎬</span>
+              </div>
+            </div>
+          </>
         ) : (
-          <div className="flex items-center justify-center h-full">
+          <div className="flex items-center justify-center h-full bg-gradient-to-br from-gray-100 to-gray-200">
             <div className="text-gray-400 text-center">
-              <svg className="w-16 h-16 mx-auto mb-2" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-              </svg>
-              <p className="text-sm">Sem foto</p>
+              <div className="text-6xl mb-3">📷</div>
+              <p className="text-sm font-medium">Aguardando Fotos</p>
             </div>
           </div>
         )}
       </div>
 
-      {/* Informações */}
-      <div className="p-4">
-        <div className="flex justify-between items-start mb-2">
-          <h3 className="text-lg font-semibold text-black truncate">
+      {/* Informações essenciais */}
+      <div className="p-5">
+        <div className="flex justify-between items-start mb-3">
+          <h3 className="text-xl font-bold text-gray-900 group-hover:text-purple-700 transition-colors duration-300">
             {pessoa.nome}
           </h3>
           {pessoa.altura && (
-            <span className="text-sm text-gray-700 bg-gray-100 px-2 py-1 rounded">
+            <span className="text-sm font-semibold text-purple-700 bg-purple-50 px-3 py-1 rounded-full">
               {pessoa.altura}cm
             </span>
           )}
@@ -64,74 +120,26 @@ export default function ModelCard({ pessoa, isParceiro = false }: ModelCardProps
 
         {/* Localização */}
         {pessoa.localizacao && (
-          <p className="text-sm text-gray-700 mb-2">
-            📍 {pessoa.localizacao}
+          <p className="text-sm text-gray-600 mb-2 flex items-center">
+            <span className="text-purple-500 mr-2">📍</span>
+            {pessoa.localizacao}
           </p>
         )}
 
-        {/* Medidas */}
+        {/* Medidas (apenas se existir) */}
         {medidas && (
-          <p className="text-sm text-gray-700 mb-2">
-            📏 {medidas}
+          <p className="text-sm text-gray-600 mb-3 flex items-center">
+            <span className="text-purple-500 mr-2">📏</span>
+            {medidas}
           </p>
-        )}
-
-        {/* Especialidades */}
-        {pessoa.especializacoes && pessoa.especializacoes.length > 0 && (
-          <div className="flex flex-wrap gap-1 mb-3">
-            {pessoa.especializacoes.slice(0, 2).map((spec, index) => (
-              <span 
-                key={index}
-                className="text-xs bg-gray-900 text-white px-2 py-1 rounded-full"
-              >
-                {spec}
-              </span>
-            ))}
-            {pessoa.especializacoes.length > 2 && (
-              <span className="text-xs text-gray-500">
-                +{pessoa.especializacoes.length - 2}
-              </span>
-            )}
-          </div>
         )}
 
         {/* Descrição resumida */}
         {pessoa.descricao && (
-          <p className="text-sm text-gray-700 mb-3 line-clamp-2">
+          <p className="text-sm text-gray-600 line-clamp-2 leading-relaxed">
             {pessoa.descricao}
           </p>
         )}
-
-        {/* Botões de contato */}
-        <div className="flex gap-2">
-          {pessoa.instagram_url && (
-            <a
-              href={pessoa.instagram_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex-1 bg-black text-white text-center py-2 px-3 rounded text-sm font-medium hover:bg-gray-800 transition-colors"
-            >
-              Instagram
-            </a>
-          )}
-          
-          {pessoa.telefone && pessoa.consentimento_contato && (
-            <a
-              href={`https://wa.me/${pessoa.telefone.replace(/\D/g, '')}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex-1 bg-gray-800 text-white text-center py-2 px-3 rounded text-sm font-medium hover:bg-gray-700 transition-colors"
-            >
-              WhatsApp
-            </a>
-          )}
-        </div>
-
-        {/* Contador de fotos/vídeos */}
-        <div className="flex justify-between items-center mt-3 text-xs text-gray-500">
-          <span>{pessoa.fotos.length} foto{pessoa.fotos.length !== 1 ? 's' : ''}</span>
-          <span>{pessoa.videos.length} vídeo{pessoa.videos.length !== 1 ? 's' : ''}</span>
-        </div>
       </div>
     </div>
   )
