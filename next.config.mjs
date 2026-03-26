@@ -14,9 +14,7 @@ const nextConfig = {
       },
     ],
   },
-  experimental: {
-    serverActions: true,
-  },
+  // Server actions habilitados por padrão no Next.js 14+
   // Otimizações para produção
   env: {
     CUSTOM_KEY: 'pupilos-da-lani',
