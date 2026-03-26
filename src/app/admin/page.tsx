@@ -4,8 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { PessoaCompleta } from '@/types/database'
-import Header from '@/components/Header'
-import Footer from '@/components/Footer'
+import AdminSidebar from '@/components/AdminSidebar'
 import Image from 'next/image'
 import Link from 'next/link'
 
@@ -126,20 +125,24 @@ export default function AdminPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Carregando...</p>
+      <div className="min-h-screen bg-gray-50 flex">
+        <AdminSidebar />
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
+            <p className="mt-4 text-gray-600">Carregando...</p>
+          </div>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Header />
+    <div className="min-h-screen bg-gray-50 flex">
+      <AdminSidebar />
       
-      <main className="container mx-auto px-4 py-8">
+      <main className="flex-1 lg:ml-0 p-8">
+        <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-gray-900">
             Painel Administrativo
@@ -350,9 +353,8 @@ export default function AdminPage() {
             ))}
           </div>
         )}
+        </div>
       </main>
-
-      <Footer />
     </div>
   )
 }
