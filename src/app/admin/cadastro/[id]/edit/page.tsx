@@ -100,6 +100,7 @@ export default function EditModelPage() {
           telefone: pessoa.telefone,
           consentimento_contato: pessoa.consentimento_contato,
           parceria: pessoa.parceria,
+          destaque: pessoa.destaque,
           data_consentimento: pessoa.consentimento_contato ? pessoa.data_consentimento || new Date().toISOString() : null
         })
         .eq('id', id)
@@ -589,6 +590,20 @@ export default function EditModelPage() {
                   />
                   <label className="text-sm text-blue-800">
                     Modelo em parceria exclusiva
+                  </label>
+                </div>
+
+                {/* Destaque */}
+                <div className="flex items-center bg-yellow-50 border border-yellow-200 p-3 rounded-lg">
+                  <input
+                    type="checkbox"
+                    name="destaque"
+                    checked={pessoa.destaque || false}
+                    onChange={handleInputChange}
+                    className="mr-2"
+                  />
+                  <label className="text-sm text-yellow-800">
+                    <strong>⭐ Modelo Destaque:</strong> Exibir na área de destaques da tela principal
                   </label>
                 </div>
 
