@@ -1,3 +1,5 @@
+'use client'
+
 import { PessoaCompleta } from '@/types/database'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -163,6 +165,7 @@ export default function ModelCard({ pessoa, isParceiro = false }: ModelCardProps
         <div className="absolute bottom-3 right-3 bg-purple-600 text-white text-xs px-2 py-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
           👆 Clique para ver mais
         </div>
+      </div>
       </div>
 
       {/* Modal Gallery */}

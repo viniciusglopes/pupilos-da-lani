@@ -5,6 +5,8 @@ import { useRouter, useParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { PessoaCompleta, Foto, Video } from '@/types/database'
 import AdminSidebar from '@/components/AdminSidebar'
+import Header from '@/components/Header'
+import Footer from '@/components/Footer'
 import Image from 'next/image'
 
 export default function EditModelPage() {

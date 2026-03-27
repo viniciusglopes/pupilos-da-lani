@@ -1,5 +1,3 @@
-"use client"
-
 import { supabase } from '@/lib/supabase'
 import { PessoaCompleta } from '@/types/database'
 import ModelCard from '@/components/ModelCard'
@@ -44,57 +42,6 @@ export default async function HomePage() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* CSS para carousel de fotos - 3 segundos */}
-      <style jsx>{`
-        .carousel-container {
-          position: relative;
-          overflow: hidden;
-        }
-        
-        .carousel-image {
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-          opacity: 0;
-          transition: opacity 1s ease-in-out;
-        }
-        
-        .carousel-image.active {
-          opacity: 1;
-        }
-        
-        .carousel-container:hover .carousel-controls {
-          opacity: 1;
-        }
-        
-        .carousel-controls {
-          position: absolute;
-          bottom: 10px;
-          left: 50%;
-          transform: translateX(-50%);
-          display: flex;
-          gap: 8px;
-          opacity: 0;
-          transition: opacity 0.3s;
-        }
-        
-        .carousel-dot {
-          width: 8px;
-          height: 8px;
-          border-radius: 50%;
-          background: rgba(255,255,255,0.5);
-          cursor: pointer;
-          transition: background 0.3s;
-        }
-        
-        .carousel-dot.active {
-          background: white;
-        }
-      `}</style>
-      
       <Header />
       
       {/* Hero Section - Half Screen */}
