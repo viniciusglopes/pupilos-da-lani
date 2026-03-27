@@ -15,6 +15,7 @@ export default function EditModelPage() {
   const [saving, setSaving] = useState(false)
   const [uploadingFiles, setUploadingFiles] = useState(false)
   const [novasFotos, setNovasFotos] = useState<File[]>([])
+  const [novosVideos, setNovosVideos] = useState<File[]>([])
   const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
   const router = useRouter()
   const params = useParams()
@@ -227,23 +228,25 @@ export default function EditModelPage() {
     }
   }
 
-  const uploadArquivo = async (arquivo: File, bucket: string): Promise<string | null> => {
-    const fileName = `${Date.now()}_${arquivo.name.replace(/[^a-zA-Z0-9.]/g, '_')}`
-    
-    const { data, error } = await supabase.storage
-      .from(bucket)
-      .upload(fileName, arquivo)
+  const uploadArquivoViaAPI = async (arquivo: File, type: 'foto' | 'video', eh_principal: boolean = false, ordem: number = 999): Promise<boolean> => {
+    const formData = new FormData()
+    formData.append('file', arquivo)
+    formData.append('pessoa_id', id)
+    formData.append('type', type)
+    formData.append('eh_principal', String(eh_principal))
+    formData.append('ordem', String(ordem))
 
-    if (error) {
-      console.error(`Erro ao fazer upload do ${bucket.slice(0, -1)}:`, error)
-      return null
+    const response = await fetch('/api/upload', {
+      method: 'POST',
+      body: formData
+    })
+
+    if (!response.ok) {
+      const result = await response.json()
+      throw new Error(result.error || 'Erro no upload')
     }
 
-    const { data: publicData } = supabase.storage
-      .from(bucket)
-      .getPublicUrl(fileName)
-
-    return publicData.publicUrl
+    return true
   }
 
   const handleNovasFotos = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -257,6 +260,17 @@ export default function EditModelPage() {
     setNovasFotos(prev => prev.filter((_, i) => i !== index))
   }
 
+  const handleNovosVideos = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const arquivos = Array.from(e.target.files).filter(f => f.type.startsWith('video/'))
+      setNovosVideos(prev => [...prev, ...arquivos])
+    }
+  }
+
+  const removerNovoVideo = (index: number) => {
+    setNovosVideos(prev => prev.filter((_, i) => i !== index))
+  }
+
   const uploadNovasFotos = async () => {
     if (novasFotos.length === 0) return
 
@@ -265,25 +279,9 @@ export default function EditModelPage() {
 
     try {
       for (const foto of novasFotos) {
-        // Upload da foto
-        const url = await uploadArquivo(foto, 'fotos')
-        if (!url) throw new Error('Erro no upload da foto')
-
-        // Salvar no banco
-        const { error } = await supabase
-          .from('fotos')
-          .insert({
-            pessoa_id: id,
-            url_arquivo: url,
-            caminho_storage: url.split('/').pop(),
-            eh_principal: false,
-            ordem: 999
-          })
-
-        if (error) throw error
+        await uploadArquivoViaAPI(foto, 'foto')
       }
 
-      // Recarregar dados da pessoa
       await loadPessoa()
       setNovasFotos([])
       setMessage({ type: 'success', text: `${novasFotos.length} foto(s) adicionada(s) com sucesso!` })
@@ -291,6 +289,29 @@ export default function EditModelPage() {
     } catch (error: any) {
       console.error('Erro ao fazer upload:', error)
       setMessage({ type: 'error', text: 'Erro ao fazer upload das fotos' })
+    } finally {
+      setUploadingFiles(false)
+    }
+  }
+
+  const uploadNovosVideos = async () => {
+    if (novosVideos.length === 0) return
+
+    setUploadingFiles(true)
+    setMessage(null)
+
+    try {
+      for (const video of novosVideos) {
+        await uploadArquivoViaAPI(video, 'video')
+      }
+
+      await loadPessoa()
+      setNovosVideos([])
+      setMessage({ type: 'success', text: `${novosVideos.length} vídeo(s) adicionado(s) com sucesso!` })
+
+    } catch (error: any) {
+      console.error('Erro ao fazer upload:', error)
+      setMessage({ type: 'error', text: 'Erro ao fazer upload dos vídeos' })
     } finally {
       setUploadingFiles(false)
     }
@@ -736,6 +757,61 @@ export default function EditModelPage() {
                     ))}
                   </div>
                 )}
+
+                {/* Upload de novos vídeos */}
+                <div className="mt-6 border-t pt-6">
+                  <h4 className="text-md font-semibold text-gray-900 mb-3">
+                    Adicionar Novos Vídeos
+                  </h4>
+                  
+                  <div className="space-y-4">
+                    <div>
+                      <input
+                        type="file"
+                        accept="video/*"
+                        multiple
+                        onChange={handleNovosVideos}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
+                      <p className="text-xs text-gray-500 mt-1">
+                        Selecione múltiplos vídeos (MP4, MOV, etc.)
+                      </p>
+                    </div>
+
+                    {novosVideos.length > 0 && (
+                      <div className="space-y-2">
+                        <p className="text-sm font-medium text-gray-700">
+                          Vídeos selecionados ({novosVideos.length}):
+                        </p>
+                        <div className="space-y-2 max-h-32 overflow-y-auto">
+                          {novosVideos.map((video, index) => (
+                            <div key={index} className="flex items-center justify-between bg-gray-50 px-3 py-2 rounded">
+                              <span className="text-sm text-gray-700 truncate">
+                                {video.name}
+                              </span>
+                              <button
+                                onClick={() => removerNovoVideo(index)}
+                                className="text-red-600 text-sm hover:text-red-800"
+                              >
+                                ✕
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {novosVideos.length > 0 && (
+                      <button
+                        onClick={uploadNovosVideos}
+                        disabled={uploadingFiles}
+                        className="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {uploadingFiles ? 'Fazendo upload...' : `Adicionar ${novosVideos.length} vídeo(s)`}
+                      </button>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
           </div>

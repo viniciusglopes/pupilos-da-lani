@@ -78,24 +78,27 @@ export default function CadastroPage() {
     }
   }
 
-  const uploadFile = async (file: File, bucket: 'fotos' | 'videos', pessoaId: string): Promise<string | null> => {
-    const fileExt = file.name.split('.').pop()
-    const fileName = `${pessoaId}/${Date.now()}.${fileExt}`
-    
-    const { data, error } = await supabase.storage
-      .from(bucket)
-      .upload(fileName, file)
+  const uploadFileViaAPI = async (file: File, type: 'foto' | 'video', pessoaId: string, eh_principal: boolean = false, ordem: number = 0): Promise<string | null> => {
+    const formData = new FormData()
+    formData.append('file', file)
+    formData.append('pessoa_id', pessoaId)
+    formData.append('type', type)
+    formData.append('eh_principal', String(eh_principal))
+    formData.append('ordem', String(ordem))
 
-    if (error) {
-      console.error(`Erro upload ${bucket}:`, error)
+    const response = await fetch('/api/upload', {
+      method: 'POST',
+      body: formData
+    })
+
+    if (!response.ok) {
+      const result = await response.json()
+      console.error(`Erro upload ${type}:`, result.error)
       return null
     }
 
-    const { data: { publicUrl } } = supabase.storage
-      .from(bucket)
-      .getPublicUrl(fileName)
-
-    return publicUrl
+    const result = await response.json()
+    return result.url
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -136,60 +139,18 @@ export default function CadastroPage() {
 
       setUploadingFiles(true)
 
-      // Upload fotos
+      // Upload fotos via API (handles both storage and DB)
       let fotoPrincipal: string | null = null
       for (let i = 0; i < fotos.length; i++) {
-        const fotoUrl = await uploadFile(fotos[i], 'fotos', pessoa.id)
-        if (fotoUrl) {
-          // Inserir foto via API (bypassa RLS)
-          const fotoResponse = await fetch('/api/fotos', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              pessoa_id: pessoa.id,
-              url_arquivo: fotoUrl,
-              caminho_storage: fotoUrl,
-              eh_principal: i === 0, // Primeira foto é principal
-              ordem: i
-            })
-          })
-
-          if (!fotoResponse.ok) {
-            console.error('Erro inserir foto via API')
-          }
-          
-          if (i === 0) fotoPrincipal = fotoUrl
-        }
+        const fotoUrl = await uploadFileViaAPI(fotos[i], 'foto', pessoa.id, i === 0, i)
+        if (fotoUrl && i === 0) fotoPrincipal = fotoUrl
       }
 
-      // Upload vídeos
+      // Upload vídeos via API (handles both storage and DB)
       let videoPrincipal: string | null = null
       for (let i = 0; i < videos.length; i++) {
-        const videoUrl = await uploadFile(videos[i], 'videos', pessoa.id)
-        if (videoUrl) {
-          // Inserir vídeo via API (bypassa RLS)
-          const videoResponse = await fetch('/api/videos', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              pessoa_id: pessoa.id,
-              url_arquivo: videoUrl,
-              caminho_storage: videoUrl,
-              eh_principal: i === 0, // Primeiro vídeo é principal
-              ordem: i
-            })
-          })
-
-          if (!videoResponse.ok) {
-            console.error('Erro inserir vídeo via API')
-          }
-
-          if (i === 0) videoPrincipal = videoUrl
-        }
+        const videoUrl = await uploadFileViaAPI(videos[i], 'video', pessoa.id, i === 0, i)
+        if (videoUrl && i === 0) videoPrincipal = videoUrl
       }
 
       // Atualizar pessoa com foto/vídeo principal
