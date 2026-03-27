@@ -3,217 +3,126 @@ import { PessoaCompleta } from '@/types/database'
 import ModelCard from '@/components/ModelCard'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
-import DestaqueCarousel from '@/components/DestaqueCarousel'
-import ScrollAnimation from '@/components/ScrollAnimation'
 import Link from 'next/link'
 
 export default async function HomePage() {
-  // Buscar pessoas em destaque
-  const { data: destaques, error: errorDestaques } = await supabase
+  const { data: destaques } = await supabase
     .from('pessoas')
-    .select(`
-      *,
-      fotos (*),
-      videos (*)
-    `)
+    .select(`*, fotos (*), videos (*)`)
     .eq('ativo', true)
     .eq('destaque', true)
     .order('created_at', { ascending: false })
 
-  // Buscar todas as pessoas ativas (não destaques)
-  const { data: pessoas, error } = await supabase
+  const { data: pessoas } = await supabase
     .from('pessoas')
-    .select(`
-      *,
-      fotos (*),
-      videos (*)
-    `)
+    .select(`*, fotos (*), videos (*)`)
     .eq('ativo', true)
     .eq('destaque', false)
     .order('created_at', { ascending: false })
 
-  if (error || errorDestaques) {
-    console.error('Erro ao buscar pessoas:', error || errorDestaques)
-    return <div>Erro ao carregar modelos</div>
-  }
-
-  const pessoasCompletas = pessoas as PessoaCompleta[]
-  const destaquesCompletos = destaques as PessoaCompleta[]
+  const destaquesCompletos = (destaques || []) as PessoaCompleta[]
+  const pessoasCompletas = (pessoas || []) as PessoaCompleta[]
+  const todos = [...destaquesCompletos, ...pessoasCompletas]
 
   return (
     <div className="min-h-screen bg-white">
       <Header />
-      
-      {/* Hero Section - Half Screen */}
-      <section className="min-h-screen flex">
-        {/* Left Side - Content */}
-        <div className="w-1/2 bg-gradient-to-br from-purple-600 to-purple-800 flex items-center justify-center">
-          <div className="text-center text-white px-12">
-            <div className="mb-8">
-              <div className="w-32 h-32 mx-auto mb-6 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
-                <span className="text-4xl font-bold text-white">PL</span>
-              </div>
-              <h1 className="text-5xl font-bold mb-4">
-                Pupilos da Lani
-              </h1>
-              <p className="text-xl text-purple-100 mb-8 leading-relaxed">
-                Conectando talentos com oportunidades.<br />
-                Descubra modelos profissionais em Minas Gerais.
-              </p>
-            </div>
-            
-            <div className="space-y-4">
+
+      {/* Hero — full viewport, split layout */}
+      <section className="h-screen flex flex-col md:flex-row">
+        {/* Left — Text */}
+        <div className="flex-1 flex items-center justify-center px-12 md:px-20">
+          <div className="max-w-md">
+            <h1 className="text-5xl md:text-6xl font-bold tracking-tight leading-none text-black uppercase">
+              Pupilos<br />da Lani
+            </h1>
+            <p className="mt-6 text-gray-500 text-base leading-relaxed">
+              Conectando talentos com oportunidades.<br />
+              Modelos profissionais em Minas Gerais.
+            </p>
+            <div className="mt-10 flex gap-4">
               <Link
                 href="/busca"
-                className="block w-full bg-white text-purple-700 font-bold py-4 px-8 rounded-lg hover:bg-purple-50 transition-colors"
+                className="bg-black text-white px-8 py-3 text-xs font-semibold tracking-widest uppercase hover:bg-gray-800 transition-colors"
               >
-                🔍 Descobrir Talentos
+                Ver Talentos
               </Link>
               <Link
                 href="/parceria"
-                className="block w-full border-2 border-white text-white font-bold py-4 px-8 rounded-lg hover:bg-white hover:text-purple-700 transition-colors"
+                className="border border-black text-black px-8 py-3 text-xs font-semibold tracking-widest uppercase hover:bg-black hover:text-white transition-colors"
               >
-                🌟 Seja um Modelo
+                Seja Modelo
               </Link>
             </div>
           </div>
         </div>
 
-        {/* Right Side - Featured Model */}
-        <div className="w-1/2 relative overflow-hidden">
+        {/* Right — Featured image */}
+        <div className="flex-1 relative bg-gray-100">
           {destaquesCompletos.length > 0 && destaquesCompletos[0].fotos.length > 0 ? (
-            <div className="h-full relative">
-              <img 
+            <>
+              <img
                 src={destaquesCompletos[0].fotos[0].url_arquivo}
                 alt={destaquesCompletos[0].nome}
                 className="w-full h-full object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent"></div>
-              <div className="absolute bottom-8 left-8 text-white">
-                <h3 className="text-3xl font-bold mb-2">{destaquesCompletos[0].nome}</h3>
-                <p className="text-lg text-white/90">{destaquesCompletos[0].localizacao}</p>
-                <div className="mt-4">
-                  <span className="bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-medium">
-                    ⭐ Modelo em Destaque
-                  </span>
-                </div>
+              <div className="absolute bottom-8 left-8">
+                <span className="text-xs font-semibold tracking-widest uppercase text-white/80 bg-black/40 px-4 py-2">
+                  {destaquesCompletos[0].nome} — Destaque
+                </span>
               </div>
-            </div>
+            </>
           ) : (
-            <div className="h-full bg-gradient-to-br from-purple-200 to-pink-200 flex items-center justify-center">
-              <div className="text-center text-purple-800">
-                <div className="text-8xl mb-4">📸</div>
-                <h3 className="text-2xl font-bold mb-2">Aguardando Talentos</h3>
-                <p className="text-lg">Seja o primeiro modelo em destaque!</p>
-              </div>
+            <div className="w-full h-full flex items-center justify-center">
+              <span className="text-gray-300 text-sm tracking-widest uppercase">Em breve</span>
             </div>
           )}
         </div>
       </section>
 
-      <main className="container mx-auto px-4 py-16">
-
-        {/* Categorias de Talentos */}
-        <ScrollAnimation animation="slideUp">
-          <section className="mb-16">
-            <div className="text-center mb-12">
-              <h2 className="text-4xl font-bold text-gray-900 mb-4">
-                Nossos Talentos
-              </h2>
-              <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-                Descubra modelos profissionais categorizados por especialidade
-              </p>
-            </div>
-
-            {/* Grid de Categorias */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-              {[
-                { name: 'Infantil', icon: '👶', color: 'from-blue-400 to-blue-600', count: pessoasCompletas.filter(p => p.especializacoes?.includes('Infantil')).length },
-                { name: 'Teen', icon: '🧑‍🎓', color: 'from-green-400 to-green-600', count: pessoasCompletas.filter(p => p.especializacoes?.includes('Teen')).length },
-                { name: 'Adulto', icon: '👩‍💼', color: 'from-purple-400 to-purple-600', count: pessoasCompletas.filter(p => p.especializacoes?.includes('Adulto')).length },
-                { name: 'Comercial', icon: '📺', color: 'from-orange-400 to-orange-600', count: pessoasCompletas.filter(p => p.especializacoes?.includes('Comercial')).length }
-              ].map((categoria, index) => (
-                <ScrollAnimation 
-                  key={categoria.name}
-                  animation="slideUp"
-                  delay={index * 100}
-                >
-                  <div 
-                    className={`bg-gradient-to-br ${categoria.color} text-white p-6 rounded-xl cursor-pointer transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl`}
-                  >
-                    <div className="text-center">
-                      <div className="text-4xl mb-3">{categoria.icon}</div>
-                      <h3 className="text-xl font-bold mb-2">{categoria.name}</h3>
-                      <p className="text-white/90 text-sm mb-3">
-                        {categoria.count} {categoria.count === 1 ? 'modelo' : 'modelos'}
-                      </p>
-                      <div className="bg-white/20 backdrop-blur-sm px-4 py-1 rounded-full text-sm font-medium">
-                        Ver Talentos →
-                      </div>
-                    </div>
-                  </div>
-                </ScrollAnimation>
-              ))}
-            </div>
-          </section>
-        </ScrollAnimation>
-
-        {/* Galeria de Modelos */}
-        <ScrollAnimation animation="slideUp">
-          <section>
-            <div className="text-center mb-8">
-              <h2 className="text-3xl font-bold text-gray-900 mb-2">
-                Galeria de Modelos
-              </h2>
-              <p className="text-gray-600">
-                Conheça nosso catálogo completo de talentos
-              </p>
-            </div>
-
-            {pessoasCompletas.length === 0 ? (
-              <div className="text-center py-12">
-                <h3 className="text-xl font-semibold text-gray-700 mb-4">
-                  {destaquesCompletos.length > 0 ? 'Nenhum modelo adicional cadastrado' : 'Ainda não temos modelos cadastrados'}
-                </h3>
-                <p className="text-gray-500">
-                  {destaquesCompletos.length > 0 ? 'Apenas modelos em destaque disponíveis no momento' : 'Em breve teremos nosso primeiro catálogo!'}
-                </p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {pessoasCompletas.map((pessoa, index) => (
-                  <ScrollAnimation 
-                    key={pessoa.id}
-                    animation="slideUp"
-                    delay={index * 100}
-                  >
-                    <ModelCard pessoa={pessoa} />
-                  </ScrollAnimation>
-                ))}
-              </div>
-            )}
-          </section>
-        </ScrollAnimation>
-
-        <div className="text-center mt-12">
-          <div className="bg-gray-50 rounded-lg p-6">
-            <p className="text-gray-700 text-lg font-medium mb-2">
-              📊 Estatísticas do Portal
-            </p>
-            <div className="flex justify-center space-x-8 text-sm text-gray-600">
-              <div>
-                <span className="font-bold text-purple-600">{destaquesCompletos.length}</span> em destaque
-              </div>
-              <div>
-                <span className="font-bold text-blue-600">{pessoasCompletas.length}</span> modelo{pessoasCompletas.length !== 1 ? 's' : ''} total
-              </div>
-              <div>
-                <span className="font-bold text-green-600">{destaquesCompletos.length + pessoasCompletas.length}</span> no catálogo
-              </div>
-            </div>
-          </div>
+      {/* Models Grid */}
+      <main className="max-w-7xl mx-auto px-6 py-24">
+        <div className="mb-16">
+          <h2 className="text-xs font-semibold tracking-widest uppercase text-gray-400">Nosso Catálogo</h2>
+          <p className="mt-2 text-3xl font-bold tracking-tight text-black">
+            {todos.length} Modelo{todos.length !== 1 ? 's' : ''}
+          </p>
         </div>
+
+        {todos.length === 0 ? (
+          <div className="text-center py-24">
+            <p className="text-gray-400 text-sm tracking-widest uppercase">
+              Nenhum modelo cadastrado ainda
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-2">
+            {todos.map((pessoa) => (
+              <ModelCard key={pessoa.id} pessoa={pessoa} />
+            ))}
+          </div>
+        )}
       </main>
+
+      {/* CTA Section */}
+      <section className="border-t border-gray-200">
+        <div className="max-w-7xl mx-auto px-6 py-24 flex flex-col md:flex-row items-center justify-between gap-8">
+          <div>
+            <h2 className="text-2xl font-bold tracking-tight text-black">
+              Quer fazer parte?
+            </h2>
+            <p className="mt-2 text-gray-500 text-sm">
+              Cadastre-se como modelo e conecte-se com oportunidades profissionais.
+            </p>
+          </div>
+          <Link
+            href="/parceria"
+            className="bg-black text-white px-10 py-4 text-xs font-semibold tracking-widest uppercase hover:bg-gray-800 transition-colors whitespace-nowrap"
+          >
+            Cadastre-se
+          </Link>
+        </div>
+      </section>
 
       <Footer />
     </div>
