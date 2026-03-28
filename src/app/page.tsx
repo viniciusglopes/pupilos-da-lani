@@ -110,7 +110,17 @@ export default function HomePage() {
     <div className="min-h-screen bg-white">
       <Header />
 
-      <main className="max-w-7xl mx-auto px-6 py-24">
+      {/* Título dinâmico */}
+      <section className="max-w-7xl mx-auto px-6 pt-24 pb-12">
+        <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-black uppercase">
+          {content.titulo}
+        </h1>
+        <p className="mt-4 text-gray-500 text-base leading-relaxed whitespace-pre-line max-w-xl">
+          {content.subtitulo}
+        </p>
+      </section>
+
+      <main className="max-w-7xl mx-auto px-6 pb-24">
         {/* Destaques */}
         {destaques.length > 0 && (
           <section className="mb-24">
