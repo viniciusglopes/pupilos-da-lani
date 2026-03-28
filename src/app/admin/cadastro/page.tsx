@@ -181,9 +181,7 @@ export default function CadastroPage() {
       setFotos([])
       setVideos([])
 
-      setTimeout(() => {
-        router.push('/')
-      }, 3000)
+      // Stay on the same page — don't redirect
 
     } catch (error: any) {
       console.error('Erro cadastro:', error)

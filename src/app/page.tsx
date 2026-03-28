@@ -5,24 +5,31 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import Link from 'next/link'
 
+// Simple shuffle using Fisher-Yates
+function shuffle<T>(array: T[]): T[] {
+  const arr = [...array]
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[arr[i], arr[j]] = [arr[j], arr[i]]
+  }
+  return arr
+}
+
+export const revalidate = 0 // no cache, always fresh
+
 export default async function HomePage() {
-  const { data: destaques } = await supabase
+  const { data: allPessoas } = await supabase
     .from('pessoas')
     .select(`*, fotos (*), videos (*)`)
     .eq('ativo', true)
-    .eq('destaque', true)
-    .order('created_at', { ascending: false })
 
-  const { data: pessoas } = await supabase
-    .from('pessoas')
-    .select(`*, fotos (*), videos (*)`)
-    .eq('ativo', true)
-    .eq('destaque', false)
-    .order('created_at', { ascending: false })
+  const todos = (allPessoas || []) as PessoaCompleta[]
+  const destaques = shuffle(todos.filter(p => p.destaque)).slice(0, 4)
+  const outros = shuffle(todos.filter(p => !p.destaque))
+  const gridModels = [...outros]
 
-  const destaquesCompletos = (destaques || []) as PessoaCompleta[]
-  const pessoasCompletas = (pessoas || []) as PessoaCompleta[]
-  const todos = [...destaquesCompletos, ...pessoasCompletas]
+  // Hero featured: first destaque with photo
+  const heroModel = destaques.find(d => d.fotos.length > 0)
 
   return (
     <div className="min-h-screen bg-white">
@@ -30,7 +37,6 @@ export default async function HomePage() {
 
       {/* Hero — full viewport, split layout */}
       <section className="h-screen flex flex-col md:flex-row">
-        {/* Left — Text */}
         <div className="flex-1 flex items-center justify-center px-12 md:px-20">
           <div className="max-w-md">
             <h1 className="text-5xl md:text-6xl font-bold tracking-tight leading-none text-black uppercase">
@@ -57,18 +63,17 @@ export default async function HomePage() {
           </div>
         </div>
 
-        {/* Right — Featured image */}
         <div className="flex-1 relative bg-gray-100">
-          {destaquesCompletos.length > 0 && destaquesCompletos[0].fotos.length > 0 ? (
+          {heroModel ? (
             <>
               <img
-                src={destaquesCompletos[0].fotos[0].url_arquivo}
-                alt={destaquesCompletos[0].nome}
+                src={heroModel.fotos[0].url_arquivo}
+                alt={heroModel.nome}
                 className="w-full h-full object-cover"
               />
               <div className="absolute bottom-8 left-8">
                 <span className="text-xs font-semibold tracking-widest uppercase text-white/80 bg-black/40 px-4 py-2">
-                  {destaquesCompletos[0].nome} — Destaque
+                  {heroModel.nome} — Destaque
                 </span>
               </div>
             </>
@@ -80,28 +85,47 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* Models Grid */}
       <main className="max-w-7xl mx-auto px-6 py-24">
-        <div className="mb-16">
-          <h2 className="text-xs font-semibold tracking-widest uppercase text-gray-400">Nosso Catálogo</h2>
-          <p className="mt-2 text-3xl font-bold tracking-tight text-black">
-            {todos.length} Modelo{todos.length !== 1 ? 's' : ''}
-          </p>
-        </div>
+        {/* Destaques Section — up to 4 */}
+        {destaques.length > 0 && (
+          <section className="mb-24">
+            <div className="mb-10">
+              <h2 className="text-xs font-semibold tracking-widest uppercase text-gray-400">Destaques</h2>
+              <p className="mt-2 text-3xl font-bold tracking-tight text-black">
+                Modelos em Evidência
+              </p>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-2">
+              {destaques.map((pessoa) => (
+                <ModelCard key={pessoa.id} pessoa={pessoa} />
+              ))}
+            </div>
+          </section>
+        )}
 
-        {todos.length === 0 ? (
-          <div className="text-center py-24">
-            <p className="text-gray-400 text-sm tracking-widest uppercase">
-              Nenhum modelo cadastrado ainda
+        {/* All Models Grid */}
+        <section>
+          <div className="mb-10">
+            <h2 className="text-xs font-semibold tracking-widest uppercase text-gray-400">Nosso Catálogo</h2>
+            <p className="mt-2 text-3xl font-bold tracking-tight text-black">
+              {todos.length} Modelo{todos.length !== 1 ? 's' : ''}
             </p>
           </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-2">
-            {todos.map((pessoa) => (
-              <ModelCard key={pessoa.id} pessoa={pessoa} />
-            ))}
-          </div>
-        )}
+
+          {gridModels.length === 0 ? (
+            <div className="text-center py-24">
+              <p className="text-gray-400 text-sm tracking-widest uppercase">
+                Nenhum modelo adicional cadastrado
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-6 gap-y-2">
+              {gridModels.map((pessoa) => (
+                <ModelCard key={pessoa.id} pessoa={pessoa} />
+              ))}
+            </div>
+          )}
+        </section>
       </main>
 
       {/* CTA Section */}
