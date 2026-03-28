@@ -26,6 +26,23 @@ function getDefaults(pagina: string) {
       }
     }
   }
+  if (pagina === 'home') {
+    return {
+      pagina: 'home',
+      titulo: 'Pupilos da Lani',
+      subtitulo: 'Conectando talentos com oportunidades.\nModelos profissionais em Minas Gerais.',
+      conteudo: {
+        btn_talentos: 'Ver Talentos',
+        btn_modelo: 'Seja Modelo',
+        destaques_label: 'Destaques',
+        destaques_titulo: 'Modelos em Evidência',
+        catalogo_label: 'Nosso Catálogo',
+        cta_titulo: 'Quer fazer parte?',
+        cta_texto: 'Cadastre-se como modelo e conecte-se com oportunidades profissionais.',
+        cta_botao: 'Cadastre-se'
+      }
+    }
+  }
   return { pagina, titulo: '', subtitulo: '', conteudo: {} }
 }
 

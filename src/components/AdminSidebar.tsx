@@ -31,6 +31,11 @@ export default function AdminSidebar() {
       description: 'Gerenciar acesso'
     },
     {
+      title: 'Pagina Principal',
+      href: '/admin/homepage',
+      description: 'Editar textos da home'
+    },
+    {
       title: 'Pagina Parceria',
       href: '/admin/parceria',
       description: 'Editar textos da parceria'
