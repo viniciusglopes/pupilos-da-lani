@@ -31,6 +31,11 @@ export default function AdminSidebar() {
       description: 'Gerenciar acesso'
     },
     {
+      title: 'Pagina Parceria',
+      href: '/admin/parceria',
+      description: 'Editar textos da parceria'
+    },
+    {
       title: 'Configuracoes',
       href: '/admin/config',
       description: 'Configuracoes do sistema'
