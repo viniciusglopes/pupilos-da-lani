@@ -167,26 +167,6 @@ export default function HomePage() {
         </section>
       </main>
 
-      {/* CTA */}
-      <section className="border-t border-gray-200">
-        <div className="max-w-7xl mx-auto px-6 py-24 flex flex-col md:flex-row items-center justify-between gap-8">
-          <div>
-            <h2 className="text-2xl font-bold tracking-tight text-black">
-              {content.conteudo.cta_titulo}
-            </h2>
-            <p className="mt-2 text-gray-500 text-sm">
-              {content.conteudo.cta_texto}
-            </p>
-          </div>
-          <Link
-            href="/parceria"
-            className="bg-black text-white px-10 py-4 text-xs font-semibold tracking-widest uppercase hover:bg-gray-800 transition-colors whitespace-nowrap"
-          >
-            {content.conteudo.cta_botao}
-          </Link>
-        </div>
-      </section>
-
       <Footer />
     </div>
   )

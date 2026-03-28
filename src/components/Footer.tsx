@@ -19,7 +19,6 @@ export default function Footer() {
               {[
                 { href: '/', label: 'Início' },
                 { href: '/busca', label: 'Talentos' },
-                { href: '/parceria', label: 'Seja Modelo' },
                 { href: '/privacidade', label: 'Privacidade' },
               ].map((link) => (
                 <li key={link.href}>

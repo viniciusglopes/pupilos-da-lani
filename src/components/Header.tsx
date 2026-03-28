@@ -18,7 +18,6 @@ export default function Header() {
             {[
               { href: '/', label: 'Início' },
               { href: '/busca', label: 'Talentos' },
-              { href: '/parceria', label: 'Seja Modelo' },
             ].map((link) => (
               <Link
                 key={link.href}
@@ -53,7 +52,6 @@ export default function Header() {
             {[
               { href: '/', label: 'Início' },
               { href: '/busca', label: 'Talentos' },
-              { href: '/parceria', label: 'Seja Modelo' },
               { href: '/login', label: 'Admin' },
             ].map((link) => (
               <Link
