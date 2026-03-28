@@ -17,7 +17,7 @@ export default function BuscaPage() {
     localizacao: '',
     alturaMin: '',
     alturaMax: '',
-    parceria: 'todos' // todos, parceiro, nao-parceiro
+    parceria: 'todos'
   })
 
   useEffect(() => {
@@ -30,9 +30,8 @@ export default function BuscaPage() {
 
   const loadPessoas = async () => {
     try {
-      console.log('🔍 Carregando pessoas via API...')
+      console.log('Carregando pessoas via API...')
       
-      // Usar nossa nova API GET /modelos
       const response = await fetch('/api/modelos')
       
       if (!response.ok) {
@@ -45,9 +44,8 @@ export default function BuscaPage() {
         throw new Error(result.error || 'Erro na API')
       }
       
-      console.log(`✅ ${result.modelos.length} modelos carregados`)
+      console.log(`${result.modelos.length} modelos carregados`)
       
-      // Adicionar campos fotos/videos vazios para compatibilidade  
       const modelosCompleitos = result.modelos.map((modelo: any) => ({
         ...modelo,
         fotos: modelo.fotos || [],
@@ -57,10 +55,9 @@ export default function BuscaPage() {
       setPessoas(modelosCompleitos as PessoaCompleta[])
       
     } catch (error) {
-      console.error('❌ Erro ao carregar pessoas:', error)
+      console.error('Erro ao carregar pessoas:', error)
       
-      // FALLBACK: Se API falhar, tenta Supabase direto
-      console.log('🔄 Tentando fallback Supabase direto...')
+      console.log('Tentando fallback Supabase direto...')
       try {
         const { data, error } = await supabase
           .from('pessoas')
@@ -73,10 +70,10 @@ export default function BuscaPage() {
           .order('created_at', { ascending: false })
 
         if (error) throw error
-        console.log(`✅ Fallback: ${data.length} modelos carregados`)
+        console.log(`Fallback: ${data.length} modelos carregados`)
         setPessoas(data as PessoaCompleta[])
       } catch (fallbackError) {
-        console.error('❌ Fallback também falhou:', fallbackError)
+        console.error('Fallback tambem falhou:', fallbackError)
       }
     } finally {
       setLoading(false)
@@ -86,7 +83,6 @@ export default function BuscaPage() {
   const applyFilters = () => {
     let filtered = [...pessoas]
 
-    // Filtro por termo de busca
     if (searchTerm.trim()) {
       const termo = searchTerm.toLowerCase()
       filtered = filtered.filter(pessoa =>
@@ -97,7 +93,6 @@ export default function BuscaPage() {
       )
     }
 
-    // Filtro por especialidade
     if (filters.especialidade) {
       filtered = filtered.filter(pessoa =>
         pessoa.especializacoes?.some(esp => 
@@ -106,28 +101,24 @@ export default function BuscaPage() {
       )
     }
 
-    // Filtro por localização
     if (filters.localizacao) {
       filtered = filtered.filter(pessoa =>
         pessoa.localizacao?.toLowerCase().includes(filters.localizacao.toLowerCase())
       )
     }
 
-    // Filtro por altura mínima
     if (filters.alturaMin) {
       filtered = filtered.filter(pessoa =>
         pessoa.altura && pessoa.altura >= parseInt(filters.alturaMin)
       )
     }
 
-    // Filtro por altura máxima
     if (filters.alturaMax) {
       filtered = filtered.filter(pessoa =>
         pessoa.altura && pessoa.altura <= parseInt(filters.alturaMax)
       )
     }
 
-    // Filtro por parceria
     if (filters.parceria === 'parceiro') {
       filtered = filtered.filter(pessoa => pessoa.parceria)
     } else if (filters.parceria === 'nao-parceiro') {
@@ -148,7 +139,6 @@ export default function BuscaPage() {
     })
   }
 
-  // Extrair valores únicos para options
   const especialidadesUnicas = [...new Set(
     pessoas.flatMap(p => p.especializacoes || [])
   )].sort()
@@ -159,27 +149,27 @@ export default function BuscaPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Carregando modelos...</p>
+          <div className="animate-spin h-12 w-12 border-2 border-black border-t-transparent mx-auto"></div>
+          <p className="mt-4 text-gray-500 text-sm uppercase tracking-wide">Carregando modelos...</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
+    <div className="min-h-screen bg-white">
       <Header />
       
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-purple-600 to-purple-800 text-white py-16">
+      <section className="bg-black text-white py-16">
         <div className="container mx-auto px-6 text-center">
-          <h1 className="text-5xl font-bold mb-4">
+          <h1 className="text-5xl font-bold mb-4 uppercase tracking-wide">
             Descobrir Talentos
           </h1>
-          <p className="text-xl text-purple-100 mb-8 max-w-2xl mx-auto">
-            Encontre o modelo ideal para seu projeto usando nossos filtros avançados
+          <p className="text-lg text-gray-300 mb-8 max-w-2xl mx-auto">
+            Encontre o modelo ideal para seu projeto usando nossos filtros avancados
           </p>
           
           {/* Quick Search */}
@@ -188,36 +178,36 @@ export default function BuscaPage() {
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="🔍 Buscar por nome, especialidade ou localização..."
-              className="w-full px-6 py-4 text-gray-900 rounded-full text-lg focus:outline-none focus:ring-4 focus:ring-purple-300 shadow-lg"
+              placeholder="Buscar por nome, especialidade ou localizacao..."
+              className="w-full px-6 py-4 text-gray-900 text-lg focus:outline-none focus:ring-2 focus:ring-gray-500 border border-gray-300"
             />
             {searchTerm && (
               <button
                 onClick={() => setSearchTerm('')}
                 className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-700"
               >
-                ✕
+                X
               </button>
             )}
           </div>
         </div>
       </section>
       
-      <main className="container mx-auto px-6 -mt-8 relative z-10">
-        {/* Filtros Avançados */}
-        <div className="bg-white rounded-2xl shadow-xl p-8 mb-12">
+      <main className="container mx-auto px-6 py-12">
+        {/* Filtros Avancados */}
+        <div className="border border-gray-200 p-8 mb-12">
           <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl font-bold text-gray-900">Filtros Avançados</h2>
+            <h2 className="text-xl font-bold text-gray-900 uppercase tracking-wide">Filtros</h2>
             <div className="flex items-center space-x-4">
-              <span className="text-sm text-gray-600 bg-purple-50 px-4 py-2 rounded-full">
+              <span className="text-sm text-gray-600 border border-gray-300 px-4 py-2">
                 {filteredPessoas.length} resultado{filteredPessoas.length !== 1 ? 's' : ''}
               </span>
               {(searchTerm || Object.values(filters).some(v => v && v !== 'todos')) && (
                 <button
                   onClick={clearFilters}
-                  className="text-purple-600 hover:text-purple-800 text-sm font-medium bg-purple-50 px-4 py-2 rounded-full hover:bg-purple-100 transition-colors"
+                  className="text-black text-sm font-medium border border-black px-4 py-2 hover:bg-black hover:text-white transition-colors uppercase tracking-wide"
                 >
-                  🗑️ Limpar Filtros
+                  Limpar Filtros
                 </button>
               )}
             </div>
@@ -227,13 +217,13 @@ export default function BuscaPage() {
 
             {/* Especialidade */}
             <div className="space-y-2">
-              <label className="block text-sm font-semibold text-gray-700">
-                🎭 Especialidade
+              <label className="block text-xs font-semibold text-gray-700 uppercase tracking-widest">
+                Especialidade
               </label>
               <select
                 value={filters.especialidade}
                 onChange={(e) => setFilters(prev => ({ ...prev, especialidade: e.target.value }))}
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                className="w-full px-4 py-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black transition-all"
               >
                 <option value="">Todas as especialidades</option>
                 {especialidadesUnicas.map(esp => (
@@ -242,15 +232,15 @@ export default function BuscaPage() {
               </select>
             </div>
 
-            {/* Localização */}
+            {/* Localizacao */}
             <div className="space-y-2">
-              <label className="block text-sm font-semibold text-gray-700">
-                📍 Localização
+              <label className="block text-xs font-semibold text-gray-700 uppercase tracking-widest">
+                Localizacao
               </label>
               <select
                 value={filters.localizacao}
                 onChange={(e) => setFilters(prev => ({ ...prev, localizacao: e.target.value }))}
-                className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                className="w-full px-4 py-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black transition-all"
               >
                 <option value="">Todas as cidades</option>
                 {localizacoesUnicas.map(loc => (
@@ -261,50 +251,50 @@ export default function BuscaPage() {
 
             {/* Faixa de Altura */}
             <div className="space-y-2">
-              <label className="block text-sm font-semibold text-gray-700">
-                📏 Altura (cm)
+              <label className="block text-xs font-semibold text-gray-700 uppercase tracking-widest">
+                Altura (cm)
               </label>
               <div className="flex space-x-2">
                 <input
                   type="number"
                   value={filters.alturaMin}
                   onChange={(e) => setFilters(prev => ({ ...prev, alturaMin: e.target.value }))}
-                  placeholder="Mín"
+                  placeholder="Min"
                   min="100"
                   max="250"
-                  className="flex-1 px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                  className="flex-1 px-4 py-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black transition-all"
                 />
                 <span className="flex items-center px-2 text-gray-500">-</span>
                 <input
                   type="number"
                   value={filters.alturaMax}
                   onChange={(e) => setFilters(prev => ({ ...prev, alturaMax: e.target.value }))}
-                  placeholder="Máx"
+                  placeholder="Max"
                   min="100"
                   max="250"
-                  className="flex-1 px-4 py-3 border-2 border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                  className="flex-1 px-4 py-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black transition-all"
                 />
               </div>
             </div>
 
             {/* Tipo de parceria */}
             <div className="space-y-2">
-              <label className="block text-sm font-semibold text-gray-700">
-                🤝 Parceria
+              <label className="block text-xs font-semibold text-gray-700 uppercase tracking-widest">
+                Parceria
               </label>
               <div className="flex space-x-2">
                 {[
-                  { key: 'todos', label: 'Todos', color: 'gray' },
-                  { key: 'parceiro', label: 'Parceiros', color: 'blue' },
-                  { key: 'nao-parceiro', label: 'Freelancers', color: 'green' }
+                  { key: 'todos', label: 'Todos' },
+                  { key: 'parceiro', label: 'Parceiros' },
+                  { key: 'nao-parceiro', label: 'Freelancers' }
                 ].map(option => (
                   <button
                     key={option.key}
                     onClick={() => setFilters(prev => ({ ...prev, parceria: option.key }))}
-                    className={`flex-1 px-4 py-3 rounded-lg font-medium transition-all ${
+                    className={`flex-1 px-4 py-3 font-medium transition-all text-sm ${
                       filters.parceria === option.key
-                        ? `bg-${option.color}-600 text-white shadow-lg`
-                        : `bg-${option.color}-50 text-${option.color}-700 hover:bg-${option.color}-100`
+                        ? 'bg-black text-white'
+                        : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
                     }`}
                   >
                     {option.label}
@@ -315,20 +305,20 @@ export default function BuscaPage() {
 
             {/* Quick Stats */}
             <div className="md:col-span-2 lg:col-span-3">
-              <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg p-6">
-                <h3 className="text-sm font-semibold text-gray-700 mb-4">📊 Estatísticas dos Resultados</h3>
+              <div className="border border-gray-200 p-6">
+                <h3 className="text-xs font-semibold text-gray-500 mb-4 uppercase tracking-widest">Estatisticas dos Resultados</h3>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {[
-                    { label: 'Total', value: filteredPessoas.length, icon: '👥', color: 'purple' },
-                    { label: 'Parceiros', value: filteredPessoas.filter(p => p.parceria).length, icon: '🤝', color: 'blue' },
-                    { label: 'Com Fotos', value: filteredPessoas.filter(p => p.fotos.length > 0).length, icon: '📸', color: 'green' },
-                    { label: 'Com Vídeos', value: filteredPessoas.filter(p => p.videos.length > 0).length, icon: '🎬', color: 'orange' }
+                    { label: 'Total', value: filteredPessoas.length },
+                    { label: 'Parceiros', value: filteredPessoas.filter(p => p.parceria).length },
+                    { label: 'Com Fotos', value: filteredPessoas.filter(p => p.fotos.length > 0).length },
+                    { label: 'Com Videos', value: filteredPessoas.filter(p => p.videos.length > 0).length }
                   ].map(stat => (
                     <div key={stat.label} className="text-center">
-                      <div className={`text-2xl text-${stat.color}-600 font-bold`}>
-                        {stat.icon} {stat.value}
+                      <div className="text-2xl text-black font-bold">
+                        {stat.value}
                       </div>
-                      <div className="text-sm text-gray-600">{stat.label}</div>
+                      <div className="text-xs text-gray-500 uppercase tracking-wide">{stat.label}</div>
                     </div>
                   ))}
                 </div>
@@ -340,23 +330,22 @@ export default function BuscaPage() {
         {/* Resultados */}
         <section className="mb-16">
           {filteredPessoas.length === 0 ? (
-            <div className="bg-white rounded-2xl shadow-lg p-12 text-center">
-              <div className="text-8xl mb-6">🔍</div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">
+            <div className="border border-gray-200 p-12 text-center">
+              <h3 className="text-2xl font-bold text-gray-900 mb-4 uppercase tracking-wide">
                 Nenhum modelo encontrado
               </h3>
               <p className="text-gray-600 mb-8 max-w-md mx-auto">
-                Não encontramos modelos que atendam aos seus critérios. Tente ajustar os filtros ou fazer uma busca mais ampla.
+                Nao encontramos modelos que atendam aos seus criterios. Tente ajustar os filtros ou fazer uma busca mais ampla.
               </p>
               <div className="space-y-4">
                 <button
                   onClick={clearFilters}
-                  className="bg-gradient-to-r from-purple-600 to-purple-700 text-white font-semibold px-8 py-3 rounded-full hover:from-purple-700 hover:to-purple-800 transition-all transform hover:scale-105"
+                  className="bg-black text-white font-semibold px-8 py-3 hover:bg-gray-800 transition-all uppercase tracking-wide text-sm"
                 >
-                  🗑️ Limpar Filtros
+                  Limpar Filtros
                 </button>
                 <div className="text-sm text-gray-500">
-                  Ou explore todas as categorias na <a href="/" className="text-purple-600 hover:text-purple-800 font-medium">página inicial</a>
+                  Ou explore todas as categorias na <a href="/" className="text-black underline font-medium">pagina inicial</a>
                 </div>
               </div>
             </div>
@@ -364,17 +353,16 @@ export default function BuscaPage() {
             <>
               {/* Header dos Resultados */}
               <div className="flex items-center justify-between mb-8">
-                <h2 className="text-3xl font-bold text-gray-900">
-                  Resultados da Busca
+                <h2 className="text-2xl font-bold text-gray-900 uppercase tracking-wide">
+                  Resultados
                 </h2>
                 <div className="flex space-x-3">
-                  {/* Views Toggle */}
-                  <div className="bg-white rounded-lg shadow-md p-1 flex">
-                    <button className="bg-purple-600 text-white px-4 py-2 rounded-md text-sm font-medium">
-                      📱 Grid
+                  <div className="border border-gray-200 p-1 flex">
+                    <button className="bg-black text-white px-4 py-2 text-sm font-medium uppercase tracking-wide">
+                      Grid
                     </button>
-                    <button className="text-gray-600 px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-100">
-                      📋 Lista
+                    <button className="text-gray-600 px-4 py-2 text-sm font-medium hover:bg-gray-100 uppercase tracking-wide">
+                      Lista
                     </button>
                   </div>
                 </div>
@@ -390,7 +378,7 @@ export default function BuscaPage() {
               {/* Load More Button */}
               {filteredPessoas.length > 8 && (
                 <div className="text-center mt-12">
-                  <button className="bg-white text-purple-700 font-semibold px-8 py-3 rounded-full border-2 border-purple-200 hover:bg-purple-50 transition-all">
+                  <button className="text-black font-semibold px-8 py-3 border border-black hover:bg-black hover:text-white transition-all uppercase tracking-wide text-sm">
                     Ver Mais Modelos
                   </button>
                 </div>

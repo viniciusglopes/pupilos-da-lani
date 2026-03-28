@@ -24,7 +24,6 @@ export default function AdminsPage() {
   const router = useRouter()
 
   useEffect(() => {
-    // Verificar autenticação
     const isAuthenticated = localStorage.getItem('admin_authenticated')
     if (!isAuthenticated) {
       router.push('/login')
@@ -36,7 +35,6 @@ export default function AdminsPage() {
 
   const loadAdmins = async () => {
     try {
-      // Simulando dados (substitua por chamada real ao Supabase)
       const mockAdmins: Admin[] = [
         {
           id: '1',
@@ -48,7 +46,7 @@ export default function AdminsPage() {
         {
           id: '2', 
           email: 'suporte@pupiloslani.com.br',
-          nome: 'Suporte Técnico',
+          nome: 'Suporte Tecnico',
           ativo: true,
           created_at: '2026-03-15'
         }
@@ -69,7 +67,6 @@ export default function AdminsPage() {
     }
 
     try {
-      // Aqui você implementaria a criação real no Supabase
       const newAdminData: Admin = {
         id: Date.now().toString(),
         email: newAdmin.email,
@@ -105,7 +102,7 @@ export default function AdminsPage() {
 
     try {
       setAdmins(prev => prev.filter(admin => admin.id !== id))
-      alert('Administrador excluído com sucesso!')
+      alert('Administrador excluido com sucesso!')
     } catch (error) {
       console.error('Erro ao excluir:', error)
       alert('Erro ao excluir administrador')
@@ -114,12 +111,12 @@ export default function AdminsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex">
+      <div className="min-h-screen bg-white flex">
         <AdminSidebar />
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
-            <p className="mt-4 text-gray-600">Carregando...</p>
+            <div className="animate-spin h-12 w-12 border-2 border-black border-t-transparent mx-auto"></div>
+            <p className="mt-4 text-gray-500 text-sm uppercase tracking-wide">Carregando...</p>
           </div>
         </div>
       </div>
@@ -127,78 +124,77 @@ export default function AdminsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-white flex">
       <AdminSidebar />
       
       <main className="flex-1 lg:ml-0 p-8">
         <div className="max-w-6xl mx-auto">
           <div className="flex justify-between items-center mb-8">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">
+              <h1 className="text-2xl font-bold text-black uppercase tracking-wide">
                 Administradores
               </h1>
-              <p className="text-gray-600 mt-2">
+              <p className="text-gray-500 mt-2 text-sm">
                 Gerencie quem tem acesso ao painel administrativo
               </p>
             </div>
             <button
               onClick={() => setShowForm(true)}
-              className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors flex items-center space-x-2"
+              className="bg-black text-white px-4 py-2 hover:bg-gray-800 transition-colors flex items-center space-x-2 text-sm uppercase tracking-wide"
             >
-              <span>➕</span>
-              <span>Novo Administrador</span>
+              <span>+ Novo Administrador</span>
             </button>
           </div>
 
-          {/* Formulário de criação */}
+          {/* Formulario de criacao */}
           {showForm && (
-            <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <div className="border border-gray-200 p-6 mb-8">
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-bold text-gray-900">Novo Administrador</h2>
+                <h2 className="text-lg font-bold text-black uppercase tracking-wide">Novo Administrador</h2>
                 <button
                   onClick={() => setShowForm(false)}
                   className="text-gray-400 hover:text-gray-600"
                 >
-                  ✕
+                  X
                 </button>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-xs font-medium text-gray-700 mb-2 uppercase tracking-widest">
                     Nome Completo
                   </label>
                   <input
                     type="text"
                     value={newAdmin.nome}
                     onChange={(e) => setNewAdmin(prev => ({ ...prev, nome: e.target.value }))}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    className="w-full p-3 border border-gray-300 focus:ring-2 focus:ring-black focus:outline-none"
                     placeholder="Nome do administrador"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-xs font-medium text-gray-700 mb-2 uppercase tracking-widest">
                     Email
                   </label>
                   <input
                     type="email"
                     value={newAdmin.email}
                     onChange={(e) => setNewAdmin(prev => ({ ...prev, email: e.target.value }))}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    className="w-full p-3 border border-gray-300 focus:ring-2 focus:ring-black focus:outline-none"
                     placeholder="email@exemplo.com"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Senha Temporária
+                  <label className="block text-xs font-medium text-gray-700 mb-2 uppercase tracking-widest">
+                    Senha Temporaria
                   </label>
                   <input
                     type="password"
                     value={newAdmin.senha}
                     onChange={(e) => setNewAdmin(prev => ({ ...prev, senha: e.target.value }))}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    className="w-full p-3 border border-gray-300 focus:ring-2 focus:ring-black focus:outline-none"
                     placeholder="Senha para primeiro acesso"
                   />
                 </div>
@@ -207,13 +203,13 @@ export default function AdminsPage() {
               <div className="flex justify-end space-x-3 mt-6">
                 <button
                   onClick={() => setShowForm(false)}
-                  className="px-4 py-2 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors"
+                  className="px-4 py-2 text-gray-700 border border-gray-300 hover:bg-gray-50 transition-colors text-sm"
                 >
                   Cancelar
                 </button>
                 <button
                   onClick={createAdmin}
-                  className="px-4 py-2 text-white bg-purple-600 rounded-lg hover:bg-purple-700 transition-colors"
+                  className="px-4 py-2 text-white bg-black hover:bg-gray-800 transition-colors text-sm uppercase tracking-wide"
                 >
                   Criar Administrador
                 </button>
@@ -222,25 +218,24 @@ export default function AdminsPage() {
           )}
 
           {/* Lista de administradores */}
-          <div className="bg-white rounded-lg shadow">
+          <div className="border border-gray-200">
             <div className="px-6 py-4 border-b border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900">
+              <h3 className="text-sm font-semibold text-gray-900 uppercase tracking-widest">
                 Lista de Administradores ({admins.length})
               </h3>
             </div>
 
             {admins.length === 0 ? (
               <div className="p-8 text-center">
-                <div className="text-6xl mb-4">👥</div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">
                   Nenhum administrador cadastrado
                 </h3>
                 <p className="text-gray-600 mb-4">
-                  Crie o primeiro administrador para começar.
+                  Crie o primeiro administrador para comecar.
                 </p>
                 <button
                   onClick={() => setShowForm(true)}
-                  className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors"
+                  className="bg-black text-white px-4 py-2 hover:bg-gray-800 transition-colors text-sm uppercase tracking-wide"
                 >
                   Criar Primeiro Administrador
                 </button>
@@ -250,7 +245,7 @@ export default function AdminsPage() {
                 {admins.map((admin) => (
                   <div key={admin.id} className="px-6 py-4 flex items-center justify-between">
                     <div className="flex items-center space-x-4">
-                      <div className="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center text-white font-bold">
+                      <div className="w-10 h-10 bg-black flex items-center justify-center text-white font-bold">
                         {admin.nome.charAt(0).toUpperCase()}
                       </div>
                       <div>
@@ -263,29 +258,25 @@ export default function AdminsPage() {
                     </div>
 
                     <div className="flex items-center space-x-3">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      <span className={`border px-2 py-1 text-xs font-medium ${
                         admin.ativo 
-                          ? 'bg-green-100 text-green-800' 
-                          : 'bg-red-100 text-red-800'
+                          ? 'border-gray-300 text-gray-700' 
+                          : 'border-gray-300 text-gray-400'
                       }`}>
                         {admin.ativo ? 'Ativo' : 'Inativo'}
                       </span>
 
                       <button
                         onClick={() => toggleAdmin(admin.id)}
-                        className={`px-3 py-1 rounded text-sm transition-colors ${
-                          admin.ativo
-                            ? 'bg-red-100 text-red-800 hover:bg-red-200'
-                            : 'bg-green-100 text-green-800 hover:bg-green-200'
-                        }`}
+                        className="border border-gray-300 text-gray-700 px-3 py-1 text-sm hover:bg-gray-50 transition-colors"
                       >
                         {admin.ativo ? 'Desativar' : 'Ativar'}
                       </button>
 
                       <button
                         onClick={() => deleteAdmin(admin.id, admin.nome)}
-                        className="bg-red-100 text-red-800 px-3 py-1 rounded text-sm hover:bg-red-200 transition-colors"
-                        disabled={admin.id === '1'} // Proteger admin principal
+                        className="border border-gray-300 text-gray-700 px-3 py-1 text-sm hover:bg-gray-50 transition-colors"
+                        disabled={admin.id === '1'}
                       >
                         Excluir
                       </button>

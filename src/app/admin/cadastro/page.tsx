@@ -33,7 +33,6 @@ export default function CadastroPage() {
   const router = useRouter()
 
   useEffect(() => {
-    // Verificar autenticação
     const isAuthenticated = localStorage.getItem('admin_authenticated')
     if (!isAuthenticated) {
       router.push('/login')
@@ -60,18 +59,16 @@ export default function CadastroPage() {
     const files = Array.from(e.target.files || [])
     
     if (type === 'fotos') {
-      // Validar imagens
       const validImages = files.filter(file => file.type.startsWith('image/'))
       if (validImages.length !== files.length) {
-        setMessage({ type: 'error', text: 'Apenas arquivos de imagem são permitidos para fotos' })
+        setMessage({ type: 'error', text: 'Apenas arquivos de imagem sao permitidos para fotos' })
         return
       }
       setFotos(validImages)
     } else {
-      // Validar vídeos
       const validVideos = files.filter(file => file.type.startsWith('video/'))
       if (validVideos.length !== files.length) {
-        setMessage({ type: 'error', text: 'Apenas arquivos de vídeo são permitidos' })
+        setMessage({ type: 'error', text: 'Apenas arquivos de video sao permitidos' })
         return
       }
       setVideos(validVideos)
@@ -107,20 +104,18 @@ export default function CadastroPage() {
     setMessage(null)
 
     try {
-      // Validações básicas
       if (!formData.nome.trim()) {
-        throw new Error('Nome é obrigatório')
+        throw new Error('Nome e obrigatorio')
       }
 
       if (formData.email && !formData.consentimento_contato) {
-        throw new Error('Para cadastrar email, é necessário consentimento de contato')
+        throw new Error('Para cadastrar email, e necessario consentimento de contato')
       }
 
       if (formData.telefone && !formData.consentimento_contato) {
-        throw new Error('Para cadastrar telefone, é necessário consentimento de contato')
+        throw new Error('Para cadastrar telefone, e necessario consentimento de contato')
       }
 
-      // Inserir pessoa via API (bypassa RLS)
       const response = await fetch('/api/modelos', {
         method: 'POST',
         headers: {
@@ -139,21 +134,18 @@ export default function CadastroPage() {
 
       setUploadingFiles(true)
 
-      // Upload fotos via API (handles both storage and DB)
       let fotoPrincipal: string | null = null
       for (let i = 0; i < fotos.length; i++) {
         const fotoUrl = await uploadFileViaAPI(fotos[i], 'foto', pessoa.id, i === 0, i)
         if (fotoUrl && i === 0) fotoPrincipal = fotoUrl
       }
 
-      // Upload vídeos via API (handles both storage and DB)
       let videoPrincipal: string | null = null
       for (let i = 0; i < videos.length; i++) {
         const videoUrl = await uploadFileViaAPI(videos[i], 'video', pessoa.id, i === 0, i)
         if (videoUrl && i === 0) videoPrincipal = videoUrl
       }
 
-      // Atualizar pessoa com foto/vídeo principal
       if (fotoPrincipal || videoPrincipal) {
         await fetch(`/api/modelos/${pessoa.id}`, {
           method: 'PATCH',
@@ -169,7 +161,6 @@ export default function CadastroPage() {
 
       setMessage({ type: 'success', text: result.message || `Modelo "${pessoa.nome}" cadastrado com sucesso!` })
       
-      // Reset form
       setFormData({
         nome: '',
         descricao: '',
@@ -190,7 +181,6 @@ export default function CadastroPage() {
       setFotos([])
       setVideos([])
 
-      // Redirect após 3 segundos
       setTimeout(() => {
         router.push('/')
       }, 3000)
@@ -210,36 +200,36 @@ export default function CadastroPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-white flex">
       <AdminSidebar />
       
       <main className="flex-1 lg:ml-0 p-8">
         <div className="max-w-4xl mx-auto">
-        <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-md p-8">
+        <div className="max-w-2xl mx-auto border border-gray-200 p-8">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            <h1 className="text-2xl font-bold text-black mb-2 uppercase tracking-wide">
               Cadastro de Modelo
             </h1>
-            <p className="text-gray-600">
-              Adicione um novo modelo ao portfólio
+            <p className="text-gray-500 text-sm">
+              Adicione um novo modelo ao portfolio
             </p>
           </div>
 
           {message && (
-            <div className={`mb-6 p-4 rounded-lg ${
+            <div className={`mb-6 p-4 border ${
               message.type === 'success' 
-                ? 'bg-green-50 border border-green-200 text-green-700'
-                : 'bg-red-50 border border-red-200 text-red-700'
+                ? 'border-gray-300 text-gray-700'
+                : 'border-gray-300 text-gray-700'
             }`}>
               {message.text}
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Informações Básicas */}
+            {/* Informacoes Basicas */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-xs font-medium text-gray-700 mb-2 uppercase tracking-widest">
                   Nome Completo *
                 </label>
                 <input
@@ -247,13 +237,13 @@ export default function CadastroPage() {
                   name="nome"
                   value={formData.nome}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-xs font-medium text-gray-700 mb-2 uppercase tracking-widest">
                   Altura (cm)
                 </label>
                 <input
@@ -261,7 +251,7 @@ export default function CadastroPage() {
                   name="altura"
                   value={formData.altura || ''}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black"
                   min="100"
                   max="250"
                 />
@@ -269,30 +259,30 @@ export default function CadastroPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Descrição
+              <label className="block text-xs font-medium text-gray-700 mb-2 uppercase tracking-widest">
+                Descricao
               </label>
               <textarea
                 name="descricao"
                 value={formData.descricao}
                 onChange={handleInputChange}
                 rows={3}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Breve descrição profissional..."
+                className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black"
+                placeholder="Breve descricao profissional..."
               />
             </div>
 
-            {/* Características Físicas */}
+            {/* Caracteristicas Fisicas */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-xs font-medium text-gray-700 mb-2 uppercase tracking-widest">
                   Cor dos Olhos
                 </label>
                 <select
                   name="cor_olhos"
                   value={formData.cor_olhos}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black"
                 >
                   <option value="">Selecione...</option>
                   <option value="Castanhos">Castanhos</option>
@@ -300,19 +290,19 @@ export default function CadastroPage() {
                   <option value="Verdes">Verdes</option>
                   <option value="Pretos">Pretos</option>
                   <option value="Mel">Mel</option>
-                  <option value="Avelã">Avelã</option>
+                  <option value="Avela">Avela</option>
                 </select>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-xs font-medium text-gray-700 mb-2 uppercase tracking-widest">
                   Cor do Cabelo
                 </label>
                 <select
                   name="cor_cabelo"
                   value={formData.cor_cabelo}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black"
                 >
                   <option value="">Selecione...</option>
                   <option value="Preto">Preto</option>
@@ -327,7 +317,7 @@ export default function CadastroPage() {
 
             {/* Medidas */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-3">
+              <label className="block text-xs font-medium text-gray-700 mb-3 uppercase tracking-widest">
                 Medidas (cm)
               </label>
               <div className="grid grid-cols-3 gap-4">
@@ -338,7 +328,7 @@ export default function CadastroPage() {
                     name="medidas_busto"
                     value={formData.medidas_busto || ''}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black"
                     min="60"
                     max="150"
                   />
@@ -350,7 +340,7 @@ export default function CadastroPage() {
                     name="medidas_cintura"
                     value={formData.medidas_cintura || ''}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black"
                     min="50"
                     max="120"
                   />
@@ -362,7 +352,7 @@ export default function CadastroPage() {
                     name="medidas_quadril"
                     value={formData.medidas_quadril || ''}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black"
                     min="70"
                     max="150"
                   />
@@ -372,7 +362,7 @@ export default function CadastroPage() {
 
             {/* Especialidades */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-xs font-medium text-gray-700 mb-2 uppercase tracking-widest">
                 Especialidades
               </label>
               <input
@@ -380,8 +370,8 @@ export default function CadastroPage() {
                 name="especializacoes"
                 value={formData.especializacoes?.join(', ') || ''}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="Ex: Fashion, Editorial, Comercial (separadas por vírgula)"
+                className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black"
+                placeholder="Ex: Fashion, Editorial, Comercial (separadas por virgula)"
               />
               <div className="mt-2 flex flex-wrap gap-2">
                 {especialidadesComuns.map(esp => (
@@ -402,10 +392,10 @@ export default function CadastroPage() {
                         }))
                       }
                     }}
-                    className={`px-2 py-1 text-xs rounded-full transition-colors ${
+                    className={`px-2 py-1 text-xs transition-colors ${
                       formData.especializacoes?.includes(esp)
-                        ? 'bg-blue-100 text-blue-800 border border-blue-300'
-                        : 'bg-gray-100 text-gray-700 border border-gray-300 hover:bg-gray-200'
+                        ? 'bg-black text-white'
+                        : 'border border-gray-300 text-gray-700 hover:bg-gray-50'
                     }`}
                   >
                     {esp}
@@ -414,26 +404,26 @@ export default function CadastroPage() {
               </div>
             </div>
 
-            {/* Localização */}
+            {/* Localizacao */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Localização
+              <label className="block text-xs font-medium text-gray-700 mb-2 uppercase tracking-widest">
+                Localizacao
               </label>
               <input
                 type="text"
                 name="localizacao"
                 value={formData.localizacao}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black"
                 placeholder="Ex: Belo Horizonte, MG"
               />
             </div>
 
             {/* Contato */}
             <div className="space-y-4">
-              <h3 className="text-lg font-medium text-gray-900">Informações de Contato</h3>
+              <h3 className="text-sm font-medium text-black uppercase tracking-wide">Informacoes de Contato</h3>
               
-              <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-lg">
+              <div className="border border-gray-300 p-4">
                 <div className="flex items-center">
                   <input
                     type="checkbox"
@@ -444,14 +434,14 @@ export default function CadastroPage() {
                   />
                   <label className="text-sm text-gray-700">
                     <strong>Consentimento LGPD:</strong> Autorizo o uso dos dados de contato abaixo 
-                    para comunicação profissional e exibição pública no portal.
+                    para comunicacao profissional e exibicao publica no portal.
                   </label>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-xs font-medium text-gray-700 mb-2 uppercase tracking-widest">
                     Instagram
                   </label>
                   <input
@@ -459,13 +449,13 @@ export default function CadastroPage() {
                     name="instagram_url"
                     value={formData.instagram_url}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black"
                     placeholder="https://instagram.com/usuario"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-xs font-medium text-gray-700 mb-2 uppercase tracking-widest">
                     Email (opcional)
                   </label>
                   <input
@@ -474,14 +464,14 @@ export default function CadastroPage() {
                     value={formData.email}
                     onChange={handleInputChange}
                     disabled={!formData.consentimento_contato}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+                    className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black disabled:bg-gray-50"
                     placeholder="email@exemplo.com"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-xs font-medium text-gray-700 mb-2 uppercase tracking-widest">
                   WhatsApp (opcional)
                 </label>
                 <input
@@ -490,14 +480,14 @@ export default function CadastroPage() {
                   value={formData.telefone}
                   onChange={handleInputChange}
                   disabled={!formData.consentimento_contato}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+                  className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black disabled:bg-gray-50"
                   placeholder="5531999999999"
                 />
               </div>
             </div>
 
             {/* Parceria */}
-            <div className="bg-blue-50 border border-blue-200 p-4 rounded-lg">
+            <div className="border border-gray-300 p-4">
               <div className="flex items-center">
                 <input
                   type="checkbox"
@@ -506,14 +496,14 @@ export default function CadastroPage() {
                   onChange={handleInputChange}
                   className="mr-3"
                 />
-                <label className="text-sm text-blue-800">
+                <label className="text-sm text-gray-700">
                   <strong>Modelo Parceiro:</strong> Marcar como modelo em parceria exclusiva
                 </label>
               </div>
             </div>
 
             {/* Destaque */}
-            <div className="bg-purple-50 border border-purple-200 p-4 rounded-lg">
+            <div className="border border-gray-300 p-4">
               <div className="flex items-center">
                 <input
                   type="checkbox"
@@ -522,26 +512,26 @@ export default function CadastroPage() {
                   onChange={handleInputChange}
                   className="mr-3"
                 />
-                <label className="text-sm text-purple-800">
-                  <strong>⭐ Modelo Destaque:</strong> Exibir na área de destaques da tela principal
+                <label className="text-sm text-gray-700">
+                  <strong>Modelo Destaque:</strong> Exibir na area de destaques da tela principal
                 </label>
               </div>
             </div>
 
             {/* Upload Arquivos */}
             <div className="space-y-4">
-              <h3 className="text-lg font-medium text-gray-900">Portfólio</h3>
+              <h3 className="text-sm font-medium text-black uppercase tracking-wide">Portfolio</h3>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Fotos (máximo 10)
+                <label className="block text-xs font-medium text-gray-700 mb-2 uppercase tracking-widest">
+                  Fotos (maximo 10)
                 </label>
                 <input
                   type="file"
                   accept="image/*"
                   multiple
                   onChange={(e) => handleFileChange(e, 'fotos')}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black"
                 />
                 {fotos.length > 0 && (
                   <p className="text-sm text-gray-500 mt-1">
@@ -551,19 +541,19 @@ export default function CadastroPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Vídeos (máximo 5)
+                <label className="block text-xs font-medium text-gray-700 mb-2 uppercase tracking-widest">
+                  Videos (maximo 5)
                 </label>
                 <input
                   type="file"
                   accept="video/*"
                   multiple
                   onChange={(e) => handleFileChange(e, 'videos')}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black"
                 />
                 {videos.length > 0 && (
                   <p className="text-sm text-gray-500 mt-1">
-                    {videos.length} vídeo(s) selecionado(s)
+                    {videos.length} video(s) selecionado(s)
                   </p>
                 )}
               </div>
@@ -573,7 +563,7 @@ export default function CadastroPage() {
             <button
               type="submit"
               disabled={loading || uploadingFiles}
-              className="w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-black text-white py-3 px-4 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-widest text-sm"
             >
               {loading ? (
                 uploadingFiles ? 'Fazendo upload dos arquivos...' : 'Cadastrando...'
@@ -586,9 +576,9 @@ export default function CadastroPage() {
           <div className="mt-6 text-center">
             <button
               onClick={() => router.push('/admin')}
-              className="text-blue-600 hover:text-blue-800 font-medium"
+              className="text-black hover:text-gray-600 font-medium text-sm underline"
             >
-              ← Voltar ao Dashboard
+              Voltar ao Dashboard
             </button>
           </div>
         </div>

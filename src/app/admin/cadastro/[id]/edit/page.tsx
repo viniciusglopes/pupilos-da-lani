@@ -22,7 +22,6 @@ export default function EditModelPage() {
   const id = params?.id as string
 
   useEffect(() => {
-    // Verificar autenticação
     const isAuthenticated = localStorage.getItem('admin_authenticated')
     if (!isAuthenticated) {
       router.push('/login')
@@ -50,7 +49,7 @@ export default function EditModelPage() {
       setPessoa(data as PessoaCompleta)
     } catch (error) {
       console.error('Erro ao carregar pessoa:', error)
-      setMessage({ type: 'error', text: 'Modelo não encontrado' })
+      setMessage({ type: 'error', text: 'Modelo nao encontrado' })
     } finally {
       setLoading(false)
     }
@@ -109,7 +108,6 @@ export default function EditModelPage() {
 
       setMessage({ type: 'success', text: 'Modelo atualizado com sucesso!' })
       
-      // Redirecionar após 2 segundos
       setTimeout(() => {
         router.push('/admin')
       }, 2000)
@@ -126,7 +124,6 @@ export default function EditModelPage() {
     if (!confirm('Tem certeza que deseja excluir esta foto?')) return
 
     try {
-      // Deletar do storage se tiver caminho
       if (caminhoStorage) {
         const fileName = caminhoStorage.split('/').pop()
         if (fileName) {
@@ -136,7 +133,6 @@ export default function EditModelPage() {
         }
       }
 
-      // Deletar do banco
       const { error } = await supabase
         .from('fotos')
         .delete()
@@ -144,13 +140,12 @@ export default function EditModelPage() {
 
       if (error) throw error
 
-      // Atualizar estado local
       setPessoa(prev => prev ? {
         ...prev,
         fotos: prev.fotos.filter(f => f.id !== fotoId)
       } : prev)
 
-      setMessage({ type: 'success', text: 'Foto excluída com sucesso!' })
+      setMessage({ type: 'success', text: 'Foto excluida com sucesso!' })
     } catch (error) {
       console.error('Erro ao deletar foto:', error)
       setMessage({ type: 'error', text: 'Erro ao excluir foto' })
@@ -158,10 +153,9 @@ export default function EditModelPage() {
   }
 
   const deleteVideo = async (videoId: string, caminhoStorage?: string) => {
-    if (!confirm('Tem certeza que deseja excluir este vídeo?')) return
+    if (!confirm('Tem certeza que deseja excluir este video?')) return
 
     try {
-      // Deletar do storage se tiver caminho
       if (caminhoStorage) {
         const fileName = caminhoStorage.split('/').pop()
         if (fileName) {
@@ -171,7 +165,6 @@ export default function EditModelPage() {
         }
       }
 
-      // Deletar do banco
       const { error } = await supabase
         .from('videos')
         .delete()
@@ -179,40 +172,35 @@ export default function EditModelPage() {
 
       if (error) throw error
 
-      // Atualizar estado local
       setPessoa(prev => prev ? {
         ...prev,
         videos: prev.videos.filter(v => v.id !== videoId)
       } : prev)
 
-      setMessage({ type: 'success', text: 'Vídeo excluído com sucesso!' })
+      setMessage({ type: 'success', text: 'Video excluido com sucesso!' })
     } catch (error) {
-      console.error('Erro ao deletar vídeo:', error)
-      setMessage({ type: 'error', text: 'Erro ao excluir vídeo' })
+      console.error('Erro ao deletar video:', error)
+      setMessage({ type: 'error', text: 'Erro ao excluir video' })
     }
   }
 
   const setFotoPrincipal = async (fotoId: string, fotoUrl: string) => {
     try {
-      // Atualizar todas as fotos para não principal
       await supabase
         .from('fotos')
         .update({ eh_principal: false })
         .eq('pessoa_id', id)
 
-      // Definir a foto selecionada como principal
       await supabase
         .from('fotos')
         .update({ eh_principal: true })
         .eq('id', fotoId)
 
-      // Atualizar na tabela pessoas
       await supabase
         .from('pessoas')
         .update({ foto_principal: fotoUrl })
         .eq('id', id)
 
-      // Atualizar estado local
       setPessoa(prev => prev ? {
         ...prev,
         foto_principal: fotoUrl,
@@ -308,11 +296,11 @@ export default function EditModelPage() {
 
       await loadPessoa()
       setNovosVideos([])
-      setMessage({ type: 'success', text: `${novosVideos.length} vídeo(s) adicionado(s) com sucesso!` })
+      setMessage({ type: 'success', text: `${novosVideos.length} video(s) adicionado(s) com sucesso!` })
 
     } catch (error: any) {
       console.error('Erro ao fazer upload:', error)
-      setMessage({ type: 'error', text: 'Erro ao fazer upload dos vídeos' })
+      setMessage({ type: 'error', text: 'Erro ao fazer upload dos videos' })
     } finally {
       setUploadingFiles(false)
     }
@@ -320,10 +308,10 @@ export default function EditModelPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Carregando...</p>
+          <div className="animate-spin h-12 w-12 border-2 border-black border-t-transparent mx-auto"></div>
+          <p className="mt-4 text-gray-500 text-sm uppercase tracking-wide">Carregando...</p>
         </div>
       </div>
     )
@@ -331,16 +319,16 @@ export default function EditModelPage() {
 
   if (!pessoa) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-white">
         <Header />
         <main className="container mx-auto px-4 py-8">
           <div className="text-center">
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">Modelo não encontrado</h1>
+            <h1 className="text-2xl font-bold text-black mb-4 uppercase tracking-wide">Modelo nao encontrado</h1>
             <button
               onClick={() => router.push('/admin')}
-              className="text-blue-600 hover:text-blue-800"
+              className="text-black hover:text-gray-600 underline"
             >
-              ← Voltar ao painel
+              Voltar ao painel
             </button>
           </div>
         </main>
@@ -350,43 +338,43 @@ export default function EditModelPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-white flex">
       <AdminSidebar />
       
       <main className="flex-1 lg:ml-0 p-8">
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center justify-between mb-8">
-            <h1 className="text-3xl font-bold text-gray-900">
-              Editar Modelo: {pessoa.nome}
+            <h1 className="text-2xl font-bold text-black uppercase tracking-wide">
+              Editar: {pessoa.nome}
             </h1>
             <button
               onClick={() => router.push('/admin')}
-              className="text-blue-600 hover:text-blue-800 font-medium"
+              className="text-black hover:text-gray-600 font-medium text-sm underline"
             >
-              ← Voltar ao painel
+              Voltar ao painel
             </button>
           </div>
 
           {message && (
-            <div className={`mb-6 p-4 rounded-lg ${
+            <div className={`mb-6 p-4 border ${
               message.type === 'success' 
-                ? 'bg-green-50 border border-green-200 text-green-700'
-                : 'bg-red-50 border border-red-200 text-red-700'
+                ? 'border-gray-300 text-gray-700'
+                : 'border-gray-300 text-gray-700'
             }`}>
               {message.text}
             </div>
           )}
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Formulário de dados */}
-            <div className="lg:col-span-2 bg-white rounded-lg shadow-md p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-6">Informações Básicas</h2>
+            {/* Formulario de dados */}
+            <div className="lg:col-span-2 border border-gray-200 p-6">
+              <h2 className="text-sm font-semibold text-black mb-6 uppercase tracking-widest">Informacoes Basicas</h2>
               
               <form onSubmit={handleSave} className="space-y-4">
                 {/* Nome e altura */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-xs font-medium text-gray-700 mb-1 uppercase tracking-widest">
                       Nome Completo *
                     </label>
                     <input
@@ -394,12 +382,12 @@ export default function EditModelPage() {
                       name="nome"
                       value={pessoa.nome}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black"
                       required
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-xs font-medium text-gray-700 mb-1 uppercase tracking-widest">
                       Altura (cm)
                     </label>
                     <input
@@ -407,29 +395,29 @@ export default function EditModelPage() {
                       name="altura"
                       value={pessoa.altura || ''}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black"
                     />
                   </div>
                 </div>
 
-                {/* Descrição */}
+                {/* Descricao */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Descrição
+                  <label className="block text-xs font-medium text-gray-700 mb-1 uppercase tracking-widest">
+                    Descricao
                   </label>
                   <textarea
                     name="descricao"
                     value={pessoa.descricao || ''}
                     onChange={handleInputChange}
                     rows={3}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black"
                   />
                 </div>
 
-                {/* Características físicas */}
+                {/* Caracteristicas fisicas */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-xs font-medium text-gray-700 mb-1 uppercase tracking-widest">
                       Cor dos Olhos
                     </label>
                     <input
@@ -437,11 +425,11 @@ export default function EditModelPage() {
                       name="cor_olhos"
                       value={pessoa.cor_olhos || ''}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-xs font-medium text-gray-700 mb-1 uppercase tracking-widest">
                       Cor do Cabelo
                     </label>
                     <input
@@ -449,14 +437,14 @@ export default function EditModelPage() {
                       name="cor_cabelo"
                       value={pessoa.cor_cabelo || ''}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black"
                     />
                   </div>
                 </div>
 
                 {/* Medidas */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-xs font-medium text-gray-700 mb-2 uppercase tracking-widest">
                     Medidas (cm)
                   </label>
                   <div className="grid grid-cols-3 gap-4">
@@ -467,7 +455,7 @@ export default function EditModelPage() {
                         name="medidas_busto"
                         value={pessoa.medidas_busto || ''}
                         onChange={handleInputChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black"
                       />
                     </div>
                     <div>
@@ -477,7 +465,7 @@ export default function EditModelPage() {
                         name="medidas_cintura"
                         value={pessoa.medidas_cintura || ''}
                         onChange={handleInputChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black"
                       />
                     </div>
                     <div>
@@ -487,7 +475,7 @@ export default function EditModelPage() {
                         name="medidas_quadril"
                         value={pessoa.medidas_quadril || ''}
                         onChange={handleInputChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black"
                       />
                     </div>
                   </div>
@@ -495,7 +483,7 @@ export default function EditModelPage() {
 
                 {/* Especialidades */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-xs font-medium text-gray-700 mb-1 uppercase tracking-widest">
                     Especialidades
                   </label>
                   <input
@@ -503,22 +491,22 @@ export default function EditModelPage() {
                     name="especializacoes"
                     value={pessoa.especializacoes?.join(', ') || ''}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Separadas por vírgula"
+                    className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black"
+                    placeholder="Separadas por virgula"
                   />
                 </div>
 
-                {/* Localização */}
+                {/* Localizacao */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Localização
+                  <label className="block text-xs font-medium text-gray-700 mb-1 uppercase tracking-widest">
+                    Localizacao
                   </label>
                   <input
                     type="text"
                     name="localizacao"
                     value={pessoa.localizacao || ''}
                     onChange={handleInputChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black"
                   />
                 </div>
 
@@ -533,12 +521,12 @@ export default function EditModelPage() {
                       className="mr-2"
                     />
                     <label className="text-sm text-gray-700">
-                      Consentimento para contato público
+                      Consentimento para contato publico
                     </label>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-xs font-medium text-gray-700 mb-1 uppercase tracking-widest">
                       Instagram
                     </label>
                     <input
@@ -546,12 +534,12 @@ export default function EditModelPage() {
                       name="instagram_url"
                       value={pessoa.instagram_url || ''}
                       onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-xs font-medium text-gray-700 mb-1 uppercase tracking-widest">
                       Email
                     </label>
                     <input
@@ -560,12 +548,12 @@ export default function EditModelPage() {
                       value={pessoa.email || ''}
                       onChange={handleInputChange}
                       disabled={!pessoa.consentimento_contato}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+                      className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black disabled:bg-gray-50"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-xs font-medium text-gray-700 mb-1 uppercase tracking-widest">
                       WhatsApp
                     </label>
                     <input
@@ -574,13 +562,13 @@ export default function EditModelPage() {
                       value={pessoa.telefone || ''}
                       onChange={handleInputChange}
                       disabled={!pessoa.consentimento_contato}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+                      className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black disabled:bg-gray-50"
                     />
                   </div>
                 </div>
 
                 {/* Parceria */}
-                <div className="flex items-center bg-blue-50 p-3 rounded-lg">
+                <div className="flex items-center border border-gray-300 p-3">
                   <input
                     type="checkbox"
                     name="parceria"
@@ -588,13 +576,13 @@ export default function EditModelPage() {
                     onChange={handleInputChange}
                     className="mr-2"
                   />
-                  <label className="text-sm text-blue-800">
+                  <label className="text-sm text-gray-700">
                     Modelo em parceria exclusiva
                   </label>
                 </div>
 
                 {/* Destaque */}
-                <div className="flex items-center bg-yellow-50 border border-yellow-200 p-3 rounded-lg">
+                <div className="flex items-center border border-gray-300 p-3">
                   <input
                     type="checkbox"
                     name="destaque"
@@ -602,31 +590,31 @@ export default function EditModelPage() {
                     onChange={handleInputChange}
                     className="mr-2"
                   />
-                  <label className="text-sm text-yellow-800">
-                    <strong>⭐ Modelo Destaque:</strong> Exibir na área de destaques da tela principal
+                  <label className="text-sm text-gray-700">
+                    <strong>Modelo Destaque:</strong> Exibir na area de destaques da tela principal
                   </label>
                 </div>
 
                 <button
                   type="submit"
                   disabled={saving}
-                  className="w-full bg-blue-600 text-white py-3 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors disabled:opacity-50"
+                  className="w-full bg-black text-white py-3 px-4 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-colors disabled:opacity-50 uppercase tracking-widest text-sm"
                 >
-                  {saving ? 'Salvando...' : 'Salvar Alterações'}
+                  {saving ? 'Salvando...' : 'Salvar Alteracoes'}
                 </button>
               </form>
             </div>
 
-            {/* Galeria de fotos e vídeos */}
+            {/* Galeria de fotos e videos */}
             <div className="space-y-6">
               {/* Fotos */}
-              <div className="bg-white rounded-lg shadow-md p-6">
+              <div className="border border-gray-200 p-6">
                 <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold text-gray-900">
-                  Galeria de Fotos ({pessoa.fotos.length})
+                <h3 className="text-sm font-semibold text-black uppercase tracking-widest">
+                  Fotos ({pessoa.fotos.length})
                 </h3>
-                <span className="text-sm text-gray-500">
-                  Passe o mouse sobre as fotos para ver opções
+                <span className="text-xs text-gray-400">
+                  Passe o mouse para ver opcoes
                 </span>
               </div>
                 
@@ -641,14 +629,14 @@ export default function EditModelPage() {
                           alt="Foto"
                           width={200}
                           height={200}
-                          className="w-full h-48 rounded-lg object-cover"
+                          className="w-full h-48 object-cover"
                         />
                         
                         {/* Overlay com controles */}
-                        <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
+                        <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                           <div className="text-center space-y-2">
                             {foto.eh_principal && (
-                              <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-medium">
+                              <span className="border border-white text-white px-2 py-1 text-xs font-medium">
                                 Foto Principal
                               </span>
                             )}
@@ -657,7 +645,7 @@ export default function EditModelPage() {
                               {!foto.eh_principal && (
                                 <button
                                   onClick={() => setFotoPrincipal(foto.id, foto.url_arquivo)}
-                                  className="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700 transition-colors"
+                                  className="bg-white text-black px-3 py-1 text-sm hover:bg-gray-100 transition-colors"
                                 >
                                   Definir Principal
                                 </button>
@@ -665,9 +653,9 @@ export default function EditModelPage() {
                               
                               <button
                                 onClick={() => deleteFoto(foto.id, foto.caminho_storage)}
-                                className="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700 transition-colors"
+                                className="bg-white text-black px-3 py-1 text-sm hover:bg-gray-100 transition-colors"
                               >
-                                🗑️ Excluir
+                                Excluir
                               </button>
                             </div>
                           </div>
@@ -678,27 +666,25 @@ export default function EditModelPage() {
                 )}
 
                 {/* Upload de novas fotos */}
-                <div className="mt-6 border-t pt-6">
-                  <h4 className="text-md font-semibold text-gray-900 mb-3">
+                <div className="mt-6 border-t border-gray-200 pt-6">
+                  <h4 className="text-xs font-semibold text-black mb-3 uppercase tracking-widest">
                     Adicionar Novas Fotos
                   </h4>
                   
                   <div className="space-y-4">
-                    {/* Input de arquivo */}
                     <div>
                       <input
                         type="file"
                         accept="image/*"
                         multiple
                         onChange={handleNovasFotos}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black"
                       />
-                      <p className="text-xs text-gray-500 mt-1">
-                        Selecione múltiplas fotos (JPEG, PNG, etc.)
+                      <p className="text-xs text-gray-400 mt-1">
+                        Selecione multiplas fotos (JPEG, PNG, etc.)
                       </p>
                     </div>
 
-                    {/* Preview das fotos selecionadas */}
                     {novasFotos.length > 0 && (
                       <div className="space-y-2">
                         <p className="text-sm font-medium text-gray-700">
@@ -706,15 +692,15 @@ export default function EditModelPage() {
                         </p>
                         <div className="space-y-2 max-h-32 overflow-y-auto">
                           {novasFotos.map((foto, index) => (
-                            <div key={index} className="flex items-center justify-between bg-gray-50 px-3 py-2 rounded">
+                            <div key={index} className="flex items-center justify-between bg-gray-50 px-3 py-2">
                               <span className="text-sm text-gray-700 truncate">
                                 {foto.name}
                               </span>
                               <button
                                 onClick={() => removerNovaFoto(index)}
-                                className="text-red-600 text-sm hover:text-red-800"
+                                className="text-gray-600 text-sm hover:text-black"
                               >
-                                ✕
+                                X
                               </button>
                             </div>
                           ))}
@@ -722,12 +708,11 @@ export default function EditModelPage() {
                       </div>
                     )}
 
-                    {/* Botão de upload */}
                     {novasFotos.length > 0 && (
                       <button
                         onClick={uploadNovasFotos}
                         disabled={uploadingFiles}
-                        className="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full bg-black text-white py-2 px-4 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm uppercase tracking-wide"
                       >
                         {uploadingFiles ? 'Fazendo upload...' : `Adicionar ${novasFotos.length} foto(s)`}
                       </button>
@@ -736,27 +721,27 @@ export default function EditModelPage() {
                 </div>
               </div>
 
-              {/* Vídeos */}
-              <div className="bg-white rounded-lg shadow-md p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                  Vídeos ({pessoa.videos.length})
+              {/* Videos */}
+              <div className="border border-gray-200 p-6">
+                <h3 className="text-sm font-semibold text-black mb-4 uppercase tracking-widest">
+                  Videos ({pessoa.videos.length})
                 </h3>
                 
                 {pessoa.videos.length === 0 ? (
-                  <p className="text-gray-500 text-sm">Nenhum vídeo cadastrado</p>
+                  <p className="text-gray-500 text-sm">Nenhum video cadastrado</p>
                 ) : (
                   <div className="space-y-3">
                     {pessoa.videos.map((video) => (
-                      <div key={video.id} className="flex items-center justify-between p-3 border rounded-lg">
+                      <div key={video.id} className="flex items-center justify-between p-3 border border-gray-200">
                         <div className="flex items-center space-x-3">
-                          <div className="w-15 h-15 bg-gray-200 rounded flex items-center justify-center">
+                          <div className="w-15 h-15 bg-gray-100 flex items-center justify-center">
                             <svg className="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
                               <path d="M8 5v10l8-5-8-5z"/>
                             </svg>
                           </div>
                           <div>
                             {video.eh_principal && (
-                              <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">
+                              <span className="border border-gray-300 text-gray-700 px-2 py-1 text-xs">
                                 Principal
                               </span>
                             )}
@@ -764,7 +749,7 @@ export default function EditModelPage() {
                         </div>
                         <button
                           onClick={() => deleteVideo(video.id, video.caminho_storage)}
-                          className="text-red-600 text-xs hover:text-red-800"
+                          className="text-gray-600 text-xs hover:text-black"
                         >
                           Excluir
                         </button>
@@ -773,10 +758,10 @@ export default function EditModelPage() {
                   </div>
                 )}
 
-                {/* Upload de novos vídeos */}
-                <div className="mt-6 border-t pt-6">
-                  <h4 className="text-md font-semibold text-gray-900 mb-3">
-                    Adicionar Novos Vídeos
+                {/* Upload de novos videos */}
+                <div className="mt-6 border-t border-gray-200 pt-6">
+                  <h4 className="text-xs font-semibold text-black mb-3 uppercase tracking-widest">
+                    Adicionar Novos Videos
                   </h4>
                   
                   <div className="space-y-4">
@@ -786,29 +771,29 @@ export default function EditModelPage() {
                         accept="video/*"
                         multiple
                         onChange={handleNovosVideos}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black"
                       />
-                      <p className="text-xs text-gray-500 mt-1">
-                        Selecione múltiplos vídeos (MP4, MOV, etc.)
+                      <p className="text-xs text-gray-400 mt-1">
+                        Selecione multiplos videos (MP4, MOV, etc.)
                       </p>
                     </div>
 
                     {novosVideos.length > 0 && (
                       <div className="space-y-2">
                         <p className="text-sm font-medium text-gray-700">
-                          Vídeos selecionados ({novosVideos.length}):
+                          Videos selecionados ({novosVideos.length}):
                         </p>
                         <div className="space-y-2 max-h-32 overflow-y-auto">
                           {novosVideos.map((video, index) => (
-                            <div key={index} className="flex items-center justify-between bg-gray-50 px-3 py-2 rounded">
+                            <div key={index} className="flex items-center justify-between bg-gray-50 px-3 py-2">
                               <span className="text-sm text-gray-700 truncate">
                                 {video.name}
                               </span>
                               <button
                                 onClick={() => removerNovoVideo(index)}
-                                className="text-red-600 text-sm hover:text-red-800"
+                                className="text-gray-600 text-sm hover:text-black"
                               >
-                                ✕
+                                X
                               </button>
                             </div>
                           ))}
@@ -820,9 +805,9 @@ export default function EditModelPage() {
                       <button
                         onClick={uploadNovosVideos}
                         disabled={uploadingFiles}
-                        className="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full bg-black text-white py-2 px-4 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-sm uppercase tracking-wide"
                       >
-                        {uploadingFiles ? 'Fazendo upload...' : `Adicionar ${novosVideos.length} vídeo(s)`}
+                        {uploadingFiles ? 'Fazendo upload...' : `Adicionar ${novosVideos.length} video(s)`}
                       </button>
                     )}
                   </div>

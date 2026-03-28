@@ -17,7 +17,6 @@ export default function ModelosPage() {
   const router = useRouter()
 
   useEffect(() => {
-    // Verificar autenticação
     const isAuthenticated = localStorage.getItem('admin_authenticated')
     if (!isAuthenticated) {
       router.push('/login')
@@ -87,12 +86,10 @@ export default function ModelosPage() {
     }
 
     try {
-      // Deletar do storage
       if (caminho && caminho.trim() !== '') {
         await supabase.storage.from('fotos').remove([caminho])
       }
 
-      // Deletar do banco
       const { error } = await supabase
         .from('fotos')
         .delete()
@@ -100,7 +97,6 @@ export default function ModelosPage() {
 
       if (error) throw error
 
-      // Atualizar estado local
       if (selectedPessoa) {
         const updatedPessoa = {
           ...selectedPessoa,
@@ -112,7 +108,7 @@ export default function ModelosPage() {
         ))
       }
       
-      alert('Foto excluída com sucesso!')
+      alert('Foto excluida com sucesso!')
     } catch (error) {
       console.error('Erro ao deletar foto:', error)
       alert('Erro ao excluir foto')
@@ -120,14 +116,13 @@ export default function ModelosPage() {
   }
 
   const deletePessoa = async (id: string, nome: string) => {
-    if (!confirm(`Tem certeza que deseja excluir ${nome}? Esta ação não pode ser desfeita.`)) {
+    if (!confirm(`Tem certeza que deseja excluir ${nome}? Esta acao nao pode ser desfeita.`)) {
       return
     }
 
     try {
       const pessoa = pessoas.find(p => p.id === id)
       if (pessoa) {
-        // Deletar fotos
         for (const foto of pessoa.fotos) {
           if (foto.caminho_storage) {
             await supabase.storage
@@ -136,7 +131,6 @@ export default function ModelosPage() {
           }
         }
         
-        // Deletar vídeos
         for (const video of pessoa.videos) {
           if (video.caminho_storage) {
             await supabase.storage
@@ -155,7 +149,7 @@ export default function ModelosPage() {
       
       setPessoas(prev => prev.filter(p => p.id !== id))
       setShowModal(false)
-      alert('Modelo excluído com sucesso!')
+      alert('Modelo excluido com sucesso!')
     } catch (error) {
       console.error('Erro ao deletar:', error)
       alert('Erro ao excluir modelo')
@@ -187,12 +181,12 @@ export default function ModelosPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex">
+      <div className="min-h-screen bg-white flex">
         <AdminSidebar />
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
-            <p className="mt-4 text-gray-600">Carregando...</p>
+            <div className="animate-spin h-12 w-12 border-2 border-black border-t-transparent mx-auto"></div>
+            <p className="mt-4 text-gray-500 text-sm uppercase tracking-wide">Carregando...</p>
           </div>
         </div>
       </div>
@@ -200,55 +194,46 @@ export default function ModelosPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-white flex">
       <AdminSidebar />
       
       <main className="flex-1 lg:ml-0 p-8">
         <div className="max-w-7xl mx-auto">
           <div className="flex justify-between items-center mb-8">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">
+              <h1 className="text-2xl font-bold text-black uppercase tracking-wide">
                 Gerenciar Modelos
               </h1>
-              <p className="text-gray-600 mt-2">
+              <p className="text-gray-500 mt-2 text-sm">
                 Visualize, edite e gerencie todos os modelos cadastrados
               </p>
             </div>
             <Link
               href="/admin/cadastro"
-              className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors flex items-center space-x-2"
+              className="bg-black text-white px-4 py-2 hover:bg-gray-800 transition-colors flex items-center space-x-2 text-sm uppercase tracking-wide"
             >
-              <span>➕</span>
-              <span>Novo Modelo</span>
+              <span>+ Novo Modelo</span>
             </Link>
           </div>
 
-          {/* Estatísticas */}
+          {/* Estatisticas */}
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
-            <div className="bg-white p-4 rounded-lg shadow">
-              <div className="text-2xl font-bold text-gray-900">{stats.total}</div>
-              <div className="text-sm text-gray-600">Total</div>
-            </div>
-            <div className="bg-white p-4 rounded-lg shadow">
-              <div className="text-2xl font-bold text-green-600">{stats.ativos}</div>
-              <div className="text-sm text-gray-600">Ativos</div>
-            </div>
-            <div className="bg-white p-4 rounded-lg shadow">
-              <div className="text-2xl font-bold text-red-600">{stats.inativos}</div>
-              <div className="text-sm text-gray-600">Inativos</div>
-            </div>
-            <div className="bg-white p-4 rounded-lg shadow">
-              <div className="text-2xl font-bold text-blue-600">{stats.parceiros}</div>
-              <div className="text-sm text-gray-600">Parceiros</div>
-            </div>
-            <div className="bg-white p-4 rounded-lg shadow">
-              <div className="text-2xl font-bold text-purple-600">{stats.destaques}</div>
-              <div className="text-sm text-gray-600">Destaques</div>
-            </div>
+            {[
+              { label: 'Total', value: stats.total },
+              { label: 'Ativos', value: stats.ativos },
+              { label: 'Inativos', value: stats.inativos },
+              { label: 'Parceiros', value: stats.parceiros },
+              { label: 'Destaques', value: stats.destaques }
+            ].map(({ label, value }) => (
+              <div key={label} className="border border-gray-200 p-4">
+                <div className="text-2xl font-bold text-black">{value}</div>
+                <div className="text-xs text-gray-500 uppercase tracking-widest">{label}</div>
+              </div>
+            ))}
           </div>
 
           {/* Filtros */}
-          <div className="bg-white p-4 rounded-lg shadow mb-6">
+          <div className="border border-gray-200 p-4 mb-6">
             <div className="flex flex-wrap gap-2">
               {[
                 { key: 'todos', label: 'Todos', count: stats.total },
@@ -260,10 +245,10 @@ export default function ModelosPage() {
                 <button
                   key={key}
                   onClick={() => setFilter(key as any)}
-                  className={`px-3 py-1 rounded-full text-sm transition-colors ${
+                  className={`px-3 py-1 text-sm transition-colors ${
                     filter === key 
-                      ? 'bg-purple-100 text-purple-800' 
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                      ? 'bg-black text-white' 
+                      : 'border border-gray-300 text-gray-700 hover:bg-gray-50'
                   }`}
                 >
                   {label} ({count})
@@ -274,19 +259,19 @@ export default function ModelosPage() {
 
           {/* Grid de modelos */}
           {filteredPessoas.length === 0 ? (
-            <div className="bg-white rounded-lg shadow p-8 text-center">
+            <div className="border border-gray-200 p-8 text-center">
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
                 Nenhum modelo encontrado
               </h3>
               <p className="text-gray-600 mb-4">
                 {filter === 'todos' 
-                  ? 'Cadastre o primeiro modelo para começar.'
-                  : `Não há modelos ${filter} no momento.`
+                  ? 'Cadastre o primeiro modelo para comecar.'
+                  : `Nao ha modelos ${filter} no momento.`
                 }
               </p>
               <Link
                 href="/admin/cadastro"
-                className="inline-flex items-center px-4 py-2 bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors"
+                className="inline-flex items-center px-4 py-2 bg-black text-white hover:bg-gray-800 transition-colors text-sm uppercase tracking-wide"
               >
                 Cadastrar Modelo
               </Link>
@@ -294,7 +279,7 @@ export default function ModelosPage() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredPessoas.map((pessoa) => (
-                <div key={pessoa.id} className="bg-white rounded-lg shadow-lg overflow-hidden">
+                <div key={pessoa.id} className="border border-gray-200 overflow-hidden">
                   <div className="relative h-48">
                     {pessoa.foto_principal || pessoa.fotos[0] ? (
                       <Image
@@ -304,10 +289,9 @@ export default function ModelosPage() {
                         className="object-cover"
                       />
                     ) : (
-                      <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                        <div className="text-center text-gray-500">
-                          <div className="text-4xl mb-2">📸</div>
-                          <p className="text-sm">Sem fotos</p>
+                      <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+                        <div className="text-center text-gray-400">
+                          <p className="text-sm uppercase tracking-wide">Sem fotos</p>
                         </div>
                       </div>
                     )}
@@ -315,22 +299,22 @@ export default function ModelosPage() {
                     {/* Status badges */}
                     <div className="absolute top-2 left-2 space-y-1">
                       {pessoa.destaque && (
-                        <span className="bg-purple-500 text-white px-2 py-1 rounded-full text-xs font-bold">
-                          ⭐ DESTAQUE
+                        <span className="bg-black text-white px-2 py-1 text-xs font-bold uppercase tracking-wide">
+                          DESTAQUE
                         </span>
                       )}
                       {pessoa.parceria && (
-                        <span className="bg-blue-500 text-white px-2 py-1 rounded-full text-xs font-bold">
+                        <span className="bg-white text-black px-2 py-1 text-xs font-bold border border-black uppercase tracking-wide">
                           PARCEIRO
                         </span>
                       )}
                     </div>
 
                     <div className="absolute top-2 right-2">
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      <span className={`px-2 py-1 text-xs font-medium border ${
                         pessoa.ativo 
-                          ? 'bg-green-100 text-green-800' 
-                          : 'bg-red-100 text-red-800'
+                          ? 'bg-white border-gray-300 text-gray-700' 
+                          : 'bg-gray-100 border-gray-300 text-gray-400'
                       }`}>
                         {pessoa.ativo ? 'Ativo' : 'Inativo'}
                       </span>
@@ -353,52 +337,48 @@ export default function ModelosPage() {
                       </div>
                     </div>
 
-                    <div className="flex justify-between items-center text-sm text-gray-600 mb-4">
-                      <span>📸 {pessoa.fotos.length} fotos</span>
-                      <span>🎬 {pessoa.videos.length} vídeos</span>
+                    <div className="flex justify-between items-center text-sm text-gray-500 mb-4">
+                      <span>{pessoa.fotos.length} fotos</span>
+                      <span>{pessoa.videos.length} videos</span>
                     </div>
 
                     <div className="flex flex-wrap gap-2 mb-4">
                       <button
                         onClick={() => openModal(pessoa)}
-                        className="bg-blue-100 text-blue-800 px-3 py-1 rounded text-sm hover:bg-blue-200 transition-colors"
+                        className="border border-gray-300 text-gray-700 px-3 py-1 text-sm hover:bg-gray-50 transition-colors"
                       >
-                        👁️ Ver Detalhes
+                        Ver Detalhes
                       </button>
                       <Link
                         href={`/admin/cadastro/${pessoa.id}/edit`}
-                        className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded text-sm hover:bg-yellow-200 transition-colors"
+                        className="border border-black text-black px-3 py-1 text-sm hover:bg-black hover:text-white transition-colors"
                       >
-                        ✏️ Editar
+                        Editar
                       </Link>
                       <button
                         onClick={() => toggleDestaque(pessoa.id, pessoa.destaque)}
-                        className={`px-3 py-1 rounded text-sm transition-colors ${
+                        className={`px-3 py-1 text-sm transition-colors ${
                           pessoa.destaque
-                            ? 'bg-purple-100 text-purple-800 hover:bg-purple-200'
-                            : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                            ? 'bg-black text-white'
+                            : 'border border-gray-300 text-gray-700 hover:bg-gray-50'
                         }`}
                       >
-                        ⭐ {pessoa.destaque ? 'Remover' : 'Destacar'}
+                        {pessoa.destaque ? 'Remover' : 'Destacar'}
                       </button>
                     </div>
 
                     <div className="flex gap-2">
                       <button
                         onClick={() => toggleAtivo(pessoa.id, pessoa.ativo)}
-                        className={`flex-1 px-3 py-2 rounded text-sm transition-colors ${
-                          pessoa.ativo
-                            ? 'bg-red-100 text-red-800 hover:bg-red-200'
-                            : 'bg-green-100 text-green-800 hover:bg-green-200'
-                        }`}
+                        className="flex-1 px-3 py-2 text-sm transition-colors border border-gray-300 text-gray-700 hover:bg-gray-50"
                       >
-                        {pessoa.ativo ? '❌ Desativar' : '✅ Ativar'}
+                        {pessoa.ativo ? 'Desativar' : 'Ativar'}
                       </button>
                       <button
                         onClick={() => deletePessoa(pessoa.id, pessoa.nome)}
-                        className="bg-red-100 text-red-800 px-3 py-2 rounded text-sm hover:bg-red-200 transition-colors"
+                        className="border border-gray-300 text-gray-700 px-3 py-2 text-sm hover:bg-gray-50 transition-colors"
                       >
-                        🗑️ Excluir
+                        Excluir
                       </button>
                     </div>
                   </div>
@@ -411,21 +391,21 @@ export default function ModelosPage() {
         {/* Modal de detalhes */}
         {showModal && selectedPessoa && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg max-w-4xl max-h-[90vh] w-full mx-4 overflow-hidden">
-              <div className="flex justify-between items-center p-6 border-b">
-                <h2 className="text-2xl font-bold">{selectedPessoa.nome}</h2>
+            <div className="bg-white max-w-4xl max-h-[90vh] w-full mx-4 overflow-hidden">
+              <div className="flex justify-between items-center p-6 border-b border-gray-200">
+                <h2 className="text-xl font-bold uppercase tracking-wide">{selectedPessoa.nome}</h2>
                 <button
                   onClick={() => setShowModal(false)}
                   className="text-gray-400 hover:text-gray-600 text-2xl"
                 >
-                  ×
+                  X
                 </button>
               </div>
 
               <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
                 {/* Fotos */}
                 <div className="mb-8">
-                  <h3 className="text-lg font-semibold mb-4">
+                  <h3 className="text-sm font-semibold mb-4 uppercase tracking-widest text-gray-500">
                     Fotos ({selectedPessoa.fotos.length})
                   </h3>
                   {selectedPessoa.fotos.length > 0 ? (
@@ -437,14 +417,14 @@ export default function ModelosPage() {
                             alt={`Foto de ${selectedPessoa.nome}`}
                             width={300}
                             height={300}
-                            className="w-full h-48 object-cover rounded-lg"
+                            className="w-full h-48 object-cover"
                           />
-                          <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-lg">
+                          <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                             <button
                               onClick={() => deleteFoto(foto.id, foto.caminho_storage || '')}
-                              className="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700"
+                              className="bg-white text-black px-3 py-1 text-sm hover:bg-gray-100"
                             >
-                              🗑️ Excluir
+                              Excluir
                             </button>
                           </div>
                         </div>
@@ -457,25 +437,25 @@ export default function ModelosPage() {
                   )}
                 </div>
 
-                {/* Informações */}
+                {/* Informacoes */}
                 <div className="grid grid-cols-2 gap-6">
                   <div>
-                    <h4 className="font-semibold mb-2">Informações Básicas</h4>
+                    <h4 className="font-semibold mb-2 text-xs uppercase tracking-widest text-gray-500">Informacoes Basicas</h4>
                     <div className="space-y-2 text-sm">
-                      <p><strong>Localização:</strong> {selectedPessoa.localizacao || 'Não informado'}</p>
-                      <p><strong>Altura:</strong> {selectedPessoa.altura ? `${selectedPessoa.altura}cm` : 'Não informado'}</p>
-                      <p><strong>Telefone:</strong> {selectedPessoa.telefone || 'Não informado'}</p>
-                      <p><strong>Email:</strong> {selectedPessoa.email || 'Não informado'}</p>
-                      <p><strong>Instagram:</strong> {selectedPessoa.instagram_url || 'Não informado'}</p>
+                      <p><strong>Localizacao:</strong> {selectedPessoa.localizacao || 'Nao informado'}</p>
+                      <p><strong>Altura:</strong> {selectedPessoa.altura ? `${selectedPessoa.altura}cm` : 'Nao informado'}</p>
+                      <p><strong>Telefone:</strong> {selectedPessoa.telefone || 'Nao informado'}</p>
+                      <p><strong>Email:</strong> {selectedPessoa.email || 'Nao informado'}</p>
+                      <p><strong>Instagram:</strong> {selectedPessoa.instagram_url || 'Nao informado'}</p>
                     </div>
                   </div>
 
                   <div>
-                    <h4 className="font-semibold mb-2">Status</h4>
+                    <h4 className="font-semibold mb-2 text-xs uppercase tracking-widest text-gray-500">Status</h4>
                     <div className="space-y-2 text-sm">
-                      <p><strong>Ativo:</strong> {selectedPessoa.ativo ? 'Sim' : 'Não'}</p>
-                      <p><strong>Destaque:</strong> {selectedPessoa.destaque ? 'Sim' : 'Não'}</p>
-                      <p><strong>Parceiro:</strong> {selectedPessoa.parceria ? 'Sim' : 'Não'}</p>
+                      <p><strong>Ativo:</strong> {selectedPessoa.ativo ? 'Sim' : 'Nao'}</p>
+                      <p><strong>Destaque:</strong> {selectedPessoa.destaque ? 'Sim' : 'Nao'}</p>
+                      <p><strong>Parceiro:</strong> {selectedPessoa.parceria ? 'Sim' : 'Nao'}</p>
                       <p><strong>Cadastro:</strong> {new Date(selectedPessoa.created_at).toLocaleDateString('pt-BR')}</p>
                     </div>
                   </div>
@@ -483,19 +463,19 @@ export default function ModelosPage() {
 
                 {selectedPessoa.descricao && (
                   <div className="mt-6">
-                    <h4 className="font-semibold mb-2">Descrição</h4>
+                    <h4 className="font-semibold mb-2 text-xs uppercase tracking-widest text-gray-500">Descricao</h4>
                     <p className="text-sm text-gray-700">{selectedPessoa.descricao}</p>
                   </div>
                 )}
 
                 {selectedPessoa.especializacoes && selectedPessoa.especializacoes.length > 0 && (
                   <div className="mt-6">
-                    <h4 className="font-semibold mb-2">Especializações</h4>
+                    <h4 className="font-semibold mb-2 text-xs uppercase tracking-widest text-gray-500">Especializacoes</h4>
                     <div className="flex flex-wrap gap-2">
                       {selectedPessoa.especializacoes.map((esp, index) => (
                         <span 
                           key={index}
-                          className="bg-purple-100 text-purple-800 px-2 py-1 rounded text-sm"
+                          className="border border-gray-300 text-gray-700 px-2 py-1 text-sm"
                         >
                           {esp}
                         </span>

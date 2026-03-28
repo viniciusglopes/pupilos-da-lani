@@ -15,7 +15,6 @@ export default function AdminPage() {
   const router = useRouter()
 
   useEffect(() => {
-    // Verificar autenticação
     const isAuthenticated = localStorage.getItem('admin_authenticated')
     if (!isAuthenticated) {
       router.push('/login')
@@ -54,7 +53,6 @@ export default function AdminPage() {
 
       if (error) throw error
       
-      // Atualizar estado local
       setPessoas(prev => prev.map(p => 
         p.id === id ? { ...p, ativo: !ativo } : p
       ))
@@ -64,15 +62,13 @@ export default function AdminPage() {
   }
 
   const deletePessoa = async (id: string, nome: string) => {
-    if (!confirm(`Tem certeza que deseja excluir ${nome}? Esta ação não pode ser desfeita.`)) {
+    if (!confirm(`Tem certeza que deseja excluir ${nome}? Esta acao nao pode ser desfeita.`)) {
       return
     }
 
     try {
-      // Primeiro, deletar arquivos do storage
       const pessoa = pessoas.find(p => p.id === id)
       if (pessoa) {
-        // Deletar fotos
         for (const foto of pessoa.fotos) {
           if (foto.caminho_storage) {
             await supabase.storage
@@ -81,7 +77,6 @@ export default function AdminPage() {
           }
         }
         
-        // Deletar vídeos
         for (const video of pessoa.videos) {
           if (video.caminho_storage) {
             await supabase.storage
@@ -91,7 +86,6 @@ export default function AdminPage() {
         }
       }
 
-      // Deletar pessoa (cascade deleta fotos/videos automaticamente)
       const { error } = await supabase
         .from('pessoas')
         .delete()
@@ -99,7 +93,6 @@ export default function AdminPage() {
 
       if (error) throw error
       
-      // Atualizar estado local
       setPessoas(prev => prev.filter(p => p.id !== id))
     } catch (error) {
       console.error('Erro ao deletar:', error)
@@ -125,12 +118,12 @@ export default function AdminPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex">
+      <div className="min-h-screen bg-white flex">
         <AdminSidebar />
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
-            <p className="mt-4 text-gray-600">Carregando...</p>
+            <div className="animate-spin h-12 w-12 border-2 border-black border-t-transparent mx-auto"></div>
+            <p className="mt-4 text-gray-500 text-sm uppercase tracking-wide">Carregando...</p>
           </div>
         </div>
       </div>
@@ -138,104 +131,82 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-white flex">
       <AdminSidebar />
       
       <main className="flex-1 lg:ml-0 p-8">
         <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">
+          <h1 className="text-2xl font-bold text-black uppercase tracking-wide">
             Painel Administrativo
           </h1>
           <Link
             href="/admin/cadastro"
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+            className="bg-black text-white px-4 py-2 hover:bg-gray-800 transition-colors text-sm uppercase tracking-wide"
           >
             + Novo Modelo
           </Link>
         </div>
 
-        {/* Estatísticas */}
+        {/* Estatisticas */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          <div className="bg-white p-4 rounded-lg shadow">
-            <div className="text-2xl font-bold text-gray-900">{stats.total}</div>
-            <div className="text-sm text-gray-600">Total</div>
+          <div className="border border-gray-200 p-4">
+            <div className="text-2xl font-bold text-black">{stats.total}</div>
+            <div className="text-xs text-gray-500 uppercase tracking-widest">Total</div>
           </div>
-          <div className="bg-white p-4 rounded-lg shadow">
-            <div className="text-2xl font-bold text-green-600">{stats.ativos}</div>
-            <div className="text-sm text-gray-600">Ativos</div>
+          <div className="border border-gray-200 p-4">
+            <div className="text-2xl font-bold text-black">{stats.ativos}</div>
+            <div className="text-xs text-gray-500 uppercase tracking-widest">Ativos</div>
           </div>
-          <div className="bg-white p-4 rounded-lg shadow">
-            <div className="text-2xl font-bold text-red-600">{stats.inativos}</div>
-            <div className="text-sm text-gray-600">Inativos</div>
+          <div className="border border-gray-200 p-4">
+            <div className="text-2xl font-bold text-black">{stats.inativos}</div>
+            <div className="text-xs text-gray-500 uppercase tracking-widest">Inativos</div>
           </div>
-          <div className="bg-white p-4 rounded-lg shadow">
-            <div className="text-2xl font-bold text-blue-600">{stats.parceiros}</div>
-            <div className="text-sm text-gray-600">Parceiros</div>
+          <div className="border border-gray-200 p-4">
+            <div className="text-2xl font-bold text-black">{stats.parceiros}</div>
+            <div className="text-xs text-gray-500 uppercase tracking-widest">Parceiros</div>
           </div>
         </div>
 
         {/* Filtros */}
-        <div className="bg-white p-4 rounded-lg shadow mb-6">
+        <div className="border border-gray-200 p-4 mb-6">
           <div className="flex flex-wrap gap-2">
-            <button
-              onClick={() => setFilter('todos')}
-              className={`px-3 py-1 rounded-full text-sm transition-colors ${
-                filter === 'todos' 
-                  ? 'bg-blue-100 text-blue-800' 
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              Todos ({stats.total})
-            </button>
-            <button
-              onClick={() => setFilter('ativo')}
-              className={`px-3 py-1 rounded-full text-sm transition-colors ${
-                filter === 'ativo' 
-                  ? 'bg-green-100 text-green-800' 
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              Ativos ({stats.ativos})
-            </button>
-            <button
-              onClick={() => setFilter('inativo')}
-              className={`px-3 py-1 rounded-full text-sm transition-colors ${
-                filter === 'inativo' 
-                  ? 'bg-red-100 text-red-800' 
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              Inativos ({stats.inativos})
-            </button>
-            <button
-              onClick={() => setFilter('parceiro')}
-              className={`px-3 py-1 rounded-full text-sm transition-colors ${
-                filter === 'parceiro' 
-                  ? 'bg-blue-100 text-blue-800' 
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              Parceiros ({stats.parceiros})
-            </button>
+            {[
+              { key: 'todos', label: 'Todos', count: stats.total },
+              { key: 'ativo', label: 'Ativos', count: stats.ativos },
+              { key: 'inativo', label: 'Inativos', count: stats.inativos },
+              { key: 'parceiro', label: 'Parceiros', count: stats.parceiros }
+            ].map(({ key, label, count }) => (
+              <button
+                key={key}
+                onClick={() => setFilter(key as any)}
+                className={`px-3 py-1 text-sm transition-colors ${
+                  filter === key 
+                    ? 'bg-black text-white' 
+                    : 'border border-gray-300 text-gray-700 hover:bg-gray-50'
+                }`}
+              >
+                {label} ({count})
+              </button>
+            ))}
           </div>
         </div>
 
         {/* Lista de modelos */}
         {filteredPessoas.length === 0 ? (
-          <div className="bg-white rounded-lg shadow p-8 text-center">
+          <div className="border border-gray-200 p-8 text-center">
             <h3 className="text-lg font-semibold text-gray-900 mb-2">
               Nenhum modelo encontrado
             </h3>
             <p className="text-gray-600 mb-4">
               {filter === 'todos' 
-                ? 'Cadastre o primeiro modelo para começar.'
-                : `Não há modelos ${filter === 'ativo' ? 'ativos' : filter === 'inativo' ? 'inativos' : 'parceiros'} no momento.`
+                ? 'Cadastre o primeiro modelo para comecar.'
+                : `Nao ha modelos ${filter === 'ativo' ? 'ativos' : filter === 'inativo' ? 'inativos' : 'parceiros'} no momento.`
               }
             </p>
             <Link
               href="/admin/cadastro"
-              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+              className="inline-flex items-center px-4 py-2 bg-black text-white hover:bg-gray-800 transition-colors text-sm uppercase tracking-wide"
             >
               Cadastrar Modelo
             </Link>
@@ -243,7 +214,7 @@ export default function AdminPage() {
         ) : (
           <div className="space-y-4">
             {filteredPessoas.map((pessoa) => (
-              <div key={pessoa.id} className="bg-white rounded-lg shadow p-6">
+              <div key={pessoa.id} className="border border-gray-200 p-6">
                 <div className="flex items-start space-x-4">
                   {/* Foto */}
                   <div className="flex-shrink-0">
@@ -253,10 +224,10 @@ export default function AdminPage() {
                         alt={pessoa.nome}
                         width={80}
                         height={80}
-                        className="w-20 h-20 rounded-lg object-cover"
+                        className="w-20 h-20 object-cover"
                       />
                     ) : (
-                      <div className="w-20 h-20 bg-gray-200 rounded-lg flex items-center justify-center">
+                      <div className="w-20 h-20 bg-gray-100 flex items-center justify-center">
                         <svg className="w-8 h-8 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
                           <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
                         </svg>
@@ -264,21 +235,21 @@ export default function AdminPage() {
                     )}
                   </div>
 
-                  {/* Informações */}
+                  {/* Informacoes */}
                   <div className="flex-grow">
                     <div className="flex items-center space-x-2 mb-2">
                       <h3 className="text-lg font-semibold text-gray-900">
                         {pessoa.nome}
                       </h3>
                       {pessoa.parceria && (
-                        <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">
+                        <span className="border border-gray-300 text-gray-700 px-2 py-1 text-xs font-medium uppercase tracking-wide">
                           Parceiro
                         </span>
                       )}
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      <span className={`border px-2 py-1 text-xs font-medium ${
                         pessoa.ativo 
-                          ? 'bg-green-100 text-green-800' 
-                          : 'bg-red-100 text-red-800'
+                          ? 'border-gray-300 text-gray-700' 
+                          : 'border-gray-300 text-gray-400'
                       }`}>
                         {pessoa.ativo ? 'Ativo' : 'Inativo'}
                       </span>
@@ -286,14 +257,14 @@ export default function AdminPage() {
 
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-gray-600">
                       <div>
-                        <span className="font-medium">Localização:</span>
+                        <span className="font-medium">Localizacao:</span>
                         <br />
-                        {pessoa.localizacao || 'Não informado'}
+                        {pessoa.localizacao || 'Nao informado'}
                       </div>
                       <div>
                         <span className="font-medium">Altura:</span>
                         <br />
-                        {pessoa.altura ? `${pessoa.altura}cm` : 'Não informado'}
+                        {pessoa.altura ? `${pessoa.altura}cm` : 'Nao informado'}
                       </div>
                       <div>
                         <span className="font-medium">Fotos:</span>
@@ -301,7 +272,7 @@ export default function AdminPage() {
                         {pessoa.fotos.length}
                       </div>
                       <div>
-                        <span className="font-medium">Vídeos:</span>
+                        <span className="font-medium">Videos:</span>
                         <br />
                         {pessoa.videos.length}
                       </div>
@@ -313,7 +284,7 @@ export default function AdminPage() {
                           {pessoa.especializacoes.map((esp, index) => (
                             <span 
                               key={index}
-                              className="bg-gray-100 text-gray-700 px-2 py-1 rounded text-xs"
+                              className="border border-gray-300 text-gray-600 px-2 py-1 text-xs"
                             >
                               {esp}
                             </span>
@@ -323,27 +294,23 @@ export default function AdminPage() {
                     )}
                   </div>
 
-                  {/* Ações */}
+                  {/* Acoes */}
                   <div className="flex-shrink-0 space-x-2">
                     <Link
                       href={`/admin/cadastro/${pessoa.id}/edit`}
-                      className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded text-sm hover:bg-yellow-200 transition-colors"
+                      className="border border-black text-black px-3 py-1 text-sm hover:bg-black hover:text-white transition-colors"
                     >
                       Editar
                     </Link>
                     <button
                       onClick={() => toggleAtivo(pessoa.id, pessoa.ativo)}
-                      className={`px-3 py-1 rounded text-sm transition-colors ${
-                        pessoa.ativo
-                          ? 'bg-red-100 text-red-800 hover:bg-red-200'
-                          : 'bg-green-100 text-green-800 hover:bg-green-200'
-                      }`}
+                      className="border border-gray-300 text-gray-700 px-3 py-1 text-sm hover:bg-gray-100 transition-colors"
                     >
                       {pessoa.ativo ? 'Desativar' : 'Ativar'}
                     </button>
                     <button
                       onClick={() => deletePessoa(pessoa.id, pessoa.nome)}
-                      className="bg-red-100 text-red-800 px-3 py-1 rounded text-sm hover:bg-red-200 transition-colors"
+                      className="border border-gray-300 text-gray-700 px-3 py-1 text-sm hover:bg-gray-100 transition-colors"
                     >
                       Excluir
                     </button>
