@@ -110,55 +110,6 @@ export default function HomePage() {
     <div className="min-h-screen bg-white">
       <Header />
 
-      {/* Hero */}
-      <section className="h-screen flex flex-col md:flex-row">
-        <div className="flex-1 flex items-center justify-center px-12 md:px-20">
-          <div className="max-w-md">
-            <h1 className="text-5xl md:text-6xl font-bold tracking-tight leading-none text-black uppercase">
-              {titleLine1}<br />{titleLine2}
-            </h1>
-            <p className="mt-6 text-gray-500 text-base leading-relaxed whitespace-pre-line">
-              {content.subtitulo}
-            </p>
-            <div className="mt-10 flex gap-4">
-              <Link
-                href="/busca"
-                className="bg-black text-white px-8 py-3 text-xs font-semibold tracking-widest uppercase hover:bg-gray-800 transition-colors"
-              >
-                {content.conteudo.btn_talentos}
-              </Link>
-              <Link
-                href="/parceria"
-                className="border border-black text-black px-8 py-3 text-xs font-semibold tracking-widest uppercase hover:bg-black hover:text-white transition-colors"
-              >
-                {content.conteudo.btn_modelo}
-              </Link>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex-1 relative bg-gray-100">
-          {heroModel ? (
-            <>
-              <img
-                src={heroModel.fotos[0].url_arquivo}
-                alt={heroModel.nome}
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute bottom-8 left-8">
-                <span className="text-xs font-semibold tracking-widest uppercase text-white/80 bg-black/40 px-4 py-2">
-                  {heroModel.nome} — Destaque
-                </span>
-              </div>
-            </>
-          ) : (
-            <div className="w-full h-full flex items-center justify-center">
-              <span className="text-gray-300 text-sm tracking-widest uppercase">Em breve</span>
-            </div>
-          )}
-        </div>
-      </section>
-
       <main className="max-w-7xl mx-auto px-6 py-24">
         {/* Destaques */}
         {destaques.length > 0 && (
