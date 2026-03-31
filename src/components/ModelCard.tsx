@@ -3,7 +3,7 @@
 import { PessoaCompleta } from '@/types/database'
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
-import ModalGallery from './ModalGallery'
+import Link from 'next/link'
 
 interface ModelCardProps {
   pessoa: PessoaCompleta
@@ -11,7 +11,6 @@ interface ModelCardProps {
 }
 
 export default function ModelCard({ pessoa, isParceiro = false }: ModelCardProps) {
-  const [isModalOpen, setIsModalOpen] = useState(false)
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0)
 
   // Auto-rotate photos every 5 seconds
@@ -40,79 +39,52 @@ export default function ModelCard({ pessoa, isParceiro = false }: ModelCardProps
         pupilo_id: pessoa.id
       }),
     }).catch(err => console.warn('Click tracking failed:', err))
-
-    setIsModalOpen(true)
   }
 
   return (
-    <>
-      <div
-        className="group cursor-pointer"
-        onClick={handleClick}
-      >
-        <div className="relative aspect-[3/4] overflow-hidden bg-gray-100">
-          {fotoUrl ? (
-            <Image
-              src={fotoUrl}
-              alt={pessoa.nome}
-              fill
-              className="object-cover transition-transform duration-700 group-hover:scale-105"
-              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-            />
-          ) : (
-            <div className="flex items-center justify-center h-full bg-gray-100">
-              <span className="text-gray-300 text-sm tracking-widest uppercase">Sem foto</span>
-            </div>
-          )}
-
-          {/* Minimal overlay on hover */}
-          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-500" />
-
-          {/* Bottom info overlay on hover */}
-          <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-500 bg-gradient-to-t from-black/80 to-transparent">
-            <div className="flex gap-3">
-              {pessoa.instagram_url && (
-                <a
-                  href={pessoa.instagram_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-xs text-white/80 hover:text-white transition-colors uppercase tracking-wider"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  Instagram
-                </a>
-              )}
-              {pessoa.telefone && pessoa.consentimento_contato && (
-                <a
-                  href={`https://wa.me/${pessoa.telefone.replace(/\D/g, '')}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-xs text-white/80 hover:text-white transition-colors uppercase tracking-wider"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  WhatsApp
-                </a>
-              )}
-            </div>
+    <Link
+      href={`/pupilos/${pessoa.id}`}
+      className="group cursor-pointer block"
+      onClick={handleClick}
+    >
+      <div className="relative aspect-[3/4] overflow-hidden bg-gray-100">
+        {fotoUrl ? (
+          <Image
+            src={fotoUrl}
+            alt={pessoa.nome}
+            fill
+            className="object-cover transition-transform duration-700 group-hover:scale-105"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+          />
+        ) : (
+          <div className="flex items-center justify-center h-full bg-gray-100">
+            <span className="text-gray-300 text-sm tracking-widest uppercase">Sem foto</span>
           </div>
-        </div>
+        )}
 
-        <div className="pt-4 pb-6">
-          <h3 className="text-sm font-semibold text-black tracking-wide uppercase">
-            {pessoa.nome}
-          </h3>
-          <div className="flex items-center gap-3 mt-1 text-xs text-gray-500">
-            {pessoa.localizacao && <span>{pessoa.localizacao}</span>}
-            {pessoa.altura && <span>{pessoa.altura}cm</span>}
+        {/* Minimal overlay on hover */}
+        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-500" />
+
+        {/* Bottom info overlay on hover */}
+        <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-500 bg-gradient-to-t from-black/80 to-transparent">
+          <div className="flex gap-3">
+            <span className="text-xs text-white/80 transition-colors uppercase tracking-wider">
+              Ver Perfil Completo
+            </span>
           </div>
         </div>
       </div>
 
-      <ModalGallery
-        pessoa={pessoa}
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-      />
-    </>
+      <div className="pt-4 pb-6">
+        <h3 className="text-sm font-semibold text-black tracking-wide uppercase">
+          {pessoa.nome}
+        </h3>
+        <div className="flex items-center gap-3 mt-1 text-xs text-gray-500">
+          {pessoa.localizacao && <span>{pessoa.localizacao}</span>}
+          {pessoa.altura && <span>{pessoa.altura}cm</span>}
+          <span>{pessoa.fotos.length} foto{pessoa.fotos.length !== 1 ? 's' : ''}</span>
+        </div>
+      </div>
+    </Link>
   )
 }

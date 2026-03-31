@@ -51,6 +51,11 @@ export default function AdminSidebar() {
       description: 'Personalizar rodape'
     },
     {
+      title: 'Campos Visiveis',
+      href: '/admin/campos-visibilidade',
+      description: 'Controlar exibicao pagina pupilo'
+    },
+    {
       title: 'Configuracoes',
       href: '/admin/config',
       description: 'Configuracoes do sistema'
