@@ -196,4 +196,4 @@ Este projeto está licenciado sob a MIT License.
 
 **Desenvolvido com ❤️ em Minas Gerais**
 
-*Em conformidade com a LGPD - Lei Geral de Proteção de Dados*
+*Em conformidade com a LGPD - Lei Geral de Proteção de Dados*# Force deploy Tue Mar 31 20:58:31 UTC 2026
