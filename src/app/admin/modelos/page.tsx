@@ -202,17 +202,17 @@ export default function ModelosPage() {
           <div className="flex justify-between items-center mb-8">
             <div>
               <h1 className="text-2xl font-bold text-black uppercase tracking-wide">
-                Gerenciar Modelos
+                Gerenciar Pupilos
               </h1>
               <p className="text-gray-500 mt-2 text-sm">
-                Visualize, edite e gerencie todos os modelos cadastrados
+                Visualize, edite e gerencie todos os pupilos cadastrados
               </p>
             </div>
             <Link
               href="/admin/cadastro"
               className="bg-black text-white px-4 py-2 hover:bg-gray-800 transition-colors flex items-center space-x-2 text-sm uppercase tracking-wide"
             >
-              <span>+ Novo Modelo</span>
+              <span>+ Novo Pupilo</span>
             </Link>
           </div>
 
@@ -261,19 +261,19 @@ export default function ModelosPage() {
           {filteredPessoas.length === 0 ? (
             <div className="border border-gray-200 p-8 text-center">
               <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                Nenhum modelo encontrado
+                Nenhum pupilo encontrado
               </h3>
               <p className="text-gray-600 mb-4">
                 {filter === 'todos' 
-                  ? 'Cadastre o primeiro modelo para comecar.'
-                  : `Nao ha modelos ${filter} no momento.`
+                  ? 'Cadastre o primeiro pupilo para comecar.'
+                  : `Nao ha pupilos ${filter} no momento.`
                 }
               </p>
               <Link
                 href="/admin/cadastro"
                 className="inline-flex items-center px-4 py-2 bg-black text-white hover:bg-gray-800 transition-colors text-sm uppercase tracking-wide"
               >
-                Cadastrar Modelo
+                Cadastrar Pupilo
               </Link>
             </div>
           ) : (

@@ -12,11 +12,10 @@ export default function BuscaPage() {
   const [filteredPessoas, setFilteredPessoas] = useState<PessoaCompleta[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [filters, setFilters] = useState({
     especialidade: '',
-    localizacao: '',
-    alturaMin: '',
-    alturaMax: '',
+    sexo: 'todos',
     parceria: 'todos'
   })
 
@@ -44,7 +43,7 @@ export default function BuscaPage() {
         throw new Error(result.error || 'Erro na API')
       }
       
-      console.log(`${result.modelos.length} modelos carregados`)
+      console.log(`${result.modelos.length} pupilos carregados`)
       
       const modelosCompleitos = result.modelos.map((modelo: any) => ({
         ...modelo,
@@ -70,7 +69,7 @@ export default function BuscaPage() {
           .order('created_at', { ascending: false })
 
         if (error) throw error
-        console.log(`Fallback: ${data.length} modelos carregados`)
+        console.log(`Fallback: ${data.length} pupilos carregados`)
         setPessoas(data as PessoaCompleta[])
       } catch (fallbackError) {
         console.error('Fallback tambem falhou:', fallbackError)
@@ -101,22 +100,10 @@ export default function BuscaPage() {
       )
     }
 
-    if (filters.localizacao) {
-      filtered = filtered.filter(pessoa =>
-        pessoa.localizacao?.toLowerCase().includes(filters.localizacao.toLowerCase())
-      )
-    }
-
-    if (filters.alturaMin) {
-      filtered = filtered.filter(pessoa =>
-        pessoa.altura && pessoa.altura >= parseInt(filters.alturaMin)
-      )
-    }
-
-    if (filters.alturaMax) {
-      filtered = filtered.filter(pessoa =>
-        pessoa.altura && pessoa.altura <= parseInt(filters.alturaMax)
-      )
+    // TODO: Add gender filtering when database field is available
+    if (filters.sexo && filters.sexo !== 'todos') {
+      // For now, this filter won't work until sexo field is added to database
+      // filtered = filtered.filter(pessoa => pessoa.sexo === filters.sexo)
     }
 
     if (filters.parceria === 'parceiro') {
@@ -132,9 +119,7 @@ export default function BuscaPage() {
     setSearchTerm('')
     setFilters({
       especialidade: '',
-      localizacao: '',
-      alturaMin: '',
-      alturaMax: '',
+      sexo: 'todos',
       parceria: 'todos'
     })
   }
@@ -143,16 +128,12 @@ export default function BuscaPage() {
     pessoas.flatMap(p => p.especializacoes || [])
   )].sort()
 
-  const localizacoesUnicas = [...new Set(
-    pessoas.map(p => p.localizacao).filter(Boolean) as string[]
-  )].sort()
-
   if (loading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin h-12 w-12 border-2 border-black border-t-transparent mx-auto"></div>
-          <p className="mt-4 text-gray-500 text-sm uppercase tracking-wide">Carregando modelos...</p>
+          <p className="mt-4 text-gray-500 text-sm uppercase tracking-wide">Carregando pupilos...</p>
         </div>
       </div>
     )
@@ -169,7 +150,7 @@ export default function BuscaPage() {
             Descobrir Talentos
           </h1>
           <p className="text-lg text-gray-300 mb-8 max-w-2xl mx-auto">
-            Encontre o modelo ideal para seu projeto usando nossos filtros avancados
+            Encontre o pupilo ideal para seu projeto usando nossos filtros avancados
           </p>
           
           {/* Quick Search */}
@@ -232,48 +213,29 @@ export default function BuscaPage() {
               </select>
             </div>
 
-            {/* Localizacao */}
+            {/* Sexo */}
             <div className="space-y-2">
               <label className="block text-xs font-semibold text-gray-700 uppercase tracking-widest">
-                Localizacao
-              </label>
-              <select
-                value={filters.localizacao}
-                onChange={(e) => setFilters(prev => ({ ...prev, localizacao: e.target.value }))}
-                className="w-full px-4 py-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black transition-all"
-              >
-                <option value="">Todas as cidades</option>
-                {localizacoesUnicas.map(loc => (
-                  <option key={loc} value={loc}>{loc}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* Faixa de Altura */}
-            <div className="space-y-2">
-              <label className="block text-xs font-semibold text-gray-700 uppercase tracking-widest">
-                Altura (cm)
+                Sexo
               </label>
               <div className="flex space-x-2">
-                <input
-                  type="number"
-                  value={filters.alturaMin}
-                  onChange={(e) => setFilters(prev => ({ ...prev, alturaMin: e.target.value }))}
-                  placeholder="Min"
-                  min="100"
-                  max="250"
-                  className="flex-1 px-4 py-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black transition-all"
-                />
-                <span className="flex items-center px-2 text-gray-500">-</span>
-                <input
-                  type="number"
-                  value={filters.alturaMax}
-                  onChange={(e) => setFilters(prev => ({ ...prev, alturaMax: e.target.value }))}
-                  placeholder="Max"
-                  min="100"
-                  max="250"
-                  className="flex-1 px-4 py-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black transition-all"
-                />
+                {[
+                  { key: 'todos', label: 'Todos' },
+                  { key: 'masculino', label: 'Masculino' },
+                  { key: 'feminino', label: 'Feminino' }
+                ].map(option => (
+                  <button
+                    key={option.key}
+                    onClick={() => setFilters(prev => ({ ...prev, sexo: option.key }))}
+                    className={`flex-1 px-4 py-3 font-medium transition-all text-sm ${
+                      filters.sexo === option.key
+                        ? 'bg-black text-white'
+                        : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                    }`}
+                  >
+                    {option.label}
+                  </button>
+                ))}
               </div>
             </div>
 
@@ -332,10 +294,10 @@ export default function BuscaPage() {
           {filteredPessoas.length === 0 ? (
             <div className="border border-gray-200 p-12 text-center">
               <h3 className="text-2xl font-bold text-gray-900 mb-4 uppercase tracking-wide">
-                Nenhum modelo encontrado
+                Nenhum pupilo encontrado
               </h3>
               <p className="text-gray-600 mb-8 max-w-md mx-auto">
-                Nao encontramos modelos que atendam aos seus criterios. Tente ajustar os filtros ou fazer uma busca mais ampla.
+                Nao encontramos pupilos que atendam aos seus criterios. Tente ajustar os filtros ou fazer uma busca mais ampla.
               </p>
               <div className="space-y-4">
                 <button
@@ -358,28 +320,100 @@ export default function BuscaPage() {
                 </h2>
                 <div className="flex space-x-3">
                   <div className="border border-gray-200 p-1 flex">
-                    <button className="bg-black text-white px-4 py-2 text-sm font-medium uppercase tracking-wide">
+                    <button 
+                      onClick={() => setViewMode('grid')}
+                      className={`px-4 py-2 text-sm font-medium uppercase tracking-wide transition-all ${
+                        viewMode === 'grid' 
+                          ? 'bg-black text-white' 
+                          : 'text-gray-600 hover:bg-gray-100'
+                      }`}
+                    >
                       Grid
                     </button>
-                    <button className="text-gray-600 px-4 py-2 text-sm font-medium hover:bg-gray-100 uppercase tracking-wide">
+                    <button 
+                      onClick={() => setViewMode('list')}
+                      className={`px-4 py-2 text-sm font-medium uppercase tracking-wide transition-all ${
+                        viewMode === 'list' 
+                          ? 'bg-black text-white' 
+                          : 'text-gray-600 hover:bg-gray-100'
+                      }`}
+                    >
                       Lista
                     </button>
                   </div>
                 </div>
               </div>
 
-              {/* Grid de Modelos */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                {filteredPessoas.map((pessoa) => (
-                  <ModelCard key={pessoa.id} pessoa={pessoa} />
-                ))}
-              </div>
+              {/* Grid/List de Pupilos */}
+              {viewMode === 'grid' ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                  {filteredPessoas.map((pessoa) => (
+                    <ModelCard key={pessoa.id} pessoa={pessoa} />
+                  ))}
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {filteredPessoas.map((pessoa) => (
+                    <div key={pessoa.id} className="border border-gray-200 p-6 flex">
+                      <div className="flex-shrink-0 w-24 h-32 bg-gray-100 mr-6">
+                        {pessoa.foto_principal || pessoa.fotos[0] ? (
+                          <img 
+                            src={pessoa.foto_principal || pessoa.fotos[0].url_arquivo} 
+                            alt={pessoa.nome}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">
+                            Sem foto
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex-grow">
+                        <h3 className="text-lg font-bold text-black mb-2">{pessoa.nome}</h3>
+                        <div className="grid grid-cols-2 gap-4 text-sm text-gray-600 mb-3">
+                          <div>
+                            <span className="font-medium">Local:</span><br />
+                            {pessoa.localizacao || 'Não informado'}
+                          </div>
+                          <div>
+                            <span className="font-medium">Altura:</span><br />
+                            {pessoa.altura ? `${pessoa.altura}cm` : 'Não informado'}
+                          </div>
+                          <div>
+                            <span className="font-medium">Fotos:</span><br />
+                            {pessoa.fotos.length}
+                          </div>
+                          <div>
+                            <span className="font-medium">Videos:</span><br />
+                            {pessoa.videos.length}
+                          </div>
+                        </div>
+                        {pessoa.descricao && (
+                          <p className="text-sm text-gray-600 line-clamp-2">{pessoa.descricao}</p>
+                        )}
+                        {pessoa.especializacoes && pessoa.especializacoes.length > 0 && (
+                          <div className="mt-3 flex flex-wrap gap-1">
+                            {pessoa.especializacoes.slice(0, 3).map((esp, index) => (
+                              <span key={index} className="text-xs border border-gray-300 text-gray-600 px-2 py-1">
+                                {esp}
+                              </span>
+                            ))}
+                            {pessoa.especializacoes.length > 3 && (
+                              <span className="text-xs text-gray-400">+{pessoa.especializacoes.length - 3}</span>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
 
               {/* Load More Button */}
               {filteredPessoas.length > 8 && (
                 <div className="text-center mt-12">
                   <button className="text-black font-semibold px-8 py-3 border border-black hover:bg-black hover:text-white transition-all uppercase tracking-wide text-sm">
-                    Ver Mais Modelos
+                    Ver Mais Pupilos
                   </button>
                 </div>
               )}

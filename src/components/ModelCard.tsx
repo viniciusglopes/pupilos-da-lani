@@ -2,7 +2,7 @@
 
 import { PessoaCompleta } from '@/types/database'
 import Image from 'next/image'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import ModalGallery from './ModalGallery'
 
 interface ModelCardProps {
@@ -12,10 +12,22 @@ interface ModelCardProps {
 
 export default function ModelCard({ pessoa, isParceiro = false }: ModelCardProps) {
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0)
 
-  const fotoUrl = pessoa.foto_principal ||
-    pessoa.fotos.find(f => f.eh_principal)?.url_arquivo ||
-    pessoa.fotos[0]?.url_arquivo
+  // Auto-rotate photos every 5 seconds
+  useEffect(() => {
+    if (pessoa.fotos.length > 1) {
+      const interval = setInterval(() => {
+        setCurrentPhotoIndex(prev => (prev + 1) % pessoa.fotos.length)
+      }, 5000)
+      
+      return () => clearInterval(interval)
+    }
+  }, [pessoa.fotos.length])
+
+  const fotoUrl = pessoa.fotos.length > 0 
+    ? pessoa.fotos[currentPhotoIndex]?.url_arquivo
+    : pessoa.foto_principal
 
   return (
     <>

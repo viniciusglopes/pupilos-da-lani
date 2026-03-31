@@ -86,6 +86,9 @@ export default function ModalGallery({ pessoa, isOpen, onClose }: ModalGalleryPr
                     fill
                     className="object-contain"
                     sizes="(max-width: 768px) 100vw, 70vw"
+                    onError={(e) => {
+                      console.error('Erro ao carregar imagem:', currentFoto.url_arquivo)
+                    }}
                   />
                   {fotos.length > 1 && (
                     <>
@@ -121,6 +124,9 @@ export default function ModalGallery({ pessoa, isOpen, onClose }: ModalGalleryPr
                         controls
                         className="w-full bg-black"
                         preload="metadata"
+                        onError={(e) => {
+                          console.error('Erro ao carregar video:', video.url_arquivo)
+                        }}
                       />
                       <p className="text-xs text-gray-400 mt-2">
                         Video {index + 1} de {videos.length}

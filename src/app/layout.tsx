@@ -5,9 +5,9 @@ import './globals.css'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Pupilos da Lani - Portal de Modelos',
-  description: 'Conectando talentos com oportunidades. Portal profissional para modelos em Minas Gerais.',
-  keywords: 'modelos, portfólio, minas gerais, casting, fotografia, publicidade',
+  title: 'Pupilos da Lani - Portal de Pupilos',
+  description: 'Conectando talentos com oportunidades. Portal profissional para pupilos em Minas Gerais.',
+  keywords: 'pupilos, portfólio, minas gerais, casting, fotografia, publicidade',
   authors: [{ name: 'Pupilos da Lani' }],
   creator: 'Pupilos da Lani',
   publisher: 'Pupilos da Lani',
@@ -15,14 +15,14 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'pt_BR',
-    title: 'Pupilos da Lani - Portal de Modelos',
-    description: 'Conectando talentos com oportunidades. Portal profissional para modelos em Minas Gerais.',
+    title: 'Pupilos da Lani - Portal de Pupilos',
+    description: 'Conectando talentos com oportunidades. Portal profissional para pupilos em Minas Gerais.',
     siteName: 'Pupilos da Lani',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Pupilos da Lani - Portal de Modelos',
-    description: 'Conectando talentos com oportunidades. Portal profissional para modelos em Minas Gerais.',
+    title: 'Pupilos da Lani - Portal de Pupilos',
+    description: 'Conectando talentos com oportunidades. Portal profissional para pupilos em Minas Gerais.',
   },
 }
 

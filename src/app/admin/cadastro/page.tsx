@@ -206,10 +206,10 @@ export default function CadastroPage() {
         <div className="max-w-2xl mx-auto border border-gray-200 p-8">
           <div className="text-center mb-8">
             <h1 className="text-2xl font-bold text-black mb-2 uppercase tracking-wide">
-              Cadastro de Modelo
+              Cadastro de Pupilo
             </h1>
             <p className="text-gray-500 text-sm">
-              Adicione um novo modelo ao portfolio
+              Adicione um novo pupilo ao portfolio
             </p>
           </div>
 
@@ -495,7 +495,7 @@ export default function CadastroPage() {
                   className="mr-3"
                 />
                 <label className="text-sm text-gray-700">
-                  <strong>Modelo Parceiro:</strong> Marcar como modelo em parceria exclusiva
+                  <strong>Pupilo Parceiro:</strong> Marcar como pupilo em parceria exclusiva
                 </label>
               </div>
             </div>
@@ -566,7 +566,7 @@ export default function CadastroPage() {
               {loading ? (
                 uploadingFiles ? 'Fazendo upload dos arquivos...' : 'Cadastrando...'
               ) : (
-                'Cadastrar Modelo'
+                'Cadastrar Pupilo'
               )}
             </button>
           </form>
