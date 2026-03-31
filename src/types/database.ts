@@ -10,6 +10,7 @@ export interface Pessoa {
   medidas_busto?: number;
   medidas_cintura?: number;
   medidas_quadril?: number;
+  sexo?: string;  // NOVO: Campo sexo (Masculino/Feminino)
   especializacoes?: string[];
   localizacao?: string;
   instagram_url?: string;
@@ -61,6 +62,7 @@ export interface PessoaForm {
   medidas_busto?: number;
   medidas_cintura?: number;
   medidas_quadril?: number;
+  sexo?: string;  // NOVO: Campo sexo no form
   especializacoes?: string[];
   localizacao?: string;
   instagram_url?: string;
