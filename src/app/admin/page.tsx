@@ -96,7 +96,7 @@ export default function AdminPage() {
       setPessoas(prev => prev.filter(p => p.id !== id))
     } catch (error) {
       console.error('Erro ao deletar:', error)
-      alert('Erro ao excluir modelo')
+      alert('Erro ao excluir pupilo')
     }
   }
 
@@ -144,7 +144,7 @@ export default function AdminPage() {
             href="/admin/cadastro"
             className="bg-black text-white px-4 py-2 hover:bg-gray-800 transition-colors text-sm uppercase tracking-wide"
           >
-            + Novo Modelo
+            + Novo Pupilo
           </Link>
         </div>
 
@@ -192,23 +192,23 @@ export default function AdminPage() {
           </div>
         </div>
 
-        {/* Lista de modelos */}
+        {/* Lista de pupilos */}
         {filteredPessoas.length === 0 ? (
           <div className="border border-gray-200 p-8 text-center">
             <h3 className="text-lg font-semibold text-gray-900 mb-2">
-              Nenhum modelo encontrado
+              Nenhum pupilo encontrado
             </h3>
             <p className="text-gray-600 mb-4">
               {filter === 'todos' 
-                ? 'Cadastre o primeiro modelo para comecar.'
-                : `Nao ha modelos ${filter === 'ativo' ? 'ativos' : filter === 'inativo' ? 'inativos' : 'parceiros'} no momento.`
+                ? 'Cadastre o primeiro pupilo para comecar.'
+                : `Nao ha pupilos ${filter === 'ativo' ? 'ativos' : filter === 'inativo' ? 'inativos' : 'parceiros'} no momento.`
               }
             </p>
             <Link
               href="/admin/cadastro"
               className="inline-flex items-center px-4 py-2 bg-black text-white hover:bg-gray-800 transition-colors text-sm uppercase tracking-wide"
             >
-              Cadastrar Modelo
+              Cadastrar Pupilo
             </Link>
           </div>
         ) : (

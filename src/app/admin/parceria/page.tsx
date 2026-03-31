@@ -13,11 +13,11 @@ export default function AdminParceriaPage() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
-  const [titulo, setTitulo] = useState('Modelos Parceiros')
-  const [subtitulo, setSubtitulo] = useState('Nossos modelos em parceria exclusiva, prontos para seus projetos.')
-  const [banner, setBanner] = useState('Modelos em parceria exclusiva - disponibilidade garantida')
+  const [titulo, setTitulo] = useState('Pupilos Parceiros')
+  const [subtitulo, setSubtitulo] = useState('Nossos pupilos em parceria exclusiva, prontos para seus projetos.')
+  const [banner, setBanner] = useState('Pupilos em parceria exclusiva - disponibilidade garantida')
   const [semParceirosTitulo, setSemParceirosTitulo] = useState('Ainda não temos parceiros exclusivos')
-  const [semParceirosTexto, setSemParceirosTexto] = useState('Em breve teremos nosso primeiro modelo parceiro!')
+  const [semParceirosTexto, setSemParceirosTexto] = useState('Em breve teremos nosso primeiro pupilo parceiro!')
   const [secoes, setSecoes] = useState<Secao[]>([])
   const router = useRouter()
 
@@ -37,7 +37,7 @@ export default function AdminParceriaPage() {
         const data = await res.json()
         if (data.success && data.conteudo) {
           const c = data.conteudo
-          setTitulo(c.titulo || 'Modelos Parceiros')
+          setTitulo(c.titulo || 'Pupilos Parceiros')
           setSubtitulo(c.subtitulo || '')
           if (c.conteudo) {
             setBanner(c.conteudo.banner || '')

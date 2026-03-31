@@ -149,10 +149,10 @@ export default function ModelosPage() {
       
       setPessoas(prev => prev.filter(p => p.id !== id))
       setShowModal(false)
-      alert('Modelo excluido com sucesso!')
+      alert('Pupilo excluido com sucesso!')
     } catch (error) {
       console.error('Erro ao deletar:', error)
-      alert('Erro ao excluir modelo')
+      alert('Erro ao excluir pupilo')
     }
   }
 
@@ -257,7 +257,7 @@ export default function ModelosPage() {
             </div>
           </div>
 
-          {/* Grid de modelos */}
+          {/* Grid de pupilos */}
           {filteredPessoas.length === 0 ? (
             <div className="border border-gray-200 p-8 text-center">
               <h3 className="text-lg font-semibold text-gray-900 mb-2">

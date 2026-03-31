@@ -49,7 +49,7 @@ export default function EditModelPage() {
       setPessoa(data as PessoaCompleta)
     } catch (error) {
       console.error('Erro ao carregar pessoa:', error)
-      setMessage({ type: 'error', text: 'Modelo nao encontrado' })
+      setMessage({ type: 'error', text: 'Pupilo nao encontrado' })
     } finally {
       setLoading(false)
     }
@@ -106,7 +106,7 @@ export default function EditModelPage() {
 
       if (error) throw error
 
-      setMessage({ type: 'success', text: 'Modelo atualizado com sucesso!' })
+      setMessage({ type: 'success', text: 'Pupilo atualizado com sucesso!' })
       
       setTimeout(() => {
         router.push('/admin')
@@ -114,7 +114,7 @@ export default function EditModelPage() {
 
     } catch (error: any) {
       console.error('Erro ao salvar:', error)
-      setMessage({ type: 'error', text: error.message || 'Erro ao atualizar modelo' })
+      setMessage({ type: 'error', text: error.message || 'Erro ao atualizar pupilo' })
     } finally {
       setSaving(false)
     }
@@ -323,7 +323,7 @@ export default function EditModelPage() {
         <Header />
         <main className="container mx-auto px-4 py-8">
           <div className="text-center">
-            <h1 className="text-2xl font-bold text-black mb-4 uppercase tracking-wide">Modelo nao encontrado</h1>
+            <h1 className="text-2xl font-bold text-black mb-4 uppercase tracking-wide">Pupilo nao encontrado</h1>
             <button
               onClick={() => router.push('/admin')}
               className="text-black hover:text-gray-600 underline"
@@ -577,7 +577,7 @@ export default function EditModelPage() {
                     className="mr-2"
                   />
                   <label className="text-sm text-gray-700">
-                    Modelo em parceria exclusiva
+                    Pupilo em parceria exclusiva
                   </label>
                 </div>
 
@@ -591,7 +591,7 @@ export default function EditModelPage() {
                     className="mr-2"
                   />
                   <label className="text-sm text-gray-700">
-                    <strong>Modelo Destaque:</strong> Exibir na area de destaques da tela principal
+                    <strong>Pupilo Destaque:</strong> Exibir na area de destaques da tela principal
                   </label>
                 </div>
 

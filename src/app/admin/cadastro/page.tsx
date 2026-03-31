@@ -127,7 +127,7 @@ export default function CadastroPage() {
       const result = await response.json()
       
       if (!response.ok) {
-        throw new Error(result.error || 'Erro ao cadastrar modelo')
+        throw new Error(result.error || 'Erro ao cadastrar pupilo')
       }
 
       const pessoa = result.pessoa
@@ -159,7 +159,7 @@ export default function CadastroPage() {
         })
       }
 
-      setMessage({ type: 'success', text: result.message || `Modelo "${pessoa.nome}" cadastrado com sucesso!` })
+      setMessage({ type: 'success', text: result.message || `Pupilo "${pessoa.nome}" cadastrado com sucesso!` })
       
       setFormData({
         nome: '',
@@ -185,7 +185,7 @@ export default function CadastroPage() {
 
     } catch (error: any) {
       console.error('Erro cadastro:', error)
-      setMessage({ type: 'error', text: error.message || 'Erro ao cadastrar modelo' })
+      setMessage({ type: 'error', text: error.message || 'Erro ao cadastrar pupilo' })
     } finally {
       setLoading(false)
       setUploadingFiles(false)
@@ -511,7 +511,7 @@ export default function CadastroPage() {
                   className="mr-3"
                 />
                 <label className="text-sm text-gray-700">
-                  <strong>Modelo Destaque:</strong> Exibir na area de destaques da tela principal
+                  <strong>Pupilo Destaque:</strong> Exibir na area de destaques da tela principal
                 </label>
               </div>
             </div>

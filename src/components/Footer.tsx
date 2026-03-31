@@ -56,7 +56,7 @@ export default function Footer() {
               {aboutContent?.title || 'Pupilos da Lani'}
             </h3>
             <p className="text-gray-400 text-sm leading-relaxed">
-              {aboutContent?.content || 'Conectando talentos com oportunidades.\nModelos profissionais em Minas Gerais.'}
+              {aboutContent?.content || 'Conectando talentos com oportunidades.\nPupilos profissionais em Minas Gerais.'}
             </p>
           </div>
 

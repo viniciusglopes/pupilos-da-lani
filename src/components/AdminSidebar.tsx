@@ -16,14 +16,14 @@ export default function AdminSidebar() {
       description: 'Visao geral'
     },
     {
-      title: 'Gerenciar Modelos',
+      title: 'Gerenciar Pupilos',
       href: '/admin/modelos',
       description: 'Ver e editar cadastros'
     },
     {
-      title: 'Novo Modelo',
+      title: 'Novo Pupilo',
       href: '/admin/cadastro',
-      description: 'Cadastrar novo modelo'
+      description: 'Cadastrar novo pupilo'
     },
     {
       title: 'Analytics',
