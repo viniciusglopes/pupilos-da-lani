@@ -26,6 +26,11 @@ export default function AdminSidebar() {
       description: 'Cadastrar novo modelo'
     },
     {
+      title: 'Analytics',
+      href: '/admin/analytics',
+      description: 'Estatisticas e metricas'
+    },
+    {
       title: 'Administradores',
       href: '/admin/admins',
       description: 'Gerenciar acesso'
@@ -39,6 +44,11 @@ export default function AdminSidebar() {
       title: 'Pagina Parceria',
       href: '/admin/parceria',
       description: 'Editar textos da parceria'
+    },
+    {
+      title: 'Editor Footer',
+      href: '/admin/footer',
+      description: 'Personalizar rodape'
     },
     {
       title: 'Configuracoes',
