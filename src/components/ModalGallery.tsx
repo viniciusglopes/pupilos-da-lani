@@ -31,11 +31,12 @@ export default function ModalGallery({ pessoa, isOpen, onClose }: ModalGalleryPr
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="absolute inset-0 bg-black/90" onClick={onClose} />
 
-      <div className="relative z-10 w-full max-w-6xl mx-4 bg-white overflow-hidden max-h-[95vh] flex flex-col">
+      {/* Mobile: Stack vertical, Desktop: Sidebar layout */}
+      <div className="relative z-10 w-full max-w-6xl mx-2 sm:mx-4 bg-white overflow-hidden max-h-[98vh] sm:max-h-[95vh] flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 shrink-0">
+        <div className="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-gray-200 shrink-0">
           <div>
-            <h2 className="text-lg font-bold tracking-tight uppercase">{pessoa.nome}</h2>
+            <h2 className="text-base sm:text-lg font-bold tracking-tight uppercase">{pessoa.nome}</h2>
             <p className="text-xs text-gray-500 mt-0.5">
               {fotos.length} foto{fotos.length !== 1 ? 's' : ''}
               {videos.length > 0 && ` — ${videos.length} video${videos.length !== 1 ? 's' : ''}`}
@@ -57,7 +58,7 @@ export default function ModalGallery({ pessoa, isOpen, onClose }: ModalGalleryPr
           <div className="flex border-b border-gray-200 shrink-0">
             <button
               onClick={() => setActiveTab('fotos')}
-              className={`px-6 py-3 text-xs font-semibold tracking-widest uppercase transition-colors ${
+              className={`px-4 sm:px-6 py-2 sm:py-3 text-xs font-semibold tracking-widest uppercase transition-colors ${
                 activeTab === 'fotos' ? 'text-black border-b-2 border-black' : 'text-gray-400 hover:text-gray-600'
               }`}
             >
@@ -65,7 +66,7 @@ export default function ModalGallery({ pessoa, isOpen, onClose }: ModalGalleryPr
             </button>
             <button
               onClick={() => setActiveTab('videos')}
-              className={`px-6 py-3 text-xs font-semibold tracking-widest uppercase transition-colors ${
+              className={`px-4 sm:px-6 py-2 sm:py-3 text-xs font-semibold tracking-widest uppercase transition-colors ${
                 activeTab === 'videos' ? 'text-black border-b-2 border-black' : 'text-gray-400 hover:text-gray-600'
               }`}
             >
@@ -74,9 +75,10 @@ export default function ModalGallery({ pessoa, isOpen, onClose }: ModalGalleryPr
           </div>
         )}
 
-        <div className="flex flex-1 min-h-0">
+        {/* Mobile: Stack layout, Desktop: Flex layout */}
+        <div className="flex flex-col lg:flex-row flex-1 min-h-0">
           {/* Main content area */}
-          <div className="flex-1 relative bg-gray-50 flex items-center justify-center">
+          <div className="flex-1 relative bg-gray-50 flex items-center justify-center min-h-[250px] sm:min-h-[400px]">
             {activeTab === 'fotos' ? (
               fotos.length > 0 ? (
                 <>
@@ -94,21 +96,36 @@ export default function ModalGallery({ pessoa, isOpen, onClose }: ModalGalleryPr
                     <>
                       <button
                         onClick={prevPhoto}
-                        className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 hover:bg-white text-black flex items-center justify-center transition-colors"
+                        className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 bg-white/90 hover:bg-white text-black flex items-center justify-center transition-colors text-lg sm:text-xl font-bold shadow-sm"
                       >
                         ‹
                       </button>
                       <button
                         onClick={nextPhoto}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/80 hover:bg-white text-black flex items-center justify-center transition-colors"
+                        className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 w-8 h-8 sm:w-10 sm:h-10 bg-white/90 hover:bg-white text-black flex items-center justify-center transition-colors text-lg sm:text-xl font-bold shadow-sm"
                       >
                         ›
                       </button>
                     </>
                   )}
-                  <div className="absolute top-4 right-4 text-xs text-gray-500 bg-white/80 px-3 py-1">
+                  <div className="absolute top-2 sm:top-4 right-2 sm:right-4 text-xs text-gray-600 bg-white/90 px-2 sm:px-3 py-1 shadow-sm">
                     {currentIndex + 1} / {fotos.length}
                   </div>
+                  
+                  {/* Mobile: Navigation dots */}
+                  {fotos.length > 1 && (
+                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 lg:hidden">
+                      {fotos.map((_, index) => (
+                        <button
+                          key={index}
+                          onClick={() => setCurrentIndex(index)}
+                          className={`w-2 h-2 rounded-full transition-colors ${
+                            index === currentIndex ? 'bg-white' : 'bg-white/50'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  )}
                 </>
               ) : (
                 <p className="text-gray-400 text-sm tracking-widest uppercase">Sem fotos</p>
@@ -116,7 +133,7 @@ export default function ModalGallery({ pessoa, isOpen, onClose }: ModalGalleryPr
             ) : (
               // Videos tab
               videos.length > 0 ? (
-                <div className="w-full h-full flex flex-col items-center justify-center gap-4 p-6 overflow-y-auto">
+                <div className="w-full h-full flex flex-col items-center justify-center gap-4 p-4 sm:p-6 overflow-y-auto">
                   {videos.map((video, index) => (
                     <div key={video.id} className="w-full max-w-2xl">
                       <video
@@ -128,7 +145,7 @@ export default function ModalGallery({ pessoa, isOpen, onClose }: ModalGalleryPr
                           console.error('Erro ao carregar video:', video.url_arquivo)
                         }}
                       />
-                      <p className="text-xs text-gray-400 mt-2">
+                      <p className="text-xs text-gray-400 mt-2 text-center">
                         Video {index + 1} de {videos.length}
                       </p>
                     </div>
@@ -140,28 +157,31 @@ export default function ModalGallery({ pessoa, isOpen, onClose }: ModalGalleryPr
             )}
           </div>
 
-          {/* Sidebar with ALL data */}
-          <div className="w-72 border-l border-gray-200 p-6 overflow-y-auto shrink-0">
-            {/* Photo thumbnails */}
+          {/* Sidebar/Bottom panel with ALL data */}
+          <div className="w-full lg:w-72 border-t lg:border-t-0 lg:border-l border-gray-200 p-4 sm:p-6 overflow-y-auto shrink-0 max-h-[350px] lg:max-h-none">
+            {/* Photo thumbnails - Enhanced for mobile */}
             {activeTab === 'fotos' && fotos.length > 1 && (
               <div className="mb-6">
-                <h3 className="text-xs font-semibold tracking-widest uppercase text-gray-400 mb-3">Galeria</h3>
-                <div className="grid grid-cols-3 gap-1.5">
+                <h3 className="text-xs font-semibold tracking-widest uppercase text-gray-400 mb-3">Todas as Fotos</h3>
+                <div className="grid grid-cols-4 sm:grid-cols-6 lg:grid-cols-3 gap-1.5">
                   {fotos.map((foto, index) => (
                     <button
                       key={foto.id}
                       onClick={() => setCurrentIndex(index)}
                       className={`relative aspect-square overflow-hidden ${
                         index === currentIndex ? 'ring-2 ring-black' : 'opacity-60 hover:opacity-100'
-                      } transition-opacity`}
+                      } transition-all duration-200`}
                     >
                       <Image
                         src={foto.url_arquivo}
                         alt={`${index + 1}`}
                         fill
                         className="object-cover"
-                        sizes="80px"
+                        sizes="(max-width: 640px) 20vw, (max-width: 1024px) 15vw, 80px"
                       />
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 hover:opacity-100 transition-opacity">
+                        <span className="text-white text-xs font-bold">{index + 1}</span>
+                      </div>
                     </button>
                   ))}
                 </div>
@@ -258,7 +278,7 @@ export default function ModalGallery({ pessoa, isOpen, onClose }: ModalGalleryPr
                 </div>
               </div>
 
-              {/* Contact buttons */}
+              {/* Contact buttons - Optimized for mobile */}
               <div className="pt-4 border-t border-gray-200 space-y-2">
                 {pessoa.instagram_url && (
                   <a
@@ -275,7 +295,7 @@ export default function ModalGallery({ pessoa, isOpen, onClose }: ModalGalleryPr
                     href={`https://wa.me/${pessoa.telefone.replace(/\D/g, '')}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="block w-full bg-white text-black text-center py-3 text-xs font-semibold tracking-widest uppercase border border-black hover:bg-gray-50 transition-colors"
+                    className="block w-full bg-green-600 text-white text-center py-3 text-xs font-semibold tracking-widest uppercase hover:bg-green-700 transition-colors"
                   >
                     WhatsApp
                   </a>
