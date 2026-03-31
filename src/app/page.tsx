@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { PessoaCompleta } from '@/types/database'
 import ModelCard from '@/components/ModelCard'
+import FeaturedPupilosCarousel from '@/components/FeaturedPupilosCarousel'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import Link from 'next/link'
@@ -55,6 +56,18 @@ export default function HomePage() {
 
   useEffect(() => {
     loadData()
+    
+    // Track page visit
+    fetch('/api/analytics/visit', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        page_path: '/',
+        referrer: document.referrer
+      }),
+    }).catch(err => console.warn('Analytics tracking failed:', err))
   }, [])
 
   const loadData = async () => {
@@ -82,7 +95,7 @@ export default function HomePage() {
             .filter((m: any) => m.ativo)
             .map((m: any) => ({ ...m, fotos: m.fotos || [], videos: m.videos || [] })) as PessoaCompleta[]
           setTodos(all)
-          setDestaques(shuffle(all.filter(p => p.destaque)).slice(0, 4))
+          setDestaques(shuffle(all.filter(p => p.destaque))) // Show ALL destaques, not just 4
           setOutros(shuffle(all.filter(p => !p.destaque)))
         }
       }
@@ -121,23 +134,13 @@ export default function HomePage() {
       </section>
 
       <main className="max-w-7xl mx-auto px-6 pb-24">
-        {/* Destaques */}
+        {/* Featured Pupilos Carousel */}
         {destaques.length > 0 && (
-          <section className="mb-24">
-            <div className="mb-10">
-              <h2 className="text-xs font-semibold tracking-widest uppercase text-gray-400">
-                {content.conteudo.destaques_label}
-              </h2>
-              <p className="mt-2 text-3xl font-bold tracking-tight text-black">
-                {content.conteudo.destaques_titulo}
-              </p>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-6 gap-y-2">
-              {destaques.map((pessoa) => (
-                <ModelCard key={pessoa.id} pessoa={pessoa} />
-              ))}
-            </div>
-          </section>
+          <FeaturedPupilosCarousel 
+            pupilos={destaques}
+            title={content.conteudo.destaques_label}
+            subtitle={content.conteudo.destaques_titulo}
+          />
         )}
 
         {/* Catalogo */}

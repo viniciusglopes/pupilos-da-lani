@@ -1,25 +1,73 @@
+'use client'
+
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 
+interface FooterContent {
+  id: string
+  section_key: string
+  title: string
+  content?: string
+  link_url?: string
+  display_order: number
+}
+
 export default function Footer() {
+  const [footerContent, setFooterContent] = useState<FooterContent[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    loadFooterContent()
+  }, [])
+
+  const loadFooterContent = async () => {
+    try {
+      const res = await fetch('/api/footer')
+      if (res.ok) {
+        const data = await res.json()
+        if (data.success) {
+          setFooterContent(data.data)
+        }
+      }
+    } catch (err) {
+      console.warn('Failed to load footer content:', err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Helper to get content by section key
+  const getContent = (key: string) => {
+    return footerContent.find(item => item.section_key === key)
+  }
+
+  const aboutContent = getContent('about')
+  const contactContent = getContent('contact')
+  const privacyContent = getContent('privacy')
+  const instagramContent = getContent('social_instagram')
+  const whatsappContent = getContent('social_whatsapp')
   return (
     <footer className="bg-black text-white">
       <div className="max-w-7xl mx-auto px-6 py-16">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+          {/* About Section */}
           <div>
-            <h3 className="text-lg font-bold tracking-tight uppercase mb-4">Pupilos da Lani</h3>
+            <h3 className="text-lg font-bold tracking-tight uppercase mb-4">
+              {aboutContent?.title || 'Pupilos da Lani'}
+            </h3>
             <p className="text-gray-400 text-sm leading-relaxed">
-              Conectando talentos com oportunidades.<br />
-              Modelos profissionais em Minas Gerais.
+              {aboutContent?.content || 'Conectando talentos com oportunidades.\nModelos profissionais em Minas Gerais.'}
             </p>
           </div>
 
+          {/* Navigation Section */}
           <div>
             <h4 className="text-xs font-semibold tracking-widest uppercase text-gray-500 mb-4">Navegação</h4>
             <ul className="space-y-3">
               {[
                 { href: '/', label: 'Início' },
                 { href: '/busca', label: 'Talentos' },
-                { href: '/privacidade', label: 'Privacidade' },
+                { href: privacyContent?.link_url || '/privacidade', label: privacyContent?.title || 'Privacidade' },
               ].map((link) => (
                 <li key={link.href}>
                   <Link href={link.href} className="text-sm text-gray-400 hover:text-white transition-colors">
@@ -30,11 +78,47 @@ export default function Footer() {
             </ul>
           </div>
 
+          {/* Contact Section */}
           <div>
-            <h4 className="text-xs font-semibold tracking-widest uppercase text-gray-500 mb-4">Contato</h4>
+            <h4 className="text-xs font-semibold tracking-widest uppercase text-gray-500 mb-4">
+              {contactContent?.title || 'Contato'}
+            </h4>
             <div className="space-y-3 text-sm text-gray-400">
-              <p>Minas Gerais, Brasil</p>
-              <p>contato@pupiloslani.com.br</p>
+              <p>{contactContent?.content || 'Minas Gerais, Brasil'}</p>
+              
+              {/* Social Links */}
+              <div className="flex flex-col gap-2 mt-4">
+                {instagramContent?.link_url && (
+                  <a 
+                    href={instagramContent.link_url}
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-gray-400 hover:text-white transition-colors"
+                  >
+                    {instagramContent.title}
+                  </a>
+                )}
+                
+                {whatsappContent?.link_url && (
+                  <a 
+                    href={whatsappContent.link_url}
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-gray-400 hover:text-white transition-colors"
+                  >
+                    {whatsappContent.title}
+                  </a>
+                )}
+                
+                {contactContent?.link_url && (
+                  <a 
+                    href={contactContent.link_url}
+                    className="text-gray-400 hover:text-white transition-colors"
+                  >
+                    Email
+                  </a>
+                )}
+              </div>
             </div>
           </div>
         </div>

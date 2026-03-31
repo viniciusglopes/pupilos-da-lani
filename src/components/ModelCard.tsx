@@ -29,11 +29,26 @@ export default function ModelCard({ pessoa, isParceiro = false }: ModelCardProps
     ? pessoa.fotos[currentPhotoIndex]?.url_arquivo
     : pessoa.foto_principal
 
+  const handleClick = () => {
+    // Track click analytics
+    fetch('/api/analytics/click', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        pupilo_id: pessoa.id
+      }),
+    }).catch(err => console.warn('Click tracking failed:', err))
+
+    setIsModalOpen(true)
+  }
+
   return (
     <>
       <div
         className="group cursor-pointer"
-        onClick={() => setIsModalOpen(true)}
+        onClick={handleClick}
       >
         <div className="relative aspect-[3/4] overflow-hidden bg-gray-100">
           {fotoUrl ? (
