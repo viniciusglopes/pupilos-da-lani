@@ -6,6 +6,7 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 
 export default function LoginPage() {
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -16,13 +17,26 @@ export default function LoginPage() {
     setLoading(true)
     setError('')
 
-    const adminPassword = process.env.NEXT_PUBLIC_ADMIN_PASSWORD
+    try {
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, senha: password })
+      })
 
-    if (password === adminPassword) {
-      localStorage.setItem('admin_authenticated', 'true')
-      router.push('/admin')
-    } else {
-      setError('Senha incorreta')
+      const data = await response.json()
+
+      if (response.ok && data.success) {
+        // Salvar token e dados do admin
+        localStorage.setItem('admin_token', data.token)
+        localStorage.setItem('admin_user', JSON.stringify(data.admin))
+        localStorage.setItem('admin_authenticated', 'true')
+        router.push('/admin')
+      } else {
+        setError(data.error || 'Erro ao fazer login')
+      }
+    } catch (err) {
+      setError('Erro de conexão. Tente novamente.')
     }
 
     setLoading(false)
@@ -44,6 +58,24 @@ export default function LoginPage() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <label 
+                htmlFor="email" 
+                className="block text-xs font-medium text-gray-700 mb-2 uppercase tracking-widest"
+              >
+                Email
+              </label>
+              <input
+                type="email"
+                id="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black"
+                placeholder="seu@email.com"
+                required
+              />
+            </div>
+
             <div>
               <label 
                 htmlFor="password" 

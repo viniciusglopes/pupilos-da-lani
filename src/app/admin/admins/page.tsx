@@ -35,24 +35,13 @@ export default function AdminsPage() {
 
   const loadAdmins = async () => {
     try {
-      const mockAdmins: Admin[] = [
-        {
-          id: '1',
-          email: 'admin@pupiloslani.com.br',
-          nome: 'Administrador Principal',
-          ativo: true,
-          created_at: '2026-03-01'
-        },
-        {
-          id: '2', 
-          email: 'suporte@pupiloslani.com.br',
-          nome: 'Suporte Tecnico',
-          ativo: true,
-          created_at: '2026-03-15'
+      const response = await fetch('/api/admin')
+      if (response.ok) {
+        const data = await response.json()
+        if (data.success) {
+          setAdmins(data.admins || [])
         }
-      ]
-      
-      setAdmins(mockAdmins)
+      }
     } catch (error) {
       console.error('Erro ao carregar administradores:', error)
     } finally {
@@ -67,18 +56,22 @@ export default function AdminsPage() {
     }
 
     try {
-      const newAdminData: Admin = {
-        id: Date.now().toString(),
-        email: newAdmin.email,
-        nome: newAdmin.nome,
-        ativo: true,
-        created_at: new Date().toISOString().split('T')[0]
-      }
+      const response = await fetch('/api/admin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newAdmin)
+      })
 
-      setAdmins(prev => [...prev, newAdminData])
-      setNewAdmin({ email: '', nome: '', senha: '' })
-      setShowForm(false)
-      alert('Administrador criado com sucesso!')
+      const data = await response.json()
+
+      if (response.ok && data.success) {
+        loadAdmins() // Recarrega a lista
+        setNewAdmin({ email: '', nome: '', senha: '' })
+        setShowForm(false)
+        alert(data.message)
+      } else {
+        alert(data.error || 'Erro ao criar administrador')
+      }
     } catch (error) {
       console.error('Erro ao criar administrador:', error)
       alert('Erro ao criar administrador')
@@ -86,12 +79,27 @@ export default function AdminsPage() {
   }
 
   const toggleAdmin = async (id: string) => {
+    const admin = admins.find(a => a.id === id)
+    if (!admin) return
+
     try {
-      setAdmins(prev => prev.map(admin => 
-        admin.id === id ? { ...admin, ativo: !admin.ativo } : admin
-      ))
+      const response = await fetch('/api/admin', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, ativo: !admin.ativo })
+      })
+
+      const data = await response.json()
+
+      if (response.ok && data.success) {
+        loadAdmins() // Recarrega a lista
+        alert(data.message)
+      } else {
+        alert(data.error || 'Erro ao alterar status')
+      }
     } catch (error) {
       console.error('Erro ao alterar status:', error)
+      alert('Erro ao alterar status')
     }
   }
 
@@ -101,8 +109,18 @@ export default function AdminsPage() {
     }
 
     try {
-      setAdmins(prev => prev.filter(admin => admin.id !== id))
-      alert('Administrador excluido com sucesso!')
+      const response = await fetch(`/api/admin?id=${id}`, {
+        method: 'DELETE'
+      })
+
+      const data = await response.json()
+
+      if (response.ok && data.success) {
+        loadAdmins() // Recarrega a lista
+        alert(data.message)
+      } else {
+        alert(data.error || 'Erro ao excluir administrador')
+      }
     } catch (error) {
       console.error('Erro ao excluir:', error)
       alert('Erro ao excluir administrador')
