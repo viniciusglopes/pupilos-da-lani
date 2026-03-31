@@ -33,17 +33,17 @@ export default function AdminHomepagePage() {
         const data = await res.json()
         if (data.success && data.conteudo) {
           const c = data.conteudo
-          setTitulo(c.titulo || 'Pupilos da Lani')
-          setSubtitulo(c.subtitulo || '')
+          setTitulo(c.titulo ?? 'Pupilos da Lani')
+          setSubtitulo(c.subtitulo ?? '')
           if (c.conteudo) {
-            setBtnTalentos(c.conteudo.btn_talentos || 'Ver Talentos')
-            setBtnModelo(c.conteudo.btn_modelo || 'Seja Modelo')
-            setDestaquesLabel(c.conteudo.destaques_label || 'Destaques')
-            setDestaquesTitulo(c.conteudo.destaques_titulo || 'Modelos em Evidência')
-            setCatalogoLabel(c.conteudo.catalogo_label || 'Nosso Catálogo')
-            setCtaTitulo(c.conteudo.cta_titulo || 'Quer fazer parte?')
-            setCtaTexto(c.conteudo.cta_texto || '')
-            setCtaBotao(c.conteudo.cta_botao || 'Cadastre-se')
+            setBtnTalentos(c.conteudo.btn_talentos ?? 'Ver Talentos')
+            setBtnModelo(c.conteudo.btn_modelo ?? 'Seja Pupilo')
+            setDestaquesLabel(c.conteudo.destaques_label ?? 'Destaques')
+            setDestaquesTitulo(c.conteudo.destaques_titulo ?? 'Pupilos em Evidência')
+            setCatalogoLabel(c.conteudo.catalogo_label ?? 'Nosso Catálogo')
+            setCtaTitulo(c.conteudo.cta_titulo ?? 'Quer fazer parte?')
+            setCtaTexto(c.conteudo.cta_texto ?? '')
+            setCtaBotao(c.conteudo.cta_botao ?? 'Cadastre-se')
           }
         }
       }

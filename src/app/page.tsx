@@ -33,15 +33,15 @@ interface HomeContent {
 
 const DEFAULTS: HomeContent = {
   titulo: 'Pupilos da Lani',
-  subtitulo: 'Conectando talentos com oportunidades.\nModelos profissionais em Minas Gerais.',
+  subtitulo: 'Conectando talentos com oportunidades.\nPupilos profissionais em Minas Gerais.',
   conteudo: {
     btn_talentos: 'Ver Talentos',
-    btn_modelo: 'Seja Modelo',
+    btn_modelo: 'Seja Pupilo',
     destaques_label: 'Destaques',
-    destaques_titulo: 'Modelos em Evidência',
+    destaques_titulo: 'Pupilos em Evidência',
     catalogo_label: 'Nosso Catálogo',
     cta_titulo: 'Quer fazer parte?',
-    cta_texto: 'Cadastre-se como modelo e conecte-se com oportunidades profissionais.',
+    cta_texto: 'Cadastre-se como pupilo e conecte-se com oportunidades profissionais.',
     cta_botao: 'Cadastre-se'
   }
 }
@@ -66,8 +66,8 @@ export default function HomePage() {
         if (contentData.success && contentData.conteudo) {
           const c = contentData.conteudo
           setContent({
-            titulo: c.titulo || DEFAULTS.titulo,
-            subtitulo: c.subtitulo || DEFAULTS.subtitulo,
+            titulo: c.titulo ?? DEFAULTS.titulo,
+            subtitulo: c.subtitulo ?? DEFAULTS.subtitulo,
             conteudo: { ...DEFAULTS.conteudo, ...c.conteudo }
           })
         }
@@ -147,14 +147,14 @@ export default function HomePage() {
               {content.conteudo.catalogo_label}
             </h2>
             <p className="mt-2 text-3xl font-bold tracking-tight text-black">
-              {todos.length} Modelo{todos.length !== 1 ? 's' : ''}
+              {todos.length} Pupilo{todos.length !== 1 ? 's' : ''}
             </p>
           </div>
 
           {outros.length === 0 ? (
             <div className="text-center py-24">
               <p className="text-gray-400 text-sm tracking-widest uppercase">
-                Nenhum modelo adicional cadastrado
+                Nenhum pupilo adicional cadastrado
               </p>
             </div>
           ) : (

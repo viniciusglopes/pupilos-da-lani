@@ -19,12 +19,12 @@ interface ParceriaContent {
 }
 
 const DEFAULTS: ParceriaContent = {
-  titulo: 'Modelos Parceiros',
-  subtitulo: 'Nossos modelos em parceria exclusiva, prontos para seus projetos.',
+  titulo: 'Pupilos Parceiros',
+  subtitulo: 'Nossos pupilos em parceria exclusiva, prontos para seus projetos.',
   conteudo: {
-    banner: 'Modelos em parceria exclusiva - disponibilidade garantida',
+    banner: 'Pupilos em parceria exclusiva - disponibilidade garantida',
     sem_parceiros_titulo: 'Ainda não temos parceiros exclusivos',
-    sem_parceiros_texto: 'Em breve teremos nosso primeiro modelo parceiro!',
+    sem_parceiros_texto: 'Em breve teremos nosso primeiro pupilo parceiro!',
     secoes: []
   }
 }
@@ -46,8 +46,8 @@ export default function ParceriaPage() {
         const contentData = await contentRes.json()
         if (contentData.success && contentData.conteudo) {
           setContent({
-            titulo: contentData.conteudo.titulo || DEFAULTS.titulo,
-            subtitulo: contentData.conteudo.subtitulo || DEFAULTS.subtitulo,
+            titulo: contentData.conteudo.titulo ?? DEFAULTS.titulo,
+            subtitulo: contentData.conteudo.subtitulo ?? DEFAULTS.subtitulo,
             conteudo: { ...DEFAULTS.conteudo, ...contentData.conteudo.conteudo }
           })
         }
@@ -96,7 +96,7 @@ export default function ParceriaPage() {
               href="/"
               className="text-xs text-gray-400 hover:text-black font-medium uppercase tracking-widest transition-colors"
             >
-              Ver todos os modelos
+              Ver todos os pupilos
             </Link>
           </div>
         </div>
@@ -125,7 +125,7 @@ export default function ParceriaPage() {
               href="/"
               className="text-xs text-black font-semibold uppercase tracking-widest underline"
             >
-              Ver todos os modelos disponiveis
+              Ver todos os pupilos disponiveis
             </Link>
           </div>
         ) : (
@@ -146,7 +146,7 @@ export default function ParceriaPage() {
 
         <div className="text-center mt-16">
           <p className="text-gray-400 text-xs uppercase tracking-widest">
-            {pessoas.length} modelo{pessoas.length !== 1 ? 's' : ''} parceiro{pessoas.length !== 1 ? 's' : ''}
+            {pessoas.length} pupilo{pessoas.length !== 1 ? 's' : ''} parceiro{pessoas.length !== 1 ? 's' : ''}
           </p>
         </div>
       </main>
