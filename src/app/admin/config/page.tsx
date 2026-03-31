@@ -8,7 +8,7 @@ export default function ConfigPage() {
   const [loading, setLoading] = useState(true)
   const [config, setConfig] = useState({
     siteName: 'Pupilos da Lani',
-    siteDescription: 'Portal de modelos profissionais em Minas Gerais',
+    siteDescription: 'Portal de pupilos profissionais em Minas Gerais',
     contactEmail: 'contato@pupiloslani.com.br',
     contactPhone: '(31) 9 9999-9999',
     maxPhotosPerModel: 10,
@@ -130,7 +130,7 @@ export default function ConfigPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-medium text-gray-700 mb-2 uppercase tracking-widest">
-                    Maximo de Fotos por Modelo
+                    Maximo de Fotos por Pupilo
                   </label>
                   <input
                     type="number"
@@ -144,7 +144,7 @@ export default function ConfigPage() {
 
                 <div>
                   <label className="block text-xs font-medium text-gray-700 mb-2 uppercase tracking-widest">
-                    Maximo de Videos por Modelo
+                    Maximo de Videos por Pupilo
                   </label>
                   <input
                     type="number"
@@ -184,7 +184,7 @@ export default function ConfigPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <h3 className="text-sm font-medium text-gray-900">Aprovacao Automatica</h3>
-                    <p className="text-sm text-gray-500">Modelos ficam ativos automaticamente apos cadastro</p>
+                    <p className="text-sm text-gray-500">Pupilos ficam ativos automaticamente apos cadastro</p>
                   </div>
                   <label className="relative inline-flex items-center cursor-pointer">
                     <input

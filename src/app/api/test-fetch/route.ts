@@ -36,7 +36,7 @@ export async function POST(request: Request) {
       success: true,
       data,
       fetch_test: 'success',
-      message: `FETCH FUNCIONOU! Modelo "${data.nome}" cadastrado`
+      message: `FETCH FUNCIONOU! Pupilo "${data.nome}" cadastrado`
     })
     
   } catch (error: any) {

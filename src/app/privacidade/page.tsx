@@ -22,7 +22,7 @@ export default function PrivacidadePage() {
                 1. Informacoes que Coletamos
               </h2>
               <p className="text-gray-700 mb-4">
-                Coletamos apenas as informacoes necessarias para apresentar o portfolio profissional dos modelos:
+                Coletamos apenas as informacoes necessarias para apresentar o portfolio profissional dos pupilos:
               </p>
               <ul className="list-disc list-inside text-gray-700 space-y-2">
                 <li>Nome completo</li>
@@ -41,8 +41,8 @@ export default function PrivacidadePage() {
               </h2>
               <ul className="list-disc list-inside text-gray-700 space-y-2">
                 <li>Exibir o portfolio profissional na plataforma</li>
-                <li>Conectar modelos com oportunidades profissionais</li>
-                <li>Facilitar o contato entre modelos e contratantes (apenas com consentimento)</li>
+                <li>Conectar pupilos com oportunidades profissionais</li>
+                <li>Facilitar o contato entre pupilos e contratantes (apenas com consentimento)</li>
                 <li>Melhorar nossos servicos</li>
               </ul>
             </section>
@@ -125,7 +125,7 @@ export default function PrivacidadePage() {
 
             <div className="border border-gray-300 p-6 mt-8">
               <h3 className="text-sm font-semibold text-black mb-2 uppercase tracking-wide">
-                Importante para Modelos
+                Importante para Pupilos
               </h3>
               <p className="text-gray-700">
                 Ao se cadastrar em nossa plataforma, voce esta consentindo expressamente com a 
