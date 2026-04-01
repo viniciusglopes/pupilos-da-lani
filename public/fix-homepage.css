@@ -1,0 +1,56 @@
+/* FIX EMERGENCIAL - Fotos Homepage */
+/* Força imagens visíveis */
+
+/* Cards com altura mínima */
+[href*="/pupilos/"] > div:first-child {
+  height: 160px !important;
+  min-height: 160px !important;
+}
+
+/* Imagens com altura forçada */
+[href*="/pupilos/"] img {
+  height: 160px !important;
+  min-height: 160px !important;
+  object-fit: cover !important;
+}
+
+/* Grid responsivo forçado */
+.grid {
+  display: grid !important;
+  grid-template-columns: repeat(2, 1fr) !important;
+  gap: 0.75rem !important; /* gap-3 */
+}
+
+@media (min-width: 640px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+}
+
+@media (min-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(4, 1fr) !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(5, 1fr) !important;
+  }
+}
+
+@media (min-width: 1280px) {
+  .grid {
+    grid-template-columns: repeat(6, 1fr) !important;
+  }
+}
+
+/* Texto simplificado */
+[href*="/pupilos/"] h3 {
+  font-size: 0.75rem !important;
+  line-height: 1rem !important;
+}
+
+[href*="/pupilos/"] .text-gray-500 {
+  font-size: 0.75rem !important;
+}
