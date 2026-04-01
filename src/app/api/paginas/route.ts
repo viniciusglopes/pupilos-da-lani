@@ -46,9 +46,11 @@ function getDefaults(pagina: string) {
   return { pagina, titulo: '', subtitulo: '', conteudo: {} }
 }
 
-// Try Supabase first, fallback to file
+// FORÇAR SUPABASE - sem fallback file que causa cache antigo
 async function readContent(pagina: string) {
-  // Try Supabase
+  console.log('📖 readContent chamado para:', pagina)
+  
+  // SEMPRE tentar Supabase primeiro
   try {
     const { data, error } = await supabaseAdmin
       .from('paginas_conteudo')
@@ -56,18 +58,37 @@ async function readContent(pagina: string) {
       .eq('pagina', pagina)
       .single()
 
-    if (!error && data) return data
-  } catch {}
+    if (error) {
+      console.error('❌ Supabase read error:', error.message)
+      
+      // Se não encontrou o registro, criar um padrão
+      if (error.code === 'PGRST116') {
+        console.log('📝 Registro não encontrado, retornando defaults')
+        return getDefaults(pagina)
+      }
+    } else if (data) {
+      console.log('✅ Supabase read success:', { titulo: data.titulo, updated_at: data.updated_at })
+      return data
+    }
+  } catch (supabaseError: any) {
+    console.error('💥 Supabase connection error:', supabaseError.message)
+  }
 
-  // Fallback: local file
+  // APENAS EM CASO EXTREMO: fallback para arquivo local
+  console.log('⚠️ Usando fallback file (deve ser raro)')
   ensureDir()
   const filePath = getFilePath(pagina)
   if (existsSync(filePath)) {
     try {
-      return JSON.parse(readFileSync(filePath, 'utf-8'))
-    } catch {}
+      const fileData = JSON.parse(readFileSync(filePath, 'utf-8'))
+      console.log('📁 File fallback usado:', fileData.titulo)
+      return fileData
+    } catch (fileError) {
+      console.error('💥 File fallback failed:', fileError)
+    }
   }
 
+  console.log('🔄 Usando defaults como último recurso')
   return getDefaults(pagina)
 }
 
@@ -109,11 +130,20 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const pagina = searchParams.get('pagina')
 
+  console.log('🚀 GET /api/paginas chamado:', pagina)
+
   if (!pagina) {
     return NextResponse.json({ error: 'pagina parameter required' }, { status: 400 })
   }
 
   const conteudo = await readContent(pagina)
+  
+  console.log('📦 GET retornando:', { 
+    pagina: conteudo.pagina, 
+    titulo: conteudo.titulo,
+    updated_at: conteudo.updated_at 
+  })
+
   return NextResponse.json({ success: true, conteudo })
 }
 
