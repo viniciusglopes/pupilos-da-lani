@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { PessoaCompleta } from '@/types/database'
 import Image from 'next/image'
+import OptimizedImage from '@/components/OptimizedImage'
 import Link from 'next/link'
 
 interface CamposVisibilidade {
@@ -189,12 +190,14 @@ export default function PupiloPage() {
               <>
                 {/* Main Image */}
                 <div className="relative aspect-[4/5] bg-gray-50 mb-6">
-                  <Image
+                  <OptimizedImage
                     src={fotos[currentFoto].url_arquivo}
                     alt={`${pupilo.nome} - ${currentFoto + 1}`}
                     fill
                     className="object-cover"
                     sizes="(max-width: 768px) 100vw, 66vw"
+                    quality={85}
+                    priority={currentFoto === 0}
                   />
                   {fotos.length > 1 && (
                     <>
@@ -228,12 +231,15 @@ export default function PupiloPage() {
                           index === currentFoto ? 'ring-2 ring-black' : 'opacity-60 hover:opacity-100'
                         } transition-all`}
                       >
-                        <Image
+                        <OptimizedImage
                           src={foto.url_arquivo}
                           alt={`${index + 1}`}
                           fill
                           className="object-cover"
                           sizes="100px"
+                          quality={60}
+                          width={100}
+                          height={100}
                         />
                       </button>
                     ))}

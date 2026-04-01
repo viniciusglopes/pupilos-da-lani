@@ -8,8 +8,8 @@ export async function GET(request: Request) {
     const limit = searchParams.get('limit') || '50'
     const offset = searchParams.get('offset') || '0'
     
-    // Buscar pessoas ativas via fetch direto
-    const response = await fetch(`https://ljttishwndzkcytkdsrc.supabase.co/rest/v1/pessoas?select=*&ativo=eq.true&order=created_at.desc&limit=${limit}&offset=${offset}`, {
+    // Buscar pessoas ativas com fotos e videos via fetch direto
+    const response = await fetch(`https://ljttishwndzkcytkdsrc.supabase.co/rest/v1/pessoas?select=*,fotos(*),videos(*)&ativo=eq.true&order=created_at.desc&limit=${limit}&offset=${offset}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',

@@ -1,3 +1,5 @@
+-- Execute este script no SQL Editor do Supabase: https://supabase.com/dashboard/project/ljttishwndzkcytkdsrc/sql
+
 -- Tabela para configurações do sistema
 CREATE TABLE IF NOT EXISTS config_sistema (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,

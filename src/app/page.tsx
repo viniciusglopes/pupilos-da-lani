@@ -57,17 +57,17 @@ export default function HomePage() {
   useEffect(() => {
     loadData()
     
-    // Track page visit
-    fetch('/api/analytics/visit', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        page_path: '/',
-        referrer: document.referrer
-      }),
-    }).catch(err => console.warn('Analytics tracking failed:', err))
+    // Track page visit - TEMPORARIAMENTE DESABILITADO
+    // fetch('/api/analytics/visit', {
+    //   method: 'POST',
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //   },
+    //   body: JSON.stringify({
+    //     page_path: '/',
+    //     referrer: document.referrer
+    //   }),
+    // }).catch(err => console.warn('Analytics tracking failed:', err))
   }, [])
 
   const loadData = async () => {

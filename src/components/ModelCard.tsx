@@ -2,6 +2,7 @@
 
 import { PessoaCompleta } from '@/types/database'
 import Image from 'next/image'
+import OptimizedImage from './OptimizedImage'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 
@@ -29,16 +30,16 @@ export default function ModelCard({ pessoa, isParceiro = false }: ModelCardProps
     : pessoa.foto_principal
 
   const handleClick = () => {
-    // Track click analytics
-    fetch('/api/analytics/click', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        pupilo_id: pessoa.id
-      }),
-    }).catch(err => console.warn('Click tracking failed:', err))
+    // Track click analytics - TEMPORARIAMENTE DESABILITADO
+    // fetch('/api/analytics/click', {
+    //   method: 'POST',
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //   },
+    //   body: JSON.stringify({
+    //     pupilo_id: pessoa.id
+    //   }),
+    // }).catch(err => console.warn('Click tracking failed:', err))
   }
 
   return (
@@ -49,12 +50,15 @@ export default function ModelCard({ pessoa, isParceiro = false }: ModelCardProps
     >
       <div className="relative aspect-[3/4] overflow-hidden bg-gray-100">
         {fotoUrl ? (
-          <Image
+          <OptimizedImage
             src={fotoUrl}
             alt={pessoa.nome}
             fill
             className="object-cover transition-transform duration-700 group-hover:scale-105"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+            quality={70}
+            width={300}
+            height={400}
           />
         ) : (
           <div className="flex items-center justify-center h-full bg-gray-100">
