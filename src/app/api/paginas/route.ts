@@ -130,20 +130,59 @@ export async function PUT(request: Request) {
 
     const contentToSave = {
       pagina,
-      titulo,
-      subtitulo,
-      conteudo,
+      titulo: titulo || '',
+      subtitulo: subtitulo || '',
+      conteudo: conteudo || {},
       updated_at: new Date().toISOString()
     }
     
-    console.log('📦 Conteúdo a salvar:', contentToSave)
+    console.log('📦 Conteúdo a salvar:', JSON.stringify(contentToSave, null, 2))
 
-    const saved = await writeContent(contentToSave)
+    // FORÇAR SALVAMENTO - Tentar Supabase primeiro, depois arquivo
+    let saved = null
+    let method = 'unknown'
+
+    try {
+      // Método 1: Supabase
+      const { data, error } = await supabaseAdmin
+        .from('paginas_conteudo')
+        .upsert(contentToSave, { onConflict: 'pagina' })
+        .select()
+        .single()
+
+      if (!error && data) {
+        saved = data
+        method = 'supabase'
+        console.log('✅ Salvou no Supabase:', data.titulo)
+      } else {
+        console.error('❌ Supabase error:', error)
+        throw new Error('Supabase failed')
+      }
+    } catch (supabaseError: any) {
+      console.error('💥 Supabase fallback:', supabaseError.message)
+      
+      // Método 2: Arquivo local (fallback)
+      try {
+        ensureDir()
+        const filePath = getFilePath(pagina)
+        writeFileSync(filePath, JSON.stringify(contentToSave, null, 2))
+        saved = contentToSave
+        method = 'file'
+        console.log('✅ Salvou em arquivo:', filePath)
+      } catch (fileError: any) {
+        console.error('💥 File fallback failed:', fileError.message)
+        throw fileError
+      }
+    }
     
-    console.log('✅ PUT finalizado com sucesso')
-    return NextResponse.json({ success: true, conteudo: saved })
+    if (!saved) {
+      throw new Error('Falha em todos os métodos de salvamento')
+    }
+    
+    console.log(`✅ PUT finalizado com sucesso (${method})`)
+    return NextResponse.json({ success: true, conteudo: saved, method })
   } catch (err: any) {
-    console.error('💥 PUT error:', err)
-    return NextResponse.json({ error: err.message }, { status: 500 })
+    console.error('💥 PUT CRITICAL ERROR:', err)
+    return NextResponse.json({ error: `Falha crítica: ${err.message}` }, { status: 500 })
   }
 }

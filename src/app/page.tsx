@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { PessoaCompleta } from '@/types/database'
-import ModelCard from '@/components/ModelCard'
+import ModelCardSimple from '@/components/ModelCardSimple'
 import FeaturedPupilosCarousel from '@/components/FeaturedPupilosCarousel'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
@@ -163,7 +163,7 @@ export default function HomePage() {
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
               {outros.map((pessoa) => (
-                <ModelCard key={pessoa.id} pessoa={pessoa} />
+                <ModelCardSimple key={pessoa.id} pessoa={pessoa} />
               ))}
             </div>
           )}
