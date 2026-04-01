@@ -5,6 +5,7 @@ export interface Pessoa {
   nome: string;
   descricao?: string;
   altura?: number;
+  idade?: number;  // NOVO: Campo idade
   cor_olhos?: string;
   cor_cabelo?: string;
   medidas_busto?: number;
@@ -57,6 +58,7 @@ export interface PessoaForm {
   nome: string;
   descricao?: string;
   altura?: number;
+  idade?: number;  // NOVO: Campo idade no form
   cor_olhos?: string;
   cor_cabelo?: string;
   medidas_busto?: number;
