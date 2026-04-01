@@ -73,6 +73,8 @@ async function readContent(pagina: string) {
 
 async function writeContent(content: any) {
   const pagina = content.pagina
+  
+  console.log('💾 writeContent chamado:', { pagina, titulo: content.titulo })
 
   // Try Supabase
   try {
@@ -82,13 +84,24 @@ async function writeContent(content: any) {
       .select()
       .single()
 
-    if (!error && data) return data
-  } catch {}
+    if (error) {
+      console.error('❌ Supabase upsert error:', error)
+      throw error
+    }
+    
+    if (data) {
+      console.log('✅ Supabase upsert success:', data.titulo)
+      return data
+    }
+  } catch (e: any) {
+    console.error('💥 Supabase fallback error:', e.message)
+  }
 
   // Fallback: local file
   ensureDir()
   const filePath = getFilePath(pagina)
   writeFileSync(filePath, JSON.stringify(content, null, 2))
+  console.log('📁 Salvou em arquivo local:', filePath)
   return content
 }
 
@@ -108,21 +121,29 @@ export async function PUT(request: Request) {
   try {
     const body = await request.json()
     const { pagina, titulo, subtitulo, conteudo } = body
+    
+    console.log('🚀 PUT /api/paginas chamado:', { pagina, titulo, keys: Object.keys(conteudo || {}) })
 
     if (!pagina) {
       return NextResponse.json({ error: 'pagina required' }, { status: 400 })
     }
 
-    const saved = await writeContent({
+    const contentToSave = {
       pagina,
       titulo,
       subtitulo,
       conteudo,
       updated_at: new Date().toISOString()
-    })
+    }
+    
+    console.log('📦 Conteúdo a salvar:', contentToSave)
 
+    const saved = await writeContent(contentToSave)
+    
+    console.log('✅ PUT finalizado com sucesso')
     return NextResponse.json({ success: true, conteudo: saved })
   } catch (err: any) {
+    console.error('💥 PUT error:', err)
     return NextResponse.json({ error: err.message }, { status: 500 })
   }
 }

@@ -48,21 +48,20 @@ export default function ModelCard({ pessoa, isParceiro = false }: ModelCardProps
       className="group cursor-pointer block"
       onClick={handleClick}
     >
-      <div className="relative aspect-[3/4] overflow-hidden bg-gray-100">
+      <div className="relative w-full h-40 overflow-hidden bg-gray-100">
         {fotoUrl ? (
           <OptimizedImage
             src={fotoUrl}
             alt={pessoa.nome}
-            fill
-            className="object-cover transition-transform duration-700 group-hover:scale-105"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+            width={160}
+            height={160}
+            className="object-cover w-full h-full transition-transform duration-700 group-hover:scale-105"
+            sizes="160px"
             quality={70}
-            width={300}
-            height={400}
           />
         ) : (
-          <div className="flex items-center justify-center h-full bg-gray-100">
-            <span className="text-gray-300 text-sm tracking-widest uppercase">Sem foto</span>
+          <div className="flex items-center justify-center w-full h-full bg-gray-100">
+            <span className="text-gray-300 text-xs tracking-widest uppercase">Sem foto</span>
           </div>
         )}
 
@@ -70,23 +69,21 @@ export default function ModelCard({ pessoa, isParceiro = false }: ModelCardProps
         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-500" />
 
         {/* Bottom info overlay on hover */}
-        <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-full group-hover:translate-y-0 transition-transform duration-500 bg-gradient-to-t from-black/80 to-transparent">
-          <div className="flex gap-3">
+        <div className="absolute bottom-0 left-0 right-0 p-2 translate-y-full group-hover:translate-y-0 transition-transform duration-500 bg-gradient-to-t from-black/80 to-transparent">
+          <div className="flex gap-2">
             <span className="text-xs text-white/80 transition-colors uppercase tracking-wider">
-              Ver Perfil Completo
+              Ver Perfil
             </span>
           </div>
         </div>
       </div>
 
-      <div className="pt-4 pb-6">
-        <h3 className="text-sm font-semibold text-black tracking-wide uppercase">
+      <div className="pt-2 pb-3">
+        <h3 className="text-xs font-semibold text-black tracking-wide uppercase line-clamp-1">
           {pessoa.nome}
         </h3>
-        <div className="flex items-center gap-3 mt-1 text-xs text-gray-500">
-          {pessoa.localizacao && <span>{pessoa.localizacao}</span>}
-          {pessoa.altura && <span>{pessoa.altura}cm</span>}
-          <span>{pessoa.fotos.length} foto{pessoa.fotos.length !== 1 ? 's' : ''}</span>
+        <div className="mt-1 text-xs text-gray-500">
+          {pessoa.idade && <span>{pessoa.idade} anos</span>}
         </div>
       </div>
     </Link>
