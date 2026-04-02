@@ -20,9 +20,11 @@ export async function GET(request: Request) {
     const { data, error } = await supabaseAdmin
       .from('homepage_config')
       .select('*')
-      .single()
+      .order('updated_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
 
-    if (error && error.code !== 'PGRST116') {
+    if (error) {
       console.error('Homepage config GET error:', error)
       return NextResponse.json({ error: error.message }, { status: 500 })
     }
@@ -48,19 +50,38 @@ export async function PUT(request: Request) {
       updated_at: new Date().toISOString()
     }
 
-    // Upsert: inserir se não existe, atualizar se existe
-    const { data, error } = await supabaseAdmin
+    // Primeiro, verificar se existe algum registro
+    const { data: existingData } = await supabaseAdmin
       .from('homepage_config')
-      .upsert(config, { onConflict: 'id' })
-      .select()
+      .select('id')
+      .limit(1)
       .single()
 
-    if (error) {
-      console.error('Homepage config PUT error:', error)
-      return NextResponse.json({ error: error.message }, { status: 500 })
+    let result
+    if (existingData) {
+      // Atualizar o registro existente
+      const { data, error } = await supabaseAdmin
+        .from('homepage_config')
+        .update(config)
+        .eq('id', existingData.id)
+        .select()
+        .single()
+
+      if (error) throw error
+      result = data
+    } else {
+      // Criar novo registro
+      const { data, error } = await supabaseAdmin
+        .from('homepage_config')
+        .insert(config)
+        .select()
+        .single()
+
+      if (error) throw error
+      result = data
     }
 
-    return NextResponse.json({ success: true, config: data })
+    return NextResponse.json({ success: true, config: result })
   } catch (error: any) {
     console.error('Homepage config PUT error:', error)
     return NextResponse.json({ error: error.message }, { status: 500 })
