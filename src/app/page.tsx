@@ -2,11 +2,15 @@
 
 import { useState, useEffect } from 'react'
 import { PessoaCompleta } from '@/types/database'
-import ModelCardSimple from '@/components/ModelCardSimpleFixed'
+import ModelCardSimpleFixed from '@/components/ModelCardSimpleFixed'
 import FeaturedPupilosCarousel from '@/components/FeaturedPupilosCarousel'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import Link from 'next/link'
+
+// ANTI-CACHE AGRESSIVO
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
 
 function shuffle<T>(array: T[]): T[] {
   const arr = [...array]
@@ -53,6 +57,7 @@ export default function HomePage() {
   const [outros, setOutros] = useState<PessoaCompleta[]>([])
   const [content, setContent] = useState<HomeContent>(DEFAULTS)
   const [loading, setLoading] = useState(true)
+  const [timestamp] = useState(Date.now()) // Cache bust timestamp
 
   useEffect(() => {
     loadData()
@@ -72,10 +77,16 @@ export default function HomePage() {
 
   const loadData = async () => {
     try {
-      // Load content
-      const contentRes = await fetch('/api/paginas?pagina=home')
+      const cacheBust = Date.now()
+      
+      // Load content with cache bust
+      const contentRes = await fetch(`/api/paginas?pagina=home&t=${cacheBust}`, {
+        cache: 'no-store',
+        headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate' }
+      })
       if (contentRes.ok) {
         const contentData = await contentRes.json()
+        console.log('📄 Content carregado:', contentData.conteudo?.titulo)
         if (contentData.success && contentData.conteudo) {
           const c = contentData.conteudo
           setContent({
@@ -86,10 +97,14 @@ export default function HomePage() {
         }
       }
 
-      // Load models
-      const res = await fetch('/api/modelos')
+      // Load models with cache bust
+      const res = await fetch(`/api/modelos?t=${cacheBust}`, {
+        cache: 'no-store',
+        headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate' }
+      })
       if (res.ok) {
         const data = await res.json()
+        console.log('👥 Models carregados:', data.modelos?.length)
         if (data.success) {
           const all = data.modelos
             .filter((m: any) => m.ativo)
@@ -122,6 +137,11 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-white">
       <Header />
+
+      {/* DEBUG INFO VISÍVEL */}
+      <div className="fixed top-0 right-0 bg-red-500 text-white text-xs p-2 z-50">
+        DEBUG: {content.titulo} | Load: {timestamp}
+      </div>
 
       {/* Título dinâmico */}
       <section className="max-w-7xl mx-auto px-6 pt-24 pb-12">
@@ -163,7 +183,7 @@ export default function HomePage() {
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
               {outros.map((pessoa) => (
-                <ModelCardSimple key={pessoa.id} pessoa={pessoa} />
+                <ModelCardSimpleFixed key={pessoa.id} pessoa={pessoa} />
               ))}
             </div>
           )}

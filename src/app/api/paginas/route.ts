@@ -4,6 +4,7 @@ import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs'
 import { join } from 'path'
 
 export const dynamic = 'force-dynamic'
+export const revalidate = 0
 
 const DATA_DIR = '/tmp/paginas-data'
 const getFilePath = (pagina: string) => join(DATA_DIR, `${pagina}.json`)
@@ -144,7 +145,15 @@ export async function GET(request: Request) {
     updated_at: conteudo.updated_at 
   })
 
-  return NextResponse.json({ success: true, conteudo })
+  const response = NextResponse.json({ success: true, conteudo })
+  
+  // ANTI-CACHE HEADERS AGRESSIVOS
+  response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate')
+  response.headers.set('Pragma', 'no-cache')
+  response.headers.set('Expires', '0')
+  response.headers.set('Surrogate-Control', 'no-store')
+  
+  return response
 }
 
 export async function PUT(request: Request) {
@@ -210,7 +219,15 @@ export async function PUT(request: Request) {
     }
     
     console.log(`✅ PUT finalizado com sucesso (${method})`)
-    return NextResponse.json({ success: true, conteudo: saved, method })
+    const response = NextResponse.json({ success: true, conteudo: saved, method })
+    
+    // ANTI-CACHE HEADERS AGRESSIVOS
+    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate')
+    response.headers.set('Pragma', 'no-cache')
+    response.headers.set('Expires', '0')
+    response.headers.set('Surrogate-Control', 'no-store')
+    
+    return response
   } catch (err: any) {
     console.error('💥 PUT CRITICAL ERROR:', err)
     return NextResponse.json({ error: `Falha crítica: ${err.message}` }, { status: 500 })

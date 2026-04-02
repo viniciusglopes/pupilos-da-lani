@@ -1,5 +1,8 @@
 import { NextResponse } from 'next/server'
 
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export async function GET(request: Request) {
   try {
     console.log('📋 API GET /modelos - Listando modelos')
@@ -30,12 +33,20 @@ export async function GET(request: Request) {
     const modelos = await response.json()
     console.log(`✅ ${modelos.length} modelos encontrados`)
     
-    return NextResponse.json({ 
+    const response = NextResponse.json({ 
       success: true,
       modelos,
       total: modelos.length,
       method: 'fetch_direto_get'
     })
+    
+    // ANTI-CACHE HEADERS AGRESSIVOS
+    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate')
+    response.headers.set('Pragma', 'no-cache')
+    response.headers.set('Expires', '0')
+    response.headers.set('Surrogate-Control', 'no-store')
+    
+    return response
 
   } catch (error: any) {
     console.error('💥 Erro GET modelos:', error)
