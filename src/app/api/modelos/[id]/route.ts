@@ -1,6 +1,41 @@
 import { NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
 
+export async function GET(
+  request: Request,
+  { params }: { params: { id: string } }
+) {
+  try {
+    // Buscar pessoa específica com fotos e videos
+    const { data: pessoa, error } = await supabaseAdmin
+      .from('pessoas')
+      .select(`
+        *,
+        fotos(*),
+        videos(*)
+      `)
+      .eq('id', params.id)
+      .eq('ativo', true)
+      .single()
+
+    if (error) {
+      if (error.code === 'PGRST116') {
+        return NextResponse.json({ error: 'Pupilo não encontrado' }, { status: 404 })
+      }
+      console.error('Erro buscando pessoa:', error)
+      return NextResponse.json({ error: error.message }, { status: 500 })
+    }
+
+    return NextResponse.json({ success: true, pupilo: pessoa })
+
+  } catch (error: any) {
+    console.error('Erro na API get:', error)
+    return NextResponse.json({ 
+      error: error.message || 'Erro interno do servidor' 
+    }, { status: 500 })
+  }
+}
+
 export async function PATCH(
   request: Request,
   { params }: { params: { id: string } }

@@ -48,27 +48,28 @@ export default function PupiloPage() {
 
   const loadPupilo = async (id: string) => {
     try {
-      // CACHE BUST: Usar fetch direto com timestamp para sempre buscar dados atualizados
+      // Usar API individual segura
       const timestamp = Date.now()
-      const response = await fetch(`https://ljttishwndzkcytkdsrc.supabase.co/rest/v1/pessoas?select=*,fotos(*),videos(*)&id=eq.${id}&ativo=eq.true&t=${timestamp}`, {
+      const response = await fetch(`/api/modelos/${id}?t=${timestamp}`, {
+        cache: 'no-store',
         headers: {
-          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxqdHRpc2h3bmR6a2N5dGtkc3JjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0NzA2NjMsImV4cCI6MjA5MDA0NjY2M30.4lH691aAK1hdIhFXVQxmzvyGTxTnGuVnTZEMN_8clpA',
-          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxqdHRpc2h3bmR6a2N5dGtkc3JjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0NzA2NjMsImV4cCI6MjA5MDA0NjY2M30.4lH691aAK1hdIhFXVQxmzvyGTxTnGuVnTZEMN_8clpA',
           'Cache-Control': 'no-cache',
           'Pragma': 'no-cache'
         }
       })
 
       if (!response.ok) {
-        throw new Error(`Erro ${response.status}: ${response.statusText}`)
+        const errorData = await response.json()
+        throw new Error(errorData.error || `Erro ${response.status}`)
       }
 
       const data = await response.json()
-      if (!data || data.length === 0) {
+      if (!data.success || !data.pupilo) {
         throw new Error('Pupilo não encontrado')
       }
       
-      const pupilo = data[0] as PessoaCompleta
+      const pupilo = data.pupilo as PessoaCompleta
+      
       console.log('✅ Pupilo carregado:', { 
         id: pupilo.id, 
         nome: pupilo.nome, 
