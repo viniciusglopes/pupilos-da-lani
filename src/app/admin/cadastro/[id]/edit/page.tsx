@@ -81,12 +81,18 @@ export default function EditModelPage() {
     setMessage(null)
 
     try {
-      const { error } = await supabase
-        .from('pessoas')
-        .update({
+      // Usar API ao invés de client-side Supabase
+      const response = await fetch(`/api/modelos/${pessoa.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
           nome: pessoa.nome,
           descricao: pessoa.descricao,
           altura: pessoa.altura,
+          idade: pessoa.idade,
+          sexo: pessoa.sexo,
           cor_olhos: pessoa.cor_olhos,
           cor_cabelo: pessoa.cor_cabelo,
           medidas_busto: pessoa.medidas_busto,
@@ -102,14 +108,24 @@ export default function EditModelPage() {
           destaque: pessoa.destaque,
           data_consentimento: pessoa.consentimento_contato ? pessoa.data_consentimento || new Date().toISOString() : null
         })
-        .eq('id', id)
+      })
 
-      if (error) throw error
+      if (!response.ok) {
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Erro ao atualizar pupilo')
+      }
+
+      const result = await response.json()
+      if (!result.success) {
+        throw new Error(result.error || 'Erro na resposta da API')
+      }
 
       setMessage({ type: 'success', text: 'Pupilo atualizado com sucesso!' })
       
-      setTimeout(() => {
-        router.push('/admin')
+      // Recarregar dados atualizados
+      setTimeout(async () => {
+        await loadPessoa()
+        setMessage(null)
       }, 2000)
 
     } catch (error: any) {
@@ -371,7 +387,7 @@ export default function EditModelPage() {
               <h2 className="text-sm font-semibold text-black mb-6 uppercase tracking-widest">Informacoes Basicas</h2>
               
               <form onSubmit={handleSave} className="space-y-4">
-                {/* Nome e altura */}
+                {/* Nome e detalhes básicos */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-medium text-gray-700 mb-1 uppercase tracking-widest">
@@ -388,12 +404,43 @@ export default function EditModelPage() {
                   </div>
                   <div>
                     <label className="block text-xs font-medium text-gray-700 mb-1 uppercase tracking-widest">
+                      Sexo
+                    </label>
+                    <select
+                      name="sexo"
+                      value={pessoa.sexo || ''}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black"
+                    >
+                      <option value="">Selecione...</option>
+                      <option value="Feminino">Feminino</option>
+                      <option value="Masculino">Masculino</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Altura e idade */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1 uppercase tracking-widest">
                       Altura (cm)
                     </label>
                     <input
                       type="number"
                       name="altura"
                       value={pessoa.altura || ''}
+                      onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-1 uppercase tracking-widest">
+                      Idade
+                    </label>
+                    <input
+                      type="number"
+                      name="idade"
+                      value={pessoa.idade || ''}
                       onChange={handleInputChange}
                       className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black"
                     />
