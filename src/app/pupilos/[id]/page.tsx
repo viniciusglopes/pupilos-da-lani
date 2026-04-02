@@ -4,8 +4,6 @@ import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { PessoaCompleta } from '@/types/database'
-import Image from 'next/image'
-import SimpleImage from '@/components/SimpleImage'
 import Link from 'next/link'
 
 interface CamposVisibilidade {
@@ -74,7 +72,8 @@ export default function PupiloPage() {
         id: pupilo.id, 
         nome: pupilo.nome, 
         fotos: pupilo.fotos?.length || 0,
-        videos: pupilo.videos?.length || 0 
+        videos: pupilo.videos?.length || 0,
+        primeiraFoto: pupilo.fotos?.[0]?.url_arquivo 
       })
       
       setPupilo(pupilo)
@@ -206,14 +205,15 @@ export default function PupiloPage() {
               <>
                 {/* Main Image */}
                 <div className="relative aspect-[4/5] bg-gray-50 mb-6">
-                  <SimpleImage
+                  <img
                     src={fotos[currentFoto].url_arquivo}
                     alt={`${pupilo.nome} - ${currentFoto + 1}`}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 768px) 100vw, 66vw"
-                    quality={85}
-                    priority={currentFoto === 0}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement
+                      target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iI2Y5ZmFmYiIvPgo8dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzM3NDE1MSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkVycm8gYW8gY2FycmVnYXI8L3RleHQ+Cjwvc3ZnPg=='
+                    }}
+                    onLoad={() => console.log('Imagem carregada:', fotos[currentFoto].url_arquivo)}
                   />
                   {fotos.length > 1 && (
                     <>
@@ -247,15 +247,11 @@ export default function PupiloPage() {
                           index === currentFoto ? 'ring-2 ring-black' : 'opacity-60 hover:opacity-100'
                         } transition-all`}
                       >
-                        <SimpleImage
+                        <img
                           src={foto.url_arquivo}
                           alt={`${index + 1}`}
-                          fill
-                          className="object-cover"
-                          sizes="100px"
-                          quality={60}
-                          width={100}
-                          height={100}
+                          className="w-full h-full object-cover"
+                          loading="lazy"
                         />
                       </button>
                     ))}
