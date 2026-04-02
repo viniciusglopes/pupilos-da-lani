@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { PessoaCompleta } from '@/types/database'
-import ModelCardSimple from '@/components/ModelCardSimple'
+import ModelCardSimple from '@/components/ModelCardSimpleFixed'
 import FeaturedPupilosCarousel from '@/components/FeaturedPupilosCarousel'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
