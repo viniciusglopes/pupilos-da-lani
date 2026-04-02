@@ -58,6 +58,7 @@ export default function PupiloPage() {
         .eq('id', id)
         .eq('ativo', true)
         .single()
+        .single()
 
       if (error) throw error
       if (!data) throw new Error('Pupilo não encontrado')
