@@ -137,11 +137,6 @@ export default function HomePage() {
     <div className="min-h-screen bg-white">
       <Header />
 
-      {/* DEBUG INFO VISÍVEL */}
-      <div className="fixed top-0 right-0 bg-red-500 text-white text-xs p-2 z-50">
-        DEBUG: {content.titulo} | Load: {timestamp}
-      </div>
-
       {/* Título dinâmico */}
       <section className="max-w-7xl mx-auto px-6 pt-24 pb-12">
         <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-black uppercase">
