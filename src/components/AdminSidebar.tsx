@@ -26,14 +26,9 @@ export default function AdminSidebar() {
       description: 'Cadastrar novo pupilo'
     },
     {
-      title: 'Analytics',
-      href: '/admin/analytics',
-      description: 'Estatisticas e metricas'
-    },
-    {
-      title: 'Administradores',
-      href: '/admin/admins',
-      description: 'Gerenciar acesso'
+      title: 'Configurar Homepage',
+      href: '/admin/homepage-config',
+      description: 'Controlar secoes da pagina inicial'
     },
     {
       title: 'Pagina Principal',
@@ -51,6 +46,21 @@ export default function AdminSidebar() {
       description: 'Personalizar rodape'
     },
     {
+      title: 'Analytics',
+      href: '/admin/analytics',
+      description: 'Estatisticas e metricas'
+    },
+    {
+      title: 'Debug Portal',
+      href: '/admin/debug',
+      description: 'Informacoes tecnicas'
+    },
+    {
+      title: 'Administradores',
+      href: '/admin/admins',
+      description: 'Gerenciar acesso'
+    },
+    {
       title: 'Campos Visiveis',
       href: '/admin/campos-visibilidade',
       description: 'Controlar exibicao pagina pupilo'
@@ -59,6 +69,12 @@ export default function AdminSidebar() {
       title: 'Configuracoes',
       href: '/admin/config',
       description: 'Configuracoes do sistema'
+    },
+    {
+      title: 'Sair',
+      href: '#logout',
+      description: 'Encerrar sessao admin',
+      isLogout: true
     }
   ]
 
@@ -104,6 +120,25 @@ export default function AdminSidebar() {
           <nav className="flex-1 px-4 py-6 space-y-1">
             {menuItems.map((item) => {
               const isActive = pathname === item.href
+              
+              if (item.isLogout) {
+                return (
+                  <button
+                    key={item.href}
+                    onClick={() => {
+                      logout()
+                      setIsOpen(false)
+                    }}
+                    className="w-full flex items-center px-4 py-3 transition-colors border-l-2 text-red-600 hover:bg-red-50 border-transparent hover:border-red-300"
+                  >
+                    <div className="flex-1 text-left">
+                      <div className="text-sm font-medium uppercase tracking-wide">{item.title}</div>
+                      <div className="text-xs text-red-400">{item.description}</div>
+                    </div>
+                  </button>
+                )
+              }
+              
               return (
                 <Link
                   key={item.href}
@@ -137,13 +172,6 @@ export default function AdminSidebar() {
                 <div className="text-xs text-gray-400">admin@pupiloslani.com.br</div>
               </div>
             </div>
-            
-            <button
-              onClick={logout}
-              className="w-full mt-2 flex items-center space-x-2 px-4 py-2 text-gray-600 hover:bg-gray-100 transition-colors text-sm uppercase tracking-wide"
-            >
-              <span>Sair</span>
-            </button>
           </div>
         </div>
       </div>
