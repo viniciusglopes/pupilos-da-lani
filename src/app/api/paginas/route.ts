@@ -145,15 +145,15 @@ export async function GET(request: Request) {
     updated_at: conteudo.updated_at 
   })
 
-  const response = NextResponse.json({ success: true, conteudo })
+  const getResponse = NextResponse.json({ success: true, conteudo })
   
   // ANTI-CACHE HEADERS AGRESSIVOS
-  response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate')
-  response.headers.set('Pragma', 'no-cache')
-  response.headers.set('Expires', '0')
-  response.headers.set('Surrogate-Control', 'no-store')
+  getResponse.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate')
+  getResponse.headers.set('Pragma', 'no-cache')
+  getResponse.headers.set('Expires', '0')
+  getResponse.headers.set('Surrogate-Control', 'no-store')
   
-  return response
+  return getResponse
 }
 
 export async function PUT(request: Request) {
@@ -219,15 +219,15 @@ export async function PUT(request: Request) {
     }
     
     console.log(`✅ PUT finalizado com sucesso (${method})`)
-    const response = NextResponse.json({ success: true, conteudo: saved, method })
+    const putResponse = NextResponse.json({ success: true, conteudo: saved, method })
     
     // ANTI-CACHE HEADERS AGRESSIVOS
-    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate')
-    response.headers.set('Pragma', 'no-cache')
-    response.headers.set('Expires', '0')
-    response.headers.set('Surrogate-Control', 'no-store')
+    putResponse.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate')
+    putResponse.headers.set('Pragma', 'no-cache')
+    putResponse.headers.set('Expires', '0')
+    putResponse.headers.set('Surrogate-Control', 'no-store')
     
-    return response
+    return putResponse
   } catch (err: any) {
     console.error('💥 PUT CRITICAL ERROR:', err)
     return NextResponse.json({ error: `Falha crítica: ${err.message}` }, { status: 500 })
