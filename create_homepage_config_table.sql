@@ -1,14 +1,15 @@
 -- Criar tabela para configurações da homepage
 CREATE TABLE IF NOT EXISTS public.homepage_config (
     id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+    mostrar_titulo boolean DEFAULT true NOT NULL,
     mostrar_destaques boolean DEFAULT true NOT NULL,
     created_at timestamp with time zone DEFAULT now(),
     updated_at timestamp with time zone DEFAULT now()
 );
 
 -- Inserir configuração padrão
-INSERT INTO public.homepage_config (mostrar_destaques)
-VALUES (true)
+INSERT INTO public.homepage_config (mostrar_titulo, mostrar_destaques)
+VALUES (true, true)
 ON CONFLICT (id) DO NOTHING;
 
 -- Habilitar RLS

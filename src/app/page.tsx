@@ -51,6 +51,7 @@ const DEFAULTS: HomeContent = {
 }
 
 interface HomepageConfig {
+  mostrar_titulo: boolean
   mostrar_destaques: boolean
 }
 
@@ -60,6 +61,7 @@ export default function HomePage() {
   const [outros, setOutros] = useState<PessoaCompleta[]>([])
   const [content, setContent] = useState<HomeContent>(DEFAULTS)
   const [config, setConfig] = useState<HomepageConfig>({
+    mostrar_titulo: true,
     mostrar_destaques: true
   })
   const [loading, setLoading] = useState(true)
@@ -157,17 +159,19 @@ export default function HomePage() {
     <div className="min-h-screen bg-white">
       <Header />
 
-      {/* Título dinâmico */}
-      <section className="max-w-7xl mx-auto px-6 pt-24 pb-12">
-        <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-black uppercase">
-          {content.titulo}
-        </h1>
-        <p className="mt-4 text-gray-500 text-base leading-relaxed whitespace-pre-line max-w-xl">
-          {content.subtitulo}
-        </p>
-      </section>
+      {/* Título dinâmico - Controlável */}
+      {config.mostrar_titulo && (
+        <section className="max-w-7xl mx-auto px-6 pt-24 pb-12">
+          <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-black uppercase">
+            {content.titulo}
+          </h1>
+          <p className="mt-4 text-gray-500 text-base leading-relaxed whitespace-pre-line max-w-xl">
+            {content.subtitulo}
+          </p>
+        </section>
+      )}
 
-      <main className="max-w-7xl mx-auto px-6 pb-24">
+      <main className={`max-w-7xl mx-auto px-6 pb-24 ${!config.mostrar_titulo ? 'pt-24' : ''}`}>
         {/* Featured Pupilos Carousel - Controlado por config */}
         {config.mostrar_destaques && destaques.length > 0 && (
           <FeaturedPupilosCarousel 

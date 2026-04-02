@@ -4,12 +4,14 @@ import { supabaseAdmin } from '@/lib/supabase'
 export const dynamic = 'force-dynamic'
 
 interface HomepageConfig {
+  mostrar_titulo: boolean
   mostrar_destaques: boolean
   created_at?: string
   updated_at?: string
 }
 
 const DEFAULT_CONFIG: HomepageConfig = {
+  mostrar_titulo: true,
   mostrar_destaques: true
 }
 
@@ -38,9 +40,10 @@ export async function GET(request: Request) {
 export async function PUT(request: Request) {
   try {
     const body = await request.json()
-    const { mostrar_destaques } = body
+    const { mostrar_titulo, mostrar_destaques } = body
 
     const config = {
+      mostrar_titulo: mostrar_titulo !== false,
       mostrar_destaques: mostrar_destaques !== false,
       updated_at: new Date().toISOString()
     }
