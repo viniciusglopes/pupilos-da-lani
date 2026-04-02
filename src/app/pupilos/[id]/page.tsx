@@ -48,22 +48,37 @@ export default function PupiloPage() {
 
   const loadPupilo = async (id: string) => {
     try {
-      const { data, error } = await supabase
-        .from('pessoas')
-        .select(`
-          *,
-          fotos (*),
-          videos (*)
-        `)
-        .eq('id', id)
-        .eq('ativo', true)
-        .single()
+      // CACHE BUST: Usar fetch direto com timestamp para sempre buscar dados atualizados
+      const timestamp = Date.now()
+      const response = await fetch(`https://ljttishwndzkcytkdsrc.supabase.co/rest/v1/pessoas?select=*,fotos(*),videos(*)&id=eq.${id}&ativo=eq.true&t=${timestamp}`, {
+        headers: {
+          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxqdHRpc2h3bmR6a2N5dGtkc3JjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0NzA2NjMsImV4cCI6MjA5MDA0NjY2M30.4lH691aAK1hdIhFXVQxmzvyGTxTnGuVnTZEMN_8clpA',
+          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxqdHRpc2h3bmR6a2N5dGtkc3JjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0NzA2NjMsImV4cCI6MjA5MDA0NjY2M30.4lH691aAK1hdIhFXVQxmzvyGTxTnGuVnTZEMN_8clpA',
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      })
 
-      if (error) throw error
-      if (!data) throw new Error('Pupilo não encontrado')
+      if (!response.ok) {
+        throw new Error(`Erro ${response.status}: ${response.statusText}`)
+      }
+
+      const data = await response.json()
+      if (!data || data.length === 0) {
+        throw new Error('Pupilo não encontrado')
+      }
       
-      setPupilo(data as PessoaCompleta)
+      const pupilo = data[0] as PessoaCompleta
+      console.log('✅ Pupilo carregado:', { 
+        id: pupilo.id, 
+        nome: pupilo.nome, 
+        fotos: pupilo.fotos?.length || 0,
+        videos: pupilo.videos?.length || 0 
+      })
+      
+      setPupilo(pupilo)
     } catch (err: any) {
+      console.error('❌ Erro ao carregar pupilo:', err)
       setError(err.message || 'Erro ao carregar pupilo')
     } finally {
       setLoading(false)
