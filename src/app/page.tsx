@@ -52,7 +52,6 @@ const DEFAULTS: HomeContent = {
 
 interface HomepageConfig {
   mostrar_destaques: boolean
-  mostrar_catalogo: boolean
 }
 
 export default function HomePage() {
@@ -61,8 +60,7 @@ export default function HomePage() {
   const [outros, setOutros] = useState<PessoaCompleta[]>([])
   const [content, setContent] = useState<HomeContent>(DEFAULTS)
   const [config, setConfig] = useState<HomepageConfig>({
-    mostrar_destaques: true,
-    mostrar_catalogo: true
+    mostrar_destaques: true
   })
   const [loading, setLoading] = useState(true)
   const [timestamp] = useState(Date.now()) // Cache bust timestamp
@@ -179,9 +177,8 @@ export default function HomePage() {
           />
         )}
 
-        {/* Catalogo - Controlado por config */}
-        {config.mostrar_catalogo && (
-          <section>
+        {/* Catalogo - Sempre visível, spacing dinâmico */}
+        <section className={config.mostrar_destaques ? "" : "mt-0"}>
           <div className="mb-10">
             <h2 className="text-xs font-semibold tracking-widest uppercase text-gray-400">
               {content.conteudo.catalogo_label}
@@ -204,8 +201,7 @@ export default function HomePage() {
               ))}
             </div>
           )}
-          </section>
-        )}
+        </section>
       </main>
 
       <Footer />

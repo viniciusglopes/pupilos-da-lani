@@ -6,13 +6,11 @@ import AdminSidebar from '@/components/AdminSidebar'
 
 interface HomepageConfig {
   mostrar_destaques: boolean
-  mostrar_catalogo: boolean
 }
 
 export default function AdminHomepageConfigPage() {
   const [config, setConfig] = useState<HomepageConfig>({
-    mostrar_destaques: true,
-    mostrar_catalogo: true
+    mostrar_destaques: true
   })
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -108,8 +106,8 @@ export default function AdminHomepageConfigPage() {
         <div className="max-w-4xl mx-auto">
           <div className="flex items-center justify-between mb-8">
             <div>
-              <h1 className="text-2xl font-bold tracking-tight text-black">Configurações Homepage</h1>
-              <p className="text-gray-600 mt-1">Configure quais seções aparecem na página inicial</p>
+              <h1 className="text-2xl font-bold tracking-tight text-black">Controle Seção Destaques</h1>
+              <p className="text-gray-600 mt-1">Ligar/desligar a seção destaques da homepage</p>
             </div>
           </div>
 
@@ -127,25 +125,25 @@ export default function AdminHomepageConfigPage() {
             <form onSubmit={handleSave} className="space-y-8">
               <div>
                 <h2 className="text-lg font-bold text-black mb-6 uppercase tracking-widest">
-                  Seções da Homepage
+                  Controle Seção Destaques
                 </h2>
                 
                 <div className="space-y-6">
                   {/* Destaques */}
-                  <div className="flex items-center justify-between p-6 border border-gray-200">
+                  <div className="flex items-center justify-between p-8 border-2 border-gray-200 bg-gray-50">
                     <div className="flex-1">
-                      <h3 className="text-base font-semibold text-black mb-2">
-                        Seção Destaques
+                      <h3 className="text-lg font-semibold text-black mb-3">
+                        🌟 Seção Destaques
                       </h3>
-                      <p className="text-sm text-gray-600">
+                      <p className="text-sm text-gray-600 mb-2">
                         Carrossel com pupilos marcados como "destaque" na página inicial.
-                        <br />
-                        <span className="text-xs text-gray-400">
-                          Componente: FeaturedPupilosCarousel
-                        </span>
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        <strong>Quando ligado:</strong> Carrossel aparece entre título e catálogo<br/>
+                        <strong>Quando desligado:</strong> Catálogo "sobe" próximo ao título
                       </p>
                     </div>
-                    <div className="ml-6">
+                    <div className="ml-8">
                       <label className="relative inline-flex items-center cursor-pointer">
                         <input
                           type="checkbox"
@@ -153,34 +151,7 @@ export default function AdminHomepageConfigPage() {
                           onChange={() => handleToggle('mostrar_destaques')}
                           className="sr-only peer"
                         />
-                        <div className="w-14 h-8 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-black/20 rounded-full peer peer-checked:after:translate-x-6 peer-checked:after:border-white after:content-[''] after:absolute after:top-1 after:left-1 after:bg-white after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-black"></div>
-                      </label>
-                    </div>
-                  </div>
-
-                  {/* Catálogo */}
-                  <div className="flex items-center justify-between p-6 border border-gray-200">
-                    <div className="flex-1">
-                      <h3 className="text-base font-semibold text-black mb-2">
-                        Seção Catálogo
-                      </h3>
-                      <p className="text-sm text-gray-600">
-                        Grid com todos os pupilos ativos (exceto destaques) na página inicial.
-                        <br />
-                        <span className="text-xs text-gray-400">
-                          Componente: ModelCardSimpleFixed
-                        </span>
-                      </p>
-                    </div>
-                    <div className="ml-6">
-                      <label className="relative inline-flex items-center cursor-pointer">
-                        <input
-                          type="checkbox"
-                          checked={config.mostrar_catalogo}
-                          onChange={() => handleToggle('mostrar_catalogo')}
-                          className="sr-only peer"
-                        />
-                        <div className="w-14 h-8 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-black/20 rounded-full peer peer-checked:after:translate-x-6 peer-checked:after:border-white after:content-[''] after:absolute after:top-1 after:left-1 after:bg-white after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-black"></div>
+                        <div className="w-16 h-9 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-black/20 rounded-full peer peer-checked:after:translate-x-7 peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-8 after:w-8 after:transition-all peer-checked:bg-black"></div>
                       </label>
                     </div>
                   </div>
@@ -188,30 +159,34 @@ export default function AdminHomepageConfigPage() {
               </div>
 
               {/* Preview Status */}
-              <div className="bg-gray-50 p-6 border border-gray-200">
-                <h3 className="text-sm font-semibold text-black mb-3 uppercase tracking-widest">
-                  Preview das Seções
+              <div className="bg-white p-6 border border-gray-200">
+                <h3 className="text-sm font-semibold text-black mb-4 uppercase tracking-widest">
+                  Estrutura da Homepage
                 </h3>
-                <div className="space-y-2 text-sm">
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600">Título + Subtítulo</span>
-                    <span className="text-green-600 font-medium">✓ Sempre visível</span>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3 p-3 bg-gray-50 border-l-4 border-gray-400">
+                    <span className="text-gray-600">1. Header</span>
+                    <span className="text-gray-400 text-xs">• Sempre visível</span>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600">Seção Destaques</span>
-                    <span className={`font-medium ${config.mostrar_destaques ? 'text-green-600' : 'text-red-600'}`}>
-                      {config.mostrar_destaques ? '✓ Visível' : '✗ Oculta'}
+                  <div className="flex items-center gap-3 p-3 bg-gray-50 border-l-4 border-gray-400">
+                    <span className="text-gray-600">2. Título + Subtítulo</span>
+                    <span className="text-gray-400 text-xs">• Sempre visível</span>
+                  </div>
+                  <div className={`flex items-center gap-3 p-3 border-l-4 ${config.mostrar_destaques ? 'bg-green-50 border-green-500' : 'bg-red-50 border-red-400'}`}>
+                    <span className="text-gray-600">3. Seção Destaques</span>
+                    <span className={`text-xs font-medium ${config.mostrar_destaques ? 'text-green-600' : 'text-red-600'}`}>
+                      {config.mostrar_destaques ? '• Visível' : '• Oculta'}
                     </span>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600">Seção Catálogo</span>
-                    <span className={`font-medium ${config.mostrar_catalogo ? 'text-green-600' : 'text-red-600'}`}>
-                      {config.mostrar_catalogo ? '✓ Visível' : '✗ Oculta'}
+                  <div className="flex items-center gap-3 p-3 bg-blue-50 border-l-4 border-blue-500">
+                    <span className="text-gray-600">4. Seção Catálogo</span>
+                    <span className="text-blue-600 text-xs font-medium">
+                      • Sempre visível {!config.mostrar_destaques && '(cola no título)'}
                     </span>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-gray-600">Header + Footer</span>
-                    <span className="text-green-600 font-medium">✓ Sempre visível</span>
+                  <div className="flex items-center gap-3 p-3 bg-gray-50 border-l-4 border-gray-400">
+                    <span className="text-gray-600">5. Footer</span>
+                    <span className="text-gray-400 text-xs">• Sempre visível</span>
                   </div>
                 </div>
               </div>

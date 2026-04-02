@@ -7,14 +7,13 @@
 CREATE TABLE IF NOT EXISTS public.homepage_config (
     id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
     mostrar_destaques boolean DEFAULT true NOT NULL,
-    mostrar_catalogo boolean DEFAULT true NOT NULL,
     created_at timestamp with time zone DEFAULT now(),
     updated_at timestamp with time zone DEFAULT now()
 );
 
 -- Inserir configuração padrão
-INSERT INTO public.homepage_config (mostrar_destaques, mostrar_catalogo)
-VALUES (true, true)
+INSERT INTO public.homepage_config (mostrar_destaques)
+VALUES (true)
 ON CONFLICT (id) DO NOTHING;
 
 -- Habilitar RLS
@@ -48,7 +47,7 @@ Depois da tabela criada, você poderá:
 
 - **Admin**: `https://pupiloslani.com.br/admin/homepage-config`
 - **Ligar/Desligar**: Seção Destaques dinamicamente
-- **Controle Total**: Das seções da homepage
+- **Comportamento**: Quando destaques desligado, catálogo "sobe" perto do título
 
 ---
 

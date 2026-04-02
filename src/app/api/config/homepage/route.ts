@@ -5,14 +5,12 @@ export const dynamic = 'force-dynamic'
 
 interface HomepageConfig {
   mostrar_destaques: boolean
-  mostrar_catalogo: boolean
   created_at?: string
   updated_at?: string
 }
 
 const DEFAULT_CONFIG: HomepageConfig = {
-  mostrar_destaques: true,
-  mostrar_catalogo: true
+  mostrar_destaques: true
 }
 
 export async function GET(request: Request) {
@@ -40,11 +38,10 @@ export async function GET(request: Request) {
 export async function PUT(request: Request) {
   try {
     const body = await request.json()
-    const { mostrar_destaques, mostrar_catalogo } = body
+    const { mostrar_destaques } = body
 
     const config = {
       mostrar_destaques: mostrar_destaques !== false,
-      mostrar_catalogo: mostrar_catalogo !== false,
       updated_at: new Date().toISOString()
     }
 
