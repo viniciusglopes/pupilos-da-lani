@@ -94,7 +94,7 @@ export default function HomePage() {
       })
       if (configRes.ok) {
         const configData = await configRes.json()
-        console.log('⚙️ Config carregado:', configData.config)
+        // console.log('⚙️ Config carregado:', configData.config)
         if (configData.success && configData.config) {
           setConfig(configData.config)
         }
@@ -107,7 +107,7 @@ export default function HomePage() {
       })
       if (contentRes.ok) {
         const contentData = await contentRes.json()
-        console.log('📄 Content carregado:', contentData.conteudo?.titulo)
+        // console.log('📄 Content carregado:', contentData.conteudo?.titulo)
         if (contentData.success && contentData.conteudo) {
           const c = contentData.conteudo
           setContent({
@@ -125,7 +125,7 @@ export default function HomePage() {
       })
       if (res.ok) {
         const data = await res.json()
-        console.log('👥 Models carregados:', data.modelos?.length)
+        // console.log('👥 Models carregados:', data.modelos?.length)
         if (data.success) {
           const all = data.modelos
             .filter((m: any) => m.ativo)
@@ -136,7 +136,7 @@ export default function HomePage() {
         }
       }
     } catch (err) {
-      console.error('Error:', err)
+      // console.error('Error:', err)
     } finally {
       setLoading(false)
     }
