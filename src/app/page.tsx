@@ -8,9 +8,8 @@ import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import Link from 'next/link'
 
-// ANTI-CACHE AGRESSIVO
-export const dynamic = 'force-dynamic'
-export const revalidate = 0
+// NOTA: Configurações anti-cache removidas (incompatíveis com 'use client')
+// Client Components controlam cache via fetch() headers
 
 function shuffle<T>(array: T[]): T[] {
   const arr = [...array]
