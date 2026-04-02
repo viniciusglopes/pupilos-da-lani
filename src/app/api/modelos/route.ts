@@ -1,68 +1,51 @@
 import { NextResponse } from 'next/server'
+import { supabase, supabaseAdmin } from '@/lib/supabase'
 
 export const dynamic = 'force-dynamic'
-export const revalidate = 0
 
 export async function GET(request: Request) {
   try {
-    console.log('📋 API GET /modelos - Listando modelos')
-    
     const { searchParams } = new URL(request.url)
-    const limit = searchParams.get('limit') || '50'
-    const offset = searchParams.get('offset') || '0'
+    const limit = parseInt(searchParams.get('limit') || '50')
+    const offset = parseInt(searchParams.get('offset') || '0')
     
-    // Buscar pessoas ativas com fotos e videos via fetch direto
-    const response = await fetch(`https://ljttishwndzkcytkdsrc.supabase.co/rest/v1/pessoas?select=*,fotos(*),videos(*)&ativo=eq.true&order=created_at.desc&limit=${limit}&offset=${offset}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxqdHRpc2h3bmR6a2N5dGtkc3JjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0NzA2NjMsImV4cCI6MjA5MDA0NjY2M30.4lH691aAK1hdIhFXVQxmzvyGTxTnGuVnTZEMN_8clpA',
-        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxqdHRpc2h3bmR6a2N5dGtkc3JjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0NzA2NjMsImV4cCI6MjA5MDA0NjY2M30.4lH691aAK1hdIhFXVQxmzvyGTxTnGuVnTZEMN_8clpA'
-      }
-    })
+    // Buscar pessoas ativas com fotos e videos usando biblioteca oficial
+    const { data: modelos, error } = await supabase
+      .from('pessoas')
+      .select(`
+        *,
+        fotos(*),
+        videos(*)
+      `)
+      .eq('ativo', true)
+      .order('created_at', { ascending: false })
+      .range(offset, offset + limit - 1)
     
-    if (!response.ok) {
-      const errorText = await response.text()
-      console.error('❌ Erro listagem:', response.status, errorText)
+    if (error) {
+      console.error('❌ Erro listagem:', error)
       return NextResponse.json({ 
-        error: `Erro ${response.status}: ${errorText}`,
-        method: 'fetch_direto_get'
-      }, { status: response.status })
+        error: `Database error: ${error.message}`,
+        code: error.code
+      }, { status: 500 })
     }
     
-    const modelos = await response.json()
-    console.log(`✅ ${modelos.length} modelos encontrados`)
-    
-    const apiResponse = NextResponse.json({ 
+    return NextResponse.json({ 
       success: true,
-      modelos,
-      total: modelos.length,
-      method: 'fetch_direto_get'
+      modelos: modelos || [],
+      total: modelos?.length || 0
     })
-    
-    // ANTI-CACHE HEADERS AGRESSIVOS
-    apiResponse.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate')
-    apiResponse.headers.set('Pragma', 'no-cache')
-    apiResponse.headers.set('Expires', '0')
-    apiResponse.headers.set('Surrogate-Control', 'no-store')
-    
-    return apiResponse
 
   } catch (error: any) {
     console.error('💥 Erro GET modelos:', error)
     return NextResponse.json({ 
-      error: error.message || 'Erro interno do servidor',
-      method: 'fetch_direto_get'
+      error: error.message || 'Erro interno do servidor'
     }, { status: 500 })
   }
 }
 
 export async function POST(request: Request) {
   try {
-    console.log('🚀 API /modelos iniciada (FETCH DIRETO)')
-    
     const formData = await request.json()
-    console.log('📝 Dados recebidos:', { nome: formData.nome, email: formData.email })
     
     // Validações básicas
     if (!formData.nome?.trim()) {
@@ -81,48 +64,36 @@ export async function POST(request: Request) {
       }, { status: 400 })
     }
 
-    // Usar FETCH direto ao Supabase (bypass biblioteca com bug)
-    console.log('💾 Inserindo via FETCH direto...')
+    // Inserir usando biblioteca oficial
     const payload = {
       ...formData,
       data_consentimento: formData.consentimento_contato ? new Date().toISOString() : null
     }
     
-    const postResponse = await fetch('https://ljttishwndzkcytkdsrc.supabase.co/rest/v1/pessoas', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxqdHRpc2h3bmR6a2N5dGtkc3JjIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NDQ3MDY2MywiZXhwIjoyMDkwMDQ2NjYzfQ.1AWXeQ-0WtWsSRyOtQoh8YJR6hiz9nn-5wV6A86ifuk',
-        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxqdHRpc2h3bmR6a2N5dGtkc3JjIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NDQ3MDY2MywiZXhwIjoyMDkwMDQ2NjYzfQ.1AWXeQ-0WtWsSRyOtQoh8YJR6hiz9nn-5wV6A86ifuk',
-        'Prefer': 'return=representation'  // Retorna o objeto criado
-      },
-      body: JSON.stringify(payload)
-    })
+    const { data: pessoa, error } = await supabaseAdmin
+      .from('pessoas')
+      .insert(payload)
+      .select()
+      .single()
     
-    if (!postResponse.ok) {
-      const postErrorText = await postResponse.text()
-      console.error('❌ Fetch error:', postResponse.status, postErrorText)
+    if (error) {
+      console.error('❌ Database error:', error)
       return NextResponse.json({ 
-        error: `Erro ${postResponse.status}: ${postErrorText}`,
-        method: 'fetch_direto'
-      }, { status: postResponse.status })
+        error: `Database error: ${error.message}`,
+        code: error.code
+      }, { status: 500 })
     }
-    
-    const pessoa = await postResponse.json()
-    console.log('✅ Pessoa criada com sucesso (fetch):', pessoa[0]?.id)
     
     return NextResponse.json({ 
       success: true,
-      pessoa: pessoa[0] || pessoa,
-      message: `Modelo "${pessoa[0]?.nome || pessoa.nome}" cadastrado com sucesso!`,
-      method: 'fetch_direto'
+      pessoa,
+      message: `Pupilo "${pessoa.nome}" cadastrado com sucesso!`
     })
 
   } catch (error: any) {
     console.error('💥 Erro geral na API:', error)
     return NextResponse.json({ 
-      error: error.message || 'Erro interno do servidor',
-      method: 'fetch_direto'
+      error: error.message || 'Erro interno do servidor'
     }, { status: 500 })
   }
 }

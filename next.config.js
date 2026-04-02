@@ -1,56 +1,57 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // ANTI-CACHE AGRESSIVO - FORÇAR SEMPRE REVALIDAÇÃO
+  // Cache inteligente - diferente para cada tipo de conteúdo
   experimental: {
     staleTimes: {
-      dynamic: 0,
-      static: 0,
+      dynamic: 30, // 30 segundos para páginas dinâmicas
+      static: 180, // 3 minutos para páginas estáticas
     },
   },
   
-  // Headers anti-cache globais
+  // Headers inteligentes por tipo de conteúdo
   async headers() {
     return [
+      // Admin pages - sem cache
       {
-        source: '/(.*)',
+        source: '/admin/:path*',
         headers: [
           {
             key: 'Cache-Control',
-            value: 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
+            value: 'no-store, no-cache, must-revalidate',
           },
+        ],
+      },
+      // API routes - cache curto
+      {
+        source: '/api/:path*',
+        headers: [
           {
-            key: 'Pragma',
-            value: 'no-cache',
+            key: 'Cache-Control',
+            value: 'public, max-age=30, s-maxage=60',
           },
+        ],
+      },
+      // Assets estáticos - cache longo
+      {
+        source: '/images/:path*',
+        headers: [
           {
-            key: 'Expires',
-            value: '0',
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      // Páginas públicas - cache médio
+      {
+        source: '/((?!admin|api).*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=180, s-maxage=300',
           },
           {
             key: 'X-Content-Type-Options',
             value: 'nosniff',
-          },
-        ],
-      },
-      // API routes - cache bust agressivo
-      {
-        source: '/api/(.*)',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
-          },
-          {
-            key: 'Pragma',
-            value: 'no-cache',
-          },
-          {
-            key: 'Expires',
-            value: '0',
-          },
-          {
-            key: 'Surrogate-Control',
-            value: 'no-store',
           },
         ],
       },
