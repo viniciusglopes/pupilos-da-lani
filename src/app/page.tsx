@@ -50,11 +50,20 @@ const DEFAULTS: HomeContent = {
   }
 }
 
+interface HomepageConfig {
+  mostrar_destaques: boolean
+  mostrar_catalogo: boolean
+}
+
 export default function HomePage() {
   const [todos, setTodos] = useState<PessoaCompleta[]>([])
   const [destaques, setDestaques] = useState<PessoaCompleta[]>([])
   const [outros, setOutros] = useState<PessoaCompleta[]>([])
   const [content, setContent] = useState<HomeContent>(DEFAULTS)
+  const [config, setConfig] = useState<HomepageConfig>({
+    mostrar_destaques: true,
+    mostrar_catalogo: true
+  })
   const [loading, setLoading] = useState(true)
   const [timestamp] = useState(Date.now()) // Cache bust timestamp
 
@@ -77,6 +86,19 @@ export default function HomePage() {
   const loadData = async () => {
     try {
       const cacheBust = Date.now()
+      
+      // Load homepage config first
+      const configRes = await fetch(`/api/config/homepage?t=${cacheBust}`, {
+        cache: 'no-store',
+        headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate' }
+      })
+      if (configRes.ok) {
+        const configData = await configRes.json()
+        console.log('⚙️ Config carregado:', configData.config)
+        if (configData.success && configData.config) {
+          setConfig(configData.config)
+        }
+      }
       
       // Load content with cache bust
       const contentRes = await fetch(`/api/paginas?pagina=home&t=${cacheBust}`, {
@@ -148,8 +170,8 @@ export default function HomePage() {
       </section>
 
       <main className="max-w-7xl mx-auto px-6 pb-24">
-        {/* Featured Pupilos Carousel */}
-        {destaques.length > 0 && (
+        {/* Featured Pupilos Carousel - Controlado por config */}
+        {config.mostrar_destaques && destaques.length > 0 && (
           <FeaturedPupilosCarousel 
             pupilos={destaques}
             title={content.conteudo.destaques_label}
@@ -157,8 +179,9 @@ export default function HomePage() {
           />
         )}
 
-        {/* Catalogo */}
-        <section>
+        {/* Catalogo - Controlado por config */}
+        {config.mostrar_catalogo && (
+          <section>
           <div className="mb-10">
             <h2 className="text-xs font-semibold tracking-widest uppercase text-gray-400">
               {content.conteudo.catalogo_label}
@@ -181,7 +204,8 @@ export default function HomePage() {
               ))}
             </div>
           )}
-        </section>
+          </section>
+        )}
       </main>
 
       <Footer />
