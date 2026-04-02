@@ -1,0 +1,94 @@
+name: Deploy to Coolify (Webhook Backup)
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch: # Permite trigger manual
+
+jobs:
+  validate-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout code
+      uses: actions/checkout@v4
+      
+    - name: 📋 Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'npm'
+        
+    - name: 📦 Install dependencies
+      run: npm ci
+      
+    - name: 🔍 Pre-deploy validation
+      run: node validate-deploy.js
+      
+    - name: 🏗️ Test build locally
+      run: npm run build
+      env:
+        SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+        SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        
+    - name: 🚀 Trigger Coolify Deploy
+      run: |
+        echo "🔄 Tentando webhook padrão primeiro..."
+        
+        # Tentar webhook original primeiro
+        WEBHOOK_RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" -X POST \
+          "http://31.97.42.252:8000/api/v1/deploy-webhooks/github/manual" \
+          -H "Content-Type: application/json" \
+          -d '{
+            "ref": "refs/heads/main",
+            "repository": {
+              "full_name": "viniciusglopes/pupilos-da-lani"
+            },
+            "head_commit": {
+              "id": "${{ github.sha }}",
+              "message": "${{ github.event.head_commit.message }}"
+            }
+          }')
+          
+        echo "Webhook response: $WEBHOOK_RESPONSE"
+        
+        # Se webhook falhar, usar API direta
+        if [ "$WEBHOOK_RESPONSE" != "200" ]; then
+          echo "⚠️ Webhook falhou, usando API direta..."
+          
+          curl -X POST "http://31.97.42.252:8000/api/v1/applications/h106hf15xrjrcrhgfw0ahfx1/restart" \
+            -H "Authorization: Bearer ${{ secrets.COOLIFY_API_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{"force_rebuild": true}'
+        fi
+        
+        echo "✅ Deploy trigger enviado!"
+        
+    - name: 📊 Monitor Deploy Status
+      run: |
+        echo "⏱️ Aguardando deploy completar..."
+        
+        for i in {1..30}; do
+          sleep 20
+          
+          STATUS=$(curl -s "http://31.97.42.252:8000/api/v1/applications/h106hf15xrjrcrhgfw0ahfx1" \
+            -H "Authorization: Bearer ${{ secrets.COOLIFY_API_TOKEN }}" \
+            | jq -r '.status // "unknown"')
+          
+          COMMIT=$(curl -s "http://31.97.42.252:8000/api/v1/applications/h106hf15xrjrcrhgfw0ahfx1" \
+            -H "Authorization: Bearer ${{ secrets.COOLIFY_API_TOKEN }}" \
+            | jq -r '.git_commit_sha // "unknown"')
+          
+          echo "[$i/30] Status: $STATUS | Commit: ${COMMIT:0:8}"
+          
+          if [ "$STATUS" = "running" ] && [ "${COMMIT:0:8}" = "${{ github.sha }}" ]; then
+            echo "🎉 Deploy completado com sucesso!"
+            exit 0
+          elif [ "$STATUS" = "error" ]; then
+            echo "❌ Deploy falhou - verificar logs"
+            exit 1
+          fi
+        done
+        
+        echo "⚠️ Timeout - verificar status manualmente"

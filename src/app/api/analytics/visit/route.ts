@@ -50,8 +50,8 @@ export async function POST(request: NextRequest) {
 
     // Get client information
     const userAgent = request.headers.get('user-agent') || ''
-    const clientIp = getClientIp(request)
-    const hashedIp = hashIp(clientIp) // Use hashed IP for privacy
+    const visitorIp = getClientIp(request)
+    const hashedIp = hashIp(visitorIp) // Use hashed IP for privacy
     const today = new Date().toISOString().split('T')[0]
 
     // Use UPSERT to increment visit count for today

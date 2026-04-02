@@ -88,7 +88,7 @@ export async function POST(request: Request) {
       data_consentimento: formData.consentimento_contato ? new Date().toISOString() : null
     }
     
-    const response = await fetch('https://ljttishwndzkcytkdsrc.supabase.co/rest/v1/pessoas', {
+    const postResponse = await fetch('https://ljttishwndzkcytkdsrc.supabase.co/rest/v1/pessoas', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -99,16 +99,16 @@ export async function POST(request: Request) {
       body: JSON.stringify(payload)
     })
     
-    if (!response.ok) {
-      const errorText = await response.text()
-      console.error('❌ Fetch error:', response.status, errorText)
+    if (!postResponse.ok) {
+      const postErrorText = await postResponse.text()
+      console.error('❌ Fetch error:', postResponse.status, postErrorText)
       return NextResponse.json({ 
-        error: `Erro ${response.status}: ${errorText}`,
+        error: `Erro ${postResponse.status}: ${postErrorText}`,
         method: 'fetch_direto'
-      }, { status: response.status })
+      }, { status: postResponse.status })
     }
     
-    const pessoa = await response.json()
+    const pessoa = await postResponse.json()
     console.log('✅ Pessoa criada com sucesso (fetch):', pessoa[0]?.id)
     
     return NextResponse.json({ 

@@ -9,7 +9,11 @@
     "start": "next start",
     "lint": "next lint",
     "type-check": "tsc --noEmit",
-    "health": "curl -f http://localhost:3000/api/health || exit 1"
+    "health": "curl -f http://localhost:3000/api/health || exit 1",
+    "validate": "node validate-deploy.js",
+    "deploy": "./smart-deploy.sh",
+    "deploy-force": "./deploy-backup.sh",
+    "predeploy": "npm run validate"
   },
   "dependencies": {
     "@supabase/auth-helpers-nextjs": "^0.15.0",
