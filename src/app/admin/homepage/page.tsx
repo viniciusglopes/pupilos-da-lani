@@ -28,7 +28,15 @@ export default function AdminHomepagePage() {
 
   const loadContent = async () => {
     try {
-      const res = await fetch('/api/paginas?pagina=home')
+      // CACHE BUST: Timestamp + anti-cache headers para sempre buscar dados atualizados
+      const timestamp = Date.now()
+      const res = await fetch(`/api/paginas?pagina=home&t=${timestamp}`, {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      })
       if (res.ok) {
         const data = await res.json()
         if (data.success && data.conteudo) {

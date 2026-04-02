@@ -57,7 +57,7 @@ jobs:
         if [ "$WEBHOOK_RESPONSE" != "200" ]; then
           echo "⚠️ Webhook falhou, usando API direta..."
           
-          curl -X POST "http://31.97.42.252:8000/api/v1/applications/h106hf15xrjrcrhgfw0ahfx1/restart" \
+          curl -X POST "http://31.97.42.252:8000/api/v1/applications/ez292p4ynr86jfy8s23ckvo0/restart" \
             -H "Authorization: Bearer ${{ secrets.COOLIFY_API_TOKEN }}" \
             -H "Content-Type: application/json" \
             -d '{"force_rebuild": true}'
@@ -72,11 +72,11 @@ jobs:
         for i in {1..30}; do
           sleep 20
           
-          STATUS=$(curl -s "http://31.97.42.252:8000/api/v1/applications/h106hf15xrjrcrhgfw0ahfx1" \
+          STATUS=$(curl -s "http://31.97.42.252:8000/api/v1/applications/ez292p4ynr86jfy8s23ckvo0" \
             -H "Authorization: Bearer ${{ secrets.COOLIFY_API_TOKEN }}" \
             | jq -r '.status // "unknown"')
           
-          COMMIT=$(curl -s "http://31.97.42.252:8000/api/v1/applications/h106hf15xrjrcrhgfw0ahfx1" \
+          COMMIT=$(curl -s "http://31.97.42.252:8000/api/v1/applications/ez292p4ynr86jfy8s23ckvo0" \
             -H "Authorization: Bearer ${{ secrets.COOLIFY_API_TOKEN }}" \
             | jq -r '.git_commit_sha // "unknown"')
           

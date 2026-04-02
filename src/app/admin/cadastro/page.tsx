@@ -15,6 +15,7 @@ export default function CadastroPage() {
     nome: '',
     descricao: '',
     altura: undefined,
+    idade: undefined,
     cor_olhos: '',
     cor_cabelo: '',
     medidas_busto: undefined,
@@ -165,6 +166,7 @@ export default function CadastroPage() {
         nome: '',
         descricao: '',
         altura: undefined,
+        idade: undefined,
         cor_olhos: '',
         cor_cabelo: '',
         medidas_busto: undefined,
@@ -176,7 +178,8 @@ export default function CadastroPage() {
         email: '',
         telefone: '',
         consentimento_contato: false,
-        parceria: false
+        parceria: false,
+        destaque: false
       })
       setFotos([])
       setVideos([])
@@ -224,22 +227,24 @@ export default function CadastroPage() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Informacoes Basicas */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-medium text-gray-700 mb-2 uppercase tracking-widest">
-                  Nome Completo *
-                </label>
-                <input
-                  type="text"
-                  name="nome"
-                  value={formData.nome}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black"
-                  required
-                />
-              </div>
+            {/* Nome (campo expandido) */}
+            <div>
+              <label className="block text-xs font-medium text-gray-700 mb-2 uppercase tracking-widest">
+                Nome Completo *
+              </label>
+              <input
+                type="text"
+                name="nome"
+                value={formData.nome}
+                onChange={handleInputChange}
+                className="w-full px-4 py-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black text-lg"
+                required
+                placeholder="Digite o nome completo do pupilo"
+              />
+            </div>
 
+            {/* Informacoes Basicas */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-2 uppercase tracking-widest">
                   Altura (cm)
@@ -249,9 +254,24 @@ export default function CadastroPage() {
                   name="altura"
                   value={formData.altura || ''}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black"
+                  className="w-full px-4 py-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black"
                   min="100"
                   max="250"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-2 uppercase tracking-widest">
+                  Idade (anos)
+                </label>
+                <input
+                  type="number"
+                  name="idade"
+                  value={formData.idade || ''}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black"
+                  min="16"
+                  max="65"
                 />
               </div>
             </div>
@@ -271,7 +291,7 @@ export default function CadastroPage() {
             </div>
 
             {/* Caracteristicas Fisicas */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-2 uppercase tracking-widest">
                   Cor dos Olhos
@@ -437,7 +457,7 @@ export default function CadastroPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-xs font-medium text-gray-700 mb-2 uppercase tracking-widest">
                     Instagram

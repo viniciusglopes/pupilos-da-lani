@@ -11,7 +11,7 @@ echo "=================================="
 # Config
 COOLIFY_URL="http://31.97.42.252:8000"
 API_TOKEN="12|OtZjXeiVJ6mLa4NXVcvxZzh6uixuB7wT9OVerIkub4f6552b"
-APP_UUID="h106hf15xrjrcrhgfw0ahfx1"
+APP_UUID="ez292p4ynr86jfy8s23ckvo0"
 
 # 1. Verificar mudanças
 echo "📋 1. Verificando mudanças..."
