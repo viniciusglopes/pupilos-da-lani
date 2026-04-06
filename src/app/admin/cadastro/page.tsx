@@ -76,6 +76,11 @@ export default function CadastroPage() {
     }
   }
 
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem('admin_token')
+    return { 'Authorization': `Bearer ${token}` }
+  }
+
   const uploadFileViaAPI = async (file: File, type: 'foto' | 'video', pessoaId: string, eh_principal: boolean = false, ordem: number = 0): Promise<string | null> => {
     const formData = new FormData()
     formData.append('file', file)
@@ -121,6 +126,7 @@ export default function CadastroPage() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          ...getAuthHeaders()
         },
         body: JSON.stringify(formData)
       })
@@ -152,6 +158,7 @@ export default function CadastroPage() {
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',
+            ...getAuthHeaders()
           },
           body: JSON.stringify({
             foto_principal: fotoPrincipal,

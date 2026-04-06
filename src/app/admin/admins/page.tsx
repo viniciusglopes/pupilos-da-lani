@@ -33,9 +33,17 @@ export default function AdminsPage() {
     loadAdmins()
   }, [router])
 
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem('admin_token')
+    return {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    }
+  }
+
   const loadAdmins = async () => {
     try {
-      const response = await fetch('/api/admin')
+      const response = await fetch('/api/admin', { headers: getAuthHeaders() })
       if (response.ok) {
         const data = await response.json()
         if (data.success) {
@@ -58,7 +66,7 @@ export default function AdminsPage() {
     try {
       const response = await fetch('/api/admin', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(),
         body: JSON.stringify(newAdmin)
       })
 
@@ -85,7 +93,7 @@ export default function AdminsPage() {
     try {
       const response = await fetch('/api/admin', {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: getAuthHeaders(),
         body: JSON.stringify({ id, ativo: !admin.ativo })
       })
 
@@ -110,7 +118,8 @@ export default function AdminsPage() {
 
     try {
       const response = await fetch(`/api/admin?id=${id}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        headers: getAuthHeaders()
       })
 
       const data = await response.json()

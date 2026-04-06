@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
+import { verifyAuth } from '@/lib/auth'
 
 export async function GET(
   request: Request,
@@ -40,6 +41,11 @@ export async function PATCH(
   request: Request,
   { params }: { params: { id: string } }
 ) {
+  const admin = verifyAuth(request)
+  if (!admin) {
+    return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
+  }
+
   try {
     const updates = await request.json()
     

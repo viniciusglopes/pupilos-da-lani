@@ -1,11 +1,17 @@
 import { NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
+import { verifyAuth } from '@/lib/auth'
 import bcrypt from 'bcryptjs'
 
 export const dynamic = 'force-dynamic'
 
-// GET /api/admin - Lista administradores
-export async function GET() {
+// GET /api/admin - Lista administradores (requer auth)
+export async function GET(request: Request) {
+  const admin = verifyAuth(request)
+  if (!admin) {
+    return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
+  }
+
   try {
     const { data, error } = await supabaseAdmin
       .from('administradores')
@@ -21,8 +27,13 @@ export async function GET() {
   }
 }
 
-// POST /api/admin - Criar administrador
+// POST /api/admin - Criar administrador (requer auth)
 export async function POST(request: Request) {
+  const admin = verifyAuth(request)
+  if (!admin) {
+    return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
+  }
+
   try {
     const { email, nome, senha } = await request.json()
 
@@ -30,7 +41,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Email, nome e senha são obrigatórios' }, { status: 400 })
     }
 
-    // Verificar se email já existe
     const { data: existingAdmin } = await supabaseAdmin
       .from('administradores')
       .select('email')
@@ -41,10 +51,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Email já cadastrado' }, { status: 400 })
     }
 
-    // Hash da senha
     const hashedPassword = await bcrypt.hash(senha, 10)
 
-    // Inserir no banco
     const { data, error } = await supabaseAdmin
       .from('administradores')
       .insert({
@@ -58,8 +66,8 @@ export async function POST(request: Request) {
 
     if (error) throw error
 
-    return NextResponse.json({ 
-      success: true, 
+    return NextResponse.json({
+      success: true,
       message: `Administrador "${nome}" criado com sucesso!`,
       admin: data
     })
@@ -69,8 +77,13 @@ export async function POST(request: Request) {
   }
 }
 
-// PUT /api/admin - Atualizar administrador
+// PUT /api/admin - Atualizar administrador (requer auth)
 export async function PUT(request: Request) {
+  const admin = verifyAuth(request)
+  if (!admin) {
+    return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
+  }
+
   try {
     const { id, ativo } = await request.json()
 
@@ -87,9 +100,9 @@ export async function PUT(request: Request) {
 
     if (error) throw error
 
-    return NextResponse.json({ 
-      success: true, 
-      message: `Status alterado com sucesso!`,
+    return NextResponse.json({
+      success: true,
+      message: 'Status alterado com sucesso!',
       admin: data
     })
   } catch (err: any) {
@@ -98,8 +111,13 @@ export async function PUT(request: Request) {
   }
 }
 
-// DELETE /api/admin - Excluir administrador
+// DELETE /api/admin - Excluir administrador (requer auth)
 export async function DELETE(request: Request) {
+  const admin = verifyAuth(request)
+  if (!admin) {
+    return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
+  }
+
   try {
     const { searchParams } = new URL(request.url)
     const id = searchParams.get('id')
@@ -108,7 +126,6 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: 'ID é obrigatório' }, { status: 400 })
     }
 
-    // Verificar se não é o último admin ativo
     const { data: activeAdmins } = await supabaseAdmin
       .from('administradores')
       .select('id')
@@ -125,8 +142,8 @@ export async function DELETE(request: Request) {
 
     if (error) throw error
 
-    return NextResponse.json({ 
-      success: true, 
+    return NextResponse.json({
+      success: true,
       message: 'Administrador excluído com sucesso!'
     })
   } catch (err: any) {

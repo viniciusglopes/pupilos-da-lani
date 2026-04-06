@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { supabase, supabaseAdmin } from '@/lib/supabase'
+import { verifyAuth } from '@/lib/auth'
 
 export const dynamic = 'force-dynamic'
 
@@ -44,6 +45,11 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  const admin = verifyAuth(request)
+  if (!admin) {
+    return NextResponse.json({ error: 'Não autorizado' }, { status: 401 })
+  }
+
   try {
     const formData = await request.json()
     

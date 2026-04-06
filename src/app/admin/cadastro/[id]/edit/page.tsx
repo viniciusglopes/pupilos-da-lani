@@ -73,10 +73,15 @@ export default function EditModelPage() {
     }
   }
 
+  const getAuthHeaders = () => {
+    const token = localStorage.getItem('admin_token')
+    return { 'Authorization': `Bearer ${token}` }
+  }
+
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!pessoa) return
-    
+
     setSaving(true)
     setMessage(null)
 
@@ -86,6 +91,7 @@ export default function EditModelPage() {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
+          ...getAuthHeaders()
         },
         body: JSON.stringify({
           nome: pessoa.nome,
