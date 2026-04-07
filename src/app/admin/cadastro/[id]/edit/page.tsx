@@ -394,9 +394,9 @@ export default function EditModelPage() {
               
               <form onSubmit={handleSave} className="space-y-4">
                 {/* Nome e detalhes básicos */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-[3fr_1fr] gap-4">
                   <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1 uppercase tracking-widest">
+                    <label className="block text-xs font-medium text-gray-700 mb-1 uppercase tracking-wide">
                       Nome Completo *
                     </label>
                     <input
@@ -409,7 +409,7 @@ export default function EditModelPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1 uppercase tracking-widest">
+                    <label className="block text-xs font-medium text-gray-700 mb-1 uppercase tracking-wide">
                       Sexo
                     </label>
                     <select
@@ -426,7 +426,7 @@ export default function EditModelPage() {
                 </div>
 
                 {/* Altura e idade */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-medium text-gray-700 mb-1 uppercase tracking-widest">
                       Altura (cm)
@@ -468,7 +468,7 @@ export default function EditModelPage() {
                 </div>
 
                 {/* Caracteristicas fisicas */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-xs font-medium text-gray-700 mb-1 uppercase tracking-widest">
                       Cor dos Olhos
@@ -682,7 +682,7 @@ export default function EditModelPage() {
                           alt="Foto"
                           width={200}
                           height={200}
-                          className="w-full h-48 object-cover"
+                          className="w-full aspect-square object-cover object-top"
                         />
                         
                         {/* Overlay com controles */}
