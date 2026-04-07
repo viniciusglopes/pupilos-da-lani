@@ -4,18 +4,31 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import AdminSidebar from '@/components/AdminSidebar'
 
+interface MenuItem {
+  label: string
+  href: string
+}
+
+interface SiteConfig {
+  logo_url: string
+  logo_texto: string
+  menu_items: MenuItem[]
+}
+
+const DEFAULT: SiteConfig = {
+  logo_url: '',
+  logo_texto: 'Pupilos da Lani',
+  menu_items: [
+    { label: 'Início', href: '/' },
+    { label: 'Talentos', href: '/busca' },
+  ]
+}
+
 export default function ConfigPage() {
+  const [config, setConfig] = useState<SiteConfig>(DEFAULT)
   const [loading, setLoading] = useState(true)
-  const [config, setConfig] = useState({
-    siteName: 'Pupilos da Lani',
-    siteDescription: 'Portal de pupilos profissionais em Minas Gerais',
-    contactEmail: 'contato@pupiloslani.com.br',
-    contactPhone: '(31) 9 9999-9999',
-    maxPhotosPerModel: 10,
-    maxVideosPerModel: 3,
-    enableNotifications: true,
-    autoApproveModels: false
-  })
+  const [saving, setSaving] = useState(false)
+  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
   const router = useRouter()
 
   useEffect(() => {
@@ -24,14 +37,51 @@ export default function ConfigPage() {
       router.push('/login')
       return
     }
-    
-    setTimeout(() => {
-      setLoading(false)
-    }, 500)
+    loadConfig()
   }, [router])
 
-  const saveConfig = () => {
-    alert('Configuracoes salvas com sucesso!')
+  const loadConfig = async () => {
+    try {
+      const res = await fetch('/api/config/site')
+      if (res.ok) {
+        const data = await res.json()
+        if (data.success && data.config) {
+          setConfig({ ...DEFAULT, ...data.config })
+        }
+      }
+    } catch {}
+    finally { setLoading(false) }
+  }
+
+  const handleSave = async () => {
+    setSaving(true)
+    setMessage(null)
+    try {
+      const res = await fetch('/api/config/site', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ config })
+      })
+      const data = await res.json()
+      if (data.success) {
+        setMessage({ type: 'success', text: 'Configurações salvas com sucesso!' })
+      } else {
+        throw new Error(data.error || 'Erro ao salvar')
+      }
+    } catch (err: any) {
+      setMessage({ type: 'error', text: err.message || 'Erro ao salvar' })
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const updateMenuItem = (index: number, field: 'label' | 'href', value: string) => {
+    setConfig(prev => ({
+      ...prev,
+      menu_items: prev.menu_items.map((item, i) =>
+        i === index ? { ...item, [field]: value } : item
+      )
+    }))
   }
 
   if (loading) {
@@ -39,10 +89,7 @@ export default function ConfigPage() {
       <div className="min-h-screen bg-white flex">
         <AdminSidebar />
         <div className="flex-1 flex items-center justify-center">
-          <div className="text-center">
-            <div className="animate-spin h-12 w-12 border-2 border-black border-t-transparent mx-auto"></div>
-            <p className="mt-4 text-gray-500 text-sm uppercase tracking-wide">Carregando...</p>
-          </div>
+          <div className="animate-spin h-8 w-8 border-2 border-black border-t-transparent" />
         </div>
       </div>
     )
@@ -51,185 +98,127 @@ export default function ConfigPage() {
   return (
     <div className="min-h-screen bg-white flex">
       <AdminSidebar />
-      
-      <main className="flex-1 lg:ml-0 p-8">
-        <div className="max-w-4xl mx-auto">
+
+      <main className="flex-1 min-w-0 p-4 lg:p-8 pt-20 lg:pt-8">
+        <div className="max-w-2xl mx-auto">
           <div className="mb-8">
             <h1 className="text-2xl font-bold text-black uppercase tracking-wide">
-              Configuracoes do Sistema
+              Configurar Header / Menu
             </h1>
             <p className="text-gray-500 mt-2 text-sm">
-              Configure as opcoes gerais da plataforma
+              Logo, nome do site e textos do menu de navegação
             </p>
           </div>
 
-          <div className="space-y-8">
-            {/* Configuracoes Gerais */}
-            <div className="border border-gray-200 p-6">
-              <h2 className="text-sm font-semibold text-black mb-4 uppercase tracking-widest">
-                Informacoes Gerais
-              </h2>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-2 uppercase tracking-widest">
-                    Nome do Site
-                  </label>
-                  <input
-                    type="text"
-                    value={config.siteName}
-                    onChange={(e) => setConfig(prev => ({ ...prev, siteName: e.target.value }))}
-                    className="w-full p-3 border border-gray-300 focus:ring-2 focus:ring-black focus:outline-none"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-2 uppercase tracking-widest">
-                    Email de Contato
-                  </label>
-                  <input
-                    type="email"
-                    value={config.contactEmail}
-                    onChange={(e) => setConfig(prev => ({ ...prev, contactEmail: e.target.value }))}
-                    className="w-full p-3 border border-gray-300 focus:ring-2 focus:ring-black focus:outline-none"
-                  />
-                </div>
-
-                <div className="md:col-span-2">
-                  <label className="block text-xs font-medium text-gray-700 mb-2 uppercase tracking-widest">
-                    Descricao do Site
-                  </label>
-                  <textarea
-                    value={config.siteDescription}
-                    onChange={(e) => setConfig(prev => ({ ...prev, siteDescription: e.target.value }))}
-                    rows={3}
-                    className="w-full p-3 border border-gray-300 focus:ring-2 focus:ring-black focus:outline-none"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-2 uppercase tracking-widest">
-                    Telefone de Contato
-                  </label>
-                  <input
-                    type="text"
-                    value={config.contactPhone}
-                    onChange={(e) => setConfig(prev => ({ ...prev, contactPhone: e.target.value }))}
-                    className="w-full p-3 border border-gray-300 focus:ring-2 focus:ring-black focus:outline-none"
-                  />
-                </div>
-              </div>
+          {message && (
+            <div className={`mb-6 p-4 border ${
+              message.type === 'success' ? 'border-gray-300 text-black' : 'border-red-300 text-red-700'
+            }`}>
+              {message.text}
             </div>
+          )}
 
-            {/* Limites de Arquivos */}
+          <div className="space-y-6">
+            {/* Logo */}
             <div className="border border-gray-200 p-6">
-              <h2 className="text-sm font-semibold text-black mb-4 uppercase tracking-widest">
-                Limites de Arquivos
+              <h2 className="text-xs font-semibold text-black mb-6 uppercase tracking-widest">
+                Logo / Nome do Site
               </h2>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-2 uppercase tracking-widest">
-                    Maximo de Fotos por Pupilo
-                  </label>
-                  <input
-                    type="number"
-                    min="1"
-                    max="50"
-                    value={config.maxPhotosPerModel}
-                    onChange={(e) => setConfig(prev => ({ ...prev, maxPhotosPerModel: parseInt(e.target.value) }))}
-                    className="w-full p-3 border border-gray-300 focus:ring-2 focus:ring-black focus:outline-none"
-                  />
-                </div>
 
-                <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-2 uppercase tracking-widest">
-                    Maximo de Videos por Pupilo
-                  </label>
-                  <input
-                    type="number"
-                    min="0"
-                    max="10"
-                    value={config.maxVideosPerModel}
-                    onChange={(e) => setConfig(prev => ({ ...prev, maxVideosPerModel: parseInt(e.target.value) }))}
-                    className="w-full p-3 border border-gray-300 focus:ring-2 focus:ring-black focus:outline-none"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Configuracoes de Comportamento */}
-            <div className="border border-gray-200 p-6">
-              <h2 className="text-sm font-semibold text-black mb-4 uppercase tracking-widest">
-                Comportamento do Sistema
-              </h2>
-              
               <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-900">Notificacoes por Email</h3>
-                    <p className="text-sm text-gray-500">Receber emails sobre novos cadastros e atualizacoes</p>
-                  </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={config.enableNotifications}
-                      onChange={(e) => setConfig(prev => ({ ...prev, enableNotifications: e.target.checked }))}
-                      className="sr-only peer"
-                    />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-gray-300 peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:h-5 after:w-5 after:transition-all peer-checked:bg-black"></div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-2 uppercase tracking-wide">
+                    Texto do Logo
                   </label>
+                  <input
+                    type="text"
+                    value={config.logo_texto}
+                    onChange={e => setConfig(prev => ({ ...prev, logo_texto: e.target.value }))}
+                    className="w-full px-4 py-3 border border-gray-300 focus:ring-2 focus:ring-black focus:outline-none"
+                    placeholder="Pupilos da Lani"
+                  />
+                  <p className="text-xs text-gray-400 mt-1">
+                    Exibido quando não há logo em imagem
+                  </p>
                 </div>
 
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-900">Aprovacao Automatica</h3>
-                    <p className="text-sm text-gray-500">Pupilos ficam ativos automaticamente apos cadastro</p>
-                  </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={config.autoApproveModels}
-                      onChange={(e) => setConfig(prev => ({ ...prev, autoApproveModels: e.target.checked }))}
-                      className="sr-only peer"
-                    />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-gray-300 peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:h-5 after:w-5 after:transition-all peer-checked:bg-black"></div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-2 uppercase tracking-wide">
+                    URL da Logo (imagem)
                   </label>
+                  <input
+                    type="url"
+                    value={config.logo_url}
+                    onChange={e => setConfig(prev => ({ ...prev, logo_url: e.target.value }))}
+                    className="w-full px-4 py-3 border border-gray-300 focus:ring-2 focus:ring-black focus:outline-none"
+                    placeholder="https://... (deixe em branco para usar texto)"
+                  />
+                  <p className="text-xs text-gray-400 mt-1">
+                    Se preenchido, exibe a imagem no lugar do texto
+                  </p>
+                </div>
+
+                {/* Preview */}
+                <div className="p-4 bg-gray-50 border border-gray-200">
+                  <p className="text-xs text-gray-400 mb-2 uppercase tracking-wide">Preview:</p>
+                  {config.logo_url ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={config.logo_url} alt="Logo preview" className="h-10 w-auto object-contain" />
+                  ) : (
+                    <span className="text-xl font-bold tracking-tight text-black uppercase">
+                      {config.logo_texto || 'Pupilos da Lani'}
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
 
-            {/* Informacoes do Sistema */}
+            {/* Menu Items */}
             <div className="border border-gray-200 p-6">
-              <h2 className="text-sm font-semibold text-black mb-4 uppercase tracking-widest">
-                Informacoes do Sistema
+              <h2 className="text-xs font-semibold text-black mb-6 uppercase tracking-widest">
+                Itens do Menu
               </h2>
-              
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="text-center p-4 border border-gray-200">
-                  <div className="text-2xl font-bold text-black">v1.0.0</div>
-                  <div className="text-xs text-gray-500 uppercase tracking-widest">Versao</div>
-                </div>
-                
-                <div className="text-center p-4 border border-gray-200">
-                  <div className="text-2xl font-bold text-black">Online</div>
-                  <div className="text-xs text-gray-500 uppercase tracking-widest">Status</div>
-                </div>
-                
-                <div className="text-center p-4 border border-gray-200">
-                  <div className="text-2xl font-bold text-black">Supabase</div>
-                  <div className="text-xs text-gray-500 uppercase tracking-widest">Banco de Dados</div>
-                </div>
+
+              <div className="space-y-4">
+                {config.menu_items.map((item, index) => (
+                  <div key={index} className="flex items-center gap-4 p-4 border border-gray-100">
+                    <div className="flex-1">
+                      <label className="block text-xs text-gray-500 mb-1 uppercase tracking-wide">
+                        Texto exibido
+                      </label>
+                      <input
+                        type="text"
+                        value={item.label}
+                        onChange={e => updateMenuItem(index, 'label', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 focus:ring-2 focus:ring-black focus:outline-none text-sm"
+                      />
+                    </div>
+                    <div className="w-40">
+                      <label className="block text-xs text-gray-500 mb-1 uppercase tracking-wide">
+                        Link (rota)
+                      </label>
+                      <input
+                        type="text"
+                        value={item.href}
+                        onChange={e => updateMenuItem(index, 'href', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 focus:ring-2 focus:ring-black focus:outline-none text-sm"
+                      />
+                    </div>
+                  </div>
+                ))}
+                <p className="text-xs text-gray-400">
+                  O item "Admin" é fixo e não aparece aqui.
+                </p>
               </div>
             </div>
 
-            {/* Botao de Salvar */}
             <div className="flex justify-end">
               <button
-                onClick={saveConfig}
-                className="bg-black text-white px-6 py-3 hover:bg-gray-800 transition-colors font-medium text-sm uppercase tracking-widest"
+                onClick={handleSave}
+                disabled={saving}
+                className="bg-black text-white px-8 py-3 text-xs font-semibold tracking-widest uppercase hover:bg-gray-800 transition-colors disabled:opacity-50"
               >
-                Salvar Configuracoes
+                {saving ? 'Salvando...' : 'Salvar Configurações'}
               </button>
             </div>
           </div>

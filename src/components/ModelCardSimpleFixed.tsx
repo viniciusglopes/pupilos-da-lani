@@ -111,10 +111,6 @@ export default function ModelCardSimpleFixed({ pessoa, isParceiro = false }: Mod
         <div className="mt-1 text-xs text-gray-500">
           {pessoa.idade ? `${pessoa.idade} anos` : 'Idade não informada'}
         </div>
-        {/* DEBUG INFO (remover em produção) */}
-        <div className="text-xs text-red-400 opacity-50">
-          Fotos: {pessoa.fotos.length} | Loaded: {imageLoaded ? 'OK' : 'NO'} | Error: {imageError ? 'YES' : 'NO'}
-        </div>
       </div>
     </Link>
   )

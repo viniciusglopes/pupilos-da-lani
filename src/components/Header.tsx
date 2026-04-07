@@ -1,24 +1,69 @@
 'use client'
 
 import Link from 'next/link'
-import { useState } from 'react'
+import Image from 'next/image'
+import { useState, useEffect } from 'react'
+
+interface MenuItem {
+  label: string
+  href: string
+}
+
+interface SiteConfig {
+  logo_url: string
+  logo_texto: string
+  menu_items: MenuItem[]
+}
+
+const DEFAULT_CONFIG: SiteConfig = {
+  logo_url: '',
+  logo_texto: 'Pupilos da Lani',
+  menu_items: [
+    { label: 'Início', href: '/' },
+    { label: 'Talentos', href: '/busca' },
+  ]
+}
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [config, setConfig] = useState<SiteConfig>(DEFAULT_CONFIG)
+
+  useEffect(() => {
+    fetch('/api/config/site')
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (data?.success && data.config) {
+          setConfig({ ...DEFAULT_CONFIG, ...data.config })
+        }
+      })
+      .catch(() => {})
+  }, [])
+
+  const navItems = [...(config.menu_items || DEFAULT_CONFIG.menu_items)]
 
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-6 py-5">
         <div className="flex justify-between items-center">
-          <Link href="/" className="text-xl font-bold tracking-tight text-black uppercase">
-            Pupilos da Lani
+          <Link href="/" className="flex items-center">
+            {config.logo_url ? (
+              <Image
+                src={config.logo_url}
+                alt={config.logo_texto || 'Logo'}
+                width={160}
+                height={48}
+                className="h-10 w-auto object-contain"
+                unoptimized
+              />
+            ) : (
+              <span className="text-xl font-bold tracking-tight text-black uppercase">
+                {config.logo_texto || DEFAULT_CONFIG.logo_texto}
+              </span>
+            )}
           </Link>
 
           <nav className="hidden md:flex items-center space-x-10">
-            {[
-              { href: '/', label: 'Início' },
-              { href: '/busca', label: 'Talentos' },
-            ].map((link) => (
+            {navItems.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
@@ -49,11 +94,7 @@ export default function Header() {
 
         {isMenuOpen && (
           <nav className="md:hidden pt-6 pb-2 space-y-4 border-t border-gray-200 mt-5">
-            {[
-              { href: '/', label: 'Início' },
-              { href: '/busca', label: 'Talentos' },
-              { href: '/login', label: 'Admin' },
-            ].map((link) => (
+            {navItems.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
@@ -63,6 +104,13 @@ export default function Header() {
                 {link.label}
               </Link>
             ))}
+            <Link
+              href="/login"
+              className="block text-sm font-medium text-gray-400 hover:text-black tracking-wide uppercase"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Admin
+            </Link>
           </nav>
         )}
       </div>
