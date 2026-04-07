@@ -50,16 +50,17 @@ export async function PUT(request: Request) {
       updated_at: new Date().toISOString()
     }
 
-    // Primeiro, verificar se existe algum registro
+    // Buscar o registro mais recente
     const { data: existingData } = await supabaseAdmin
       .from('homepage_config')
       .select('id')
+      .order('updated_at', { ascending: false })
       .limit(1)
-      .single()
+      .maybeSingle()
 
     let result
     if (existingData) {
-      // Atualizar o registro existente
+      // Atualizar o registro mais recente
       const { data, error } = await supabaseAdmin
         .from('homepage_config')
         .update(config)
