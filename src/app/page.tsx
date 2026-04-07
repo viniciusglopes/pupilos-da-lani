@@ -192,21 +192,21 @@ export default function HomePage() {
             </h2>
           </div>
 
-          {outros.length === 0 ? (
+          {todos.length === 0 ? (
             <div className="text-center py-24">
               <p className="text-gray-400 text-sm tracking-widest uppercase">
-                Nenhum pupilo adicional cadastrado
+                Nenhum pupilo cadastrado
               </p>
             </div>
           ) : (
             <>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
-                {outros.slice(0, visibleCount).map((pessoa) => (
+                {todos.slice(0, visibleCount).map((pessoa) => (
                   <ModelCardSimpleFixed key={pessoa.id} pessoa={pessoa} />
                 ))}
               </div>
 
-              {visibleCount < outros.length && (
+              {visibleCount < todos.length && (
                 <div className="text-center mt-12">
                   <button
                     onClick={() => setVisibleCount(prev => prev + PAGE_SIZE)}
@@ -215,7 +215,7 @@ export default function HomePage() {
                     Ver Mais Pupilos
                   </button>
                   <p className="text-xs text-gray-400 mt-3">
-                    Exibindo {Math.min(visibleCount, outros.length)} de {outros.length}
+                    Exibindo {Math.min(visibleCount, todos.length)} de {todos.length}
                   </p>
                 </div>
               )}
