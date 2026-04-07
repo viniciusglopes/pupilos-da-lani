@@ -55,10 +55,13 @@ interface HomepageConfig {
   mostrar_destaques: boolean
 }
 
+const PAGE_SIZE = 12
+
 export default function HomePage() {
   const [todos, setTodos] = useState<PessoaCompleta[]>([])
   const [destaques, setDestaques] = useState<PessoaCompleta[]>([])
   const [outros, setOutros] = useState<PessoaCompleta[]>([])
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE)
   const [content, setContent] = useState<HomeContent>(DEFAULTS)
   const [config, setConfig] = useState<HomepageConfig>({
     mostrar_titulo: true,
@@ -187,9 +190,6 @@ export default function HomePage() {
             <h2 className="text-xs font-semibold tracking-widest uppercase text-gray-400">
               {content.conteudo.catalogo_label}
             </h2>
-            <p className="mt-2 text-3xl font-bold tracking-tight text-black">
-              {todos.length} Pupilo{todos.length !== 1 ? 's' : ''}
-            </p>
           </div>
 
           {outros.length === 0 ? (
@@ -199,11 +199,27 @@ export default function HomePage() {
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
-              {outros.map((pessoa) => (
-                <ModelCardSimpleFixed key={pessoa.id} pessoa={pessoa} />
-              ))}
-            </div>
+            <>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
+                {outros.slice(0, visibleCount).map((pessoa) => (
+                  <ModelCardSimpleFixed key={pessoa.id} pessoa={pessoa} />
+                ))}
+              </div>
+
+              {visibleCount < outros.length && (
+                <div className="text-center mt-12">
+                  <button
+                    onClick={() => setVisibleCount(prev => prev + PAGE_SIZE)}
+                    className="border border-black text-black font-semibold px-10 py-3 hover:bg-black hover:text-white transition-all uppercase tracking-widest text-sm"
+                  >
+                    Ver Mais Pupilos
+                  </button>
+                  <p className="text-xs text-gray-400 mt-3">
+                    Exibindo {Math.min(visibleCount, outros.length)} de {outros.length}
+                  </p>
+                </div>
+              )}
+            </>
           )}
         </section>
       </main>
