@@ -51,11 +51,12 @@ const nextConfig = {
           { key: 'X-Frame-Options', value: 'DENY' },
         ],
       },
-      // API routes — short cache
+      // API routes — sem cache (dados dinâmicos do admin/supabase)
       {
         source: '/api/:path*',
         headers: [
-          { key: 'Cache-Control', value: 'public, max-age=30, s-maxage=60' },
+          { key: 'Cache-Control', value: 'no-store, no-cache, must-revalidate' },
+          { key: 'Pragma', value: 'no-cache' },
         ],
       },
       // Static assets — long cache
