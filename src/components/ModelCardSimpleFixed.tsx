@@ -108,9 +108,6 @@ export default function ModelCardSimpleFixed({ pessoa, isParceiro = false }: Mod
         <h3 className="text-xs font-semibold text-black tracking-wide uppercase truncate">
           {pessoa.nome}
         </h3>
-        <div className="mt-1 text-xs text-gray-500">
-          {pessoa.idade ? `${pessoa.idade} anos` : 'Idade não informada'}
-        </div>
       </div>
     </Link>
   )

@@ -12,12 +12,16 @@ interface MenuItem {
 interface SiteConfig {
   logo_url: string
   logo_texto: string
+  bg_color: string
+  text_color: string
   menu_items: MenuItem[]
 }
 
 const DEFAULT: SiteConfig = {
   logo_url: '',
   logo_texto: 'Pupilos da Lani',
+  bg_color: '#ffffff',
+  text_color: '#000000',
   menu_items: [
     { label: 'Início', href: '/' },
     { label: 'Talentos', href: '/busca' },
@@ -158,17 +162,70 @@ export default function ConfigPage() {
                   </p>
                 </div>
 
+                {/* Cores */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-2 uppercase tracking-wide">
+                      Cor de Fundo
+                    </label>
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="color"
+                        value={config.bg_color || '#ffffff'}
+                        onChange={e => setConfig(prev => ({ ...prev, bg_color: e.target.value }))}
+                        className="h-10 w-14 border border-gray-300 cursor-pointer"
+                      />
+                      <input
+                        type="text"
+                        value={config.bg_color || '#ffffff'}
+                        onChange={e => setConfig(prev => ({ ...prev, bg_color: e.target.value }))}
+                        className="flex-1 px-3 py-2 border border-gray-300 text-sm focus:ring-2 focus:ring-black focus:outline-none"
+                        placeholder="#ffffff"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-700 mb-2 uppercase tracking-wide">
+                      Cor do Texto
+                    </label>
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="color"
+                        value={config.text_color || '#000000'}
+                        onChange={e => setConfig(prev => ({ ...prev, text_color: e.target.value }))}
+                        className="h-10 w-14 border border-gray-300 cursor-pointer"
+                      />
+                      <input
+                        type="text"
+                        value={config.text_color || '#000000'}
+                        onChange={e => setConfig(prev => ({ ...prev, text_color: e.target.value }))}
+                        className="flex-1 px-3 py-2 border border-gray-300 text-sm focus:ring-2 focus:ring-black focus:outline-none"
+                        placeholder="#000000"
+                      />
+                    </div>
+                  </div>
+                </div>
+
                 {/* Preview */}
-                <div className="p-4 bg-gray-50 border border-gray-200">
-                  <p className="text-xs text-gray-400 mb-2 uppercase tracking-wide">Preview:</p>
-                  {config.logo_url ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={config.logo_url} alt="Logo preview" className="h-10 w-auto object-contain" />
-                  ) : (
-                    <span className="text-xl font-bold tracking-tight text-black uppercase">
-                      {config.logo_texto || 'Pupilos da Lani'}
-                    </span>
-                  )}
+                <div className="border border-gray-200">
+                  <p className="text-xs text-gray-400 px-4 pt-3 pb-1 uppercase tracking-wide">Preview do header:</p>
+                  <div className="px-6 py-4 flex items-center justify-between" style={{ backgroundColor: config.bg_color || '#ffffff' }}>
+                    {config.logo_url ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={config.logo_url} alt="Logo preview" className="h-8 w-auto object-contain" />
+                    ) : (
+                      <span className="text-base font-bold tracking-tight uppercase" style={{ color: config.text_color || '#000000' }}>
+                        {config.logo_texto || 'Pupilos da Lani'}
+                      </span>
+                    )}
+                    <div className="flex gap-6">
+                      {(config.menu_items || DEFAULT.menu_items).map((item, i) => (
+                        <span key={i} className="text-xs font-medium tracking-wide uppercase" style={{ color: config.text_color || '#000000' }}>
+                          {item.label}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>

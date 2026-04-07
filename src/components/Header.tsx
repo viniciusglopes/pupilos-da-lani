@@ -12,12 +12,16 @@ interface MenuItem {
 interface SiteConfig {
   logo_url: string
   logo_texto: string
+  bg_color: string
+  text_color: string
   menu_items: MenuItem[]
 }
 
 const DEFAULT_CONFIG: SiteConfig = {
   logo_url: '',
   logo_texto: 'Pupilos da Lani',
+  bg_color: '#ffffff',
+  text_color: '#000000',
   menu_items: [
     { label: 'Início', href: '/' },
     { label: 'Talentos', href: '/busca' },
@@ -42,7 +46,10 @@ export default function Header() {
   const navItems = [...(config.menu_items || DEFAULT_CONFIG.menu_items)]
 
   return (
-    <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
+    <header
+      className="border-b sticky top-0 z-50"
+      style={{ backgroundColor: config.bg_color || '#ffffff', borderColor: config.bg_color === '#000000' || config.bg_color?.toLowerCase() === '#000' ? '#333' : '#e5e7eb' }}
+    >
       <div className="max-w-7xl mx-auto px-6 py-5">
         <div className="flex justify-between items-center">
           <Link href="/" className="flex items-center">
@@ -56,7 +63,7 @@ export default function Header() {
                 unoptimized
               />
             ) : (
-              <span className="text-xl font-bold tracking-tight text-black uppercase">
+              <span className="text-xl font-bold tracking-tight uppercase" style={{ color: config.text_color || '#000000' }}>
                 {config.logo_texto || DEFAULT_CONFIG.logo_texto}
               </span>
             )}
@@ -67,14 +74,16 @@ export default function Header() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-sm font-medium text-gray-600 hover:text-black transition-colors tracking-wide uppercase"
+                className="text-sm font-medium transition-colors tracking-wide uppercase"
+                style={{ color: config.text_color || '#000000' }}
               >
                 {link.label}
               </Link>
             ))}
             <Link
               href="/login"
-              className="text-sm font-medium text-gray-400 hover:text-black transition-colors tracking-wide uppercase"
+              className="text-sm font-medium transition-colors tracking-wide uppercase opacity-50"
+              style={{ color: config.text_color || '#000000' }}
             >
               Admin
             </Link>
@@ -82,23 +91,25 @@ export default function Header() {
 
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="md:hidden p-2 text-black"
+            className="md:hidden p-2"
+            style={{ color: config.text_color || '#000000' }}
           >
             <div className="w-6 h-5 relative flex flex-col justify-between">
-              <span className={`block h-px w-6 bg-black transition-all duration-300 ${isMenuOpen ? 'rotate-45 translate-y-2' : ''}`} />
-              <span className={`block h-px w-6 bg-black transition-all duration-300 ${isMenuOpen ? 'opacity-0' : ''}`} />
-              <span className={`block h-px w-6 bg-black transition-all duration-300 ${isMenuOpen ? '-rotate-45 -translate-y-2' : ''}`} />
+              <span className={`block h-px w-6 transition-all duration-300 ${isMenuOpen ? 'rotate-45 translate-y-2' : ''}`} style={{ backgroundColor: config.text_color || '#000000' }} />
+              <span className={`block h-px w-6 transition-all duration-300 ${isMenuOpen ? 'opacity-0' : ''}`} style={{ backgroundColor: config.text_color || '#000000' }} />
+              <span className={`block h-px w-6 transition-all duration-300 ${isMenuOpen ? '-rotate-45 -translate-y-2' : ''}`} style={{ backgroundColor: config.text_color || '#000000' }} />
             </div>
           </button>
         </div>
 
         {isMenuOpen && (
-          <nav className="md:hidden pt-6 pb-2 space-y-4 border-t border-gray-200 mt-5">
+          <nav className="md:hidden pt-6 pb-2 space-y-4 border-t mt-5" style={{ borderColor: config.text_color === '#ffffff' ? '#444' : '#e5e7eb' }}>
             {navItems.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="block text-sm font-medium text-gray-700 hover:text-black tracking-wide uppercase"
+                className="block text-sm font-medium tracking-wide uppercase"
+                style={{ color: config.text_color || '#000000' }}
                 onClick={() => setIsMenuOpen(false)}
               >
                 {link.label}
@@ -106,7 +117,8 @@ export default function Header() {
             ))}
             <Link
               href="/login"
-              className="block text-sm font-medium text-gray-400 hover:text-black tracking-wide uppercase"
+              className="block text-sm font-medium tracking-wide uppercase opacity-50"
+              style={{ color: config.text_color || '#000000' }}
               onClick={() => setIsMenuOpen(false)}
             >
               Admin

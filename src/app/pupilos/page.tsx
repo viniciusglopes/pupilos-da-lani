@@ -13,9 +13,8 @@ export default function PupilosPage() {
   const [searchTerm, setSearchTerm] = useState('')
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [filters, setFilters] = useState({
-    especialidade: '',
     sexo: 'todos',
-    parceria: 'todos'
+    idade: 'todos'
   })
 
   useEffect(() => {
@@ -72,30 +71,26 @@ export default function PupilosPage() {
       )
     }
 
-    // Filtro por especialidade
-    if (filters.especialidade) {
-      filtered = filtered.filter(pessoa =>
-        pessoa.especializacoes?.includes(filters.especialidade)
-      )
-    }
-
     // Filtro por sexo
     if (filters.sexo !== 'todos') {
       filtered = filtered.filter(pessoa => pessoa.sexo === filters.sexo)
     }
 
-    // Filtro por parceria
-    if (filters.parceria !== 'todos') {
-      const isParceria = filters.parceria === 'true'
-      filtered = filtered.filter(pessoa => pessoa.parceria === isParceria)
+    // Filtro por idade
+    if (filters.idade !== 'todos') {
+      filtered = filtered.filter(pessoa => {
+        const idade = pessoa.idade
+        if (!idade) return false
+        if (filters.idade === '0-10') return idade <= 10
+        if (filters.idade === '11-15') return idade >= 11 && idade <= 15
+        if (filters.idade === '16-18') return idade >= 16 && idade <= 18
+        if (filters.idade === '18+') return idade > 18
+        return true
+      })
     }
 
     setFilteredPessoas(filtered)
   }
-
-  const especialidades = Array.from(
-    new Set(pessoas.flatMap(pessoa => pessoa.especializacoes || []))
-  ).sort()
 
   if (loading) {
     return (
@@ -125,7 +120,7 @@ export default function PupilosPage() {
 
         {/* Filtros */}
         <div className="bg-gray-50 p-6 rounded-none mb-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Busca por texto */}
             <div>
               <input
@@ -137,20 +132,6 @@ export default function PupilosPage() {
               />
             </div>
 
-            {/* Filtro por especialidade */}
-            <div>
-              <select
-                value={filters.especialidade}
-                onChange={(e) => setFilters(prev => ({ ...prev, especialidade: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 text-sm focus:outline-none focus:border-black"
-              >
-                <option value="">Todas Especialidades</option>
-                {especialidades.map(esp => (
-                  <option key={esp} value={esp}>{esp}</option>
-                ))}
-              </select>
-            </div>
-
             {/* Filtro por sexo */}
             <div>
               <select
@@ -158,22 +139,24 @@ export default function PupilosPage() {
                 onChange={(e) => setFilters(prev => ({ ...prev, sexo: e.target.value }))}
                 className="w-full px-3 py-2 border border-gray-300 text-sm focus:outline-none focus:border-black"
               >
-                <option value="todos">Ambos os Sexos</option>
+                <option value="todos">Todos os Sexos</option>
                 <option value="Feminino">Feminino</option>
                 <option value="Masculino">Masculino</option>
               </select>
             </div>
 
-            {/* Filtro por parceria */}
+            {/* Filtro por idade */}
             <div>
               <select
-                value={filters.parceria}
-                onChange={(e) => setFilters(prev => ({ ...prev, parceria: e.target.value }))}
+                value={filters.idade}
+                onChange={(e) => setFilters(prev => ({ ...prev, idade: e.target.value }))}
                 className="w-full px-3 py-2 border border-gray-300 text-sm focus:outline-none focus:border-black"
               >
-                <option value="todos">Todos os Status</option>
-                <option value="true">Apenas Parceiros</option>
-                <option value="false">Não Parceiros</option>
+                <option value="todos">Todas as Idades</option>
+                <option value="0-10">Até 10 anos</option>
+                <option value="11-15">11 a 15 anos</option>
+                <option value="16-18">16 a 18 anos</option>
+                <option value="18+">Acima de 18 anos</option>
               </select>
             </div>
           </div>
