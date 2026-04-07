@@ -41,6 +41,12 @@ export default function PupiloPage() {
     if (params.id) {
       loadPupilo(params.id as string)
       loadCamposVisibilidade()
+      // Registrar clique/visualização
+      fetch('/api/analytics/click', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pupilo_id: params.id })
+      }).catch(() => {})
     }
   }, [params.id])
 

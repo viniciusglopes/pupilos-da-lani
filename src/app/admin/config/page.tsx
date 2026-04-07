@@ -12,6 +12,7 @@ interface MenuItem {
 interface SiteConfig {
   logo_url: string
   logo_texto: string
+  favicon_url: string
   bg_color: string
   text_color: string
   menu_items: MenuItem[]
@@ -20,6 +21,7 @@ interface SiteConfig {
 const DEFAULT: SiteConfig = {
   logo_url: '',
   logo_texto: 'Pupilos da Lani',
+  favicon_url: '',
   bg_color: '#ffffff',
   text_color: '#000000',
   menu_items: [
@@ -160,6 +162,27 @@ export default function ConfigPage() {
                   <p className="text-xs text-gray-400 mt-1">
                     Se preenchido, exibe a imagem no lugar do texto
                   </p>
+                </div>
+
+                {/* Favicon */}
+                <div>
+                  <label className="block text-xs font-medium text-gray-700 mb-2 uppercase tracking-wide">
+                    URL do Favicon (ícone do navegador)
+                  </label>
+                  <input
+                    type="url"
+                    value={config.favicon_url}
+                    onChange={e => setConfig(prev => ({ ...prev, favicon_url: e.target.value }))}
+                    className="w-full px-4 py-3 border border-gray-300 focus:ring-2 focus:ring-black focus:outline-none"
+                    placeholder="https://... (.ico, .png ou .svg — 32x32px recomendado)"
+                  />
+                  {config.favicon_url && (
+                    <div className="flex items-center gap-3 mt-2">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={config.favicon_url} alt="Favicon preview" className="w-8 h-8 object-contain border border-gray-200" />
+                      <span className="text-xs text-gray-400">Preview do favicon</span>
+                    </div>
+                  )}
                 </div>
 
                 {/* Cores */}

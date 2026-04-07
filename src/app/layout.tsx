@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
+import FaviconUpdater from "@/components/FaviconUpdater"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -21,6 +22,7 @@ export default function RootLayout({
         <link rel="stylesheet" href="/fix-homepage.css" />
       </head>
       <body className={inter.className}>
+        <FaviconUpdater />
         {children}
       </body>
     </html>

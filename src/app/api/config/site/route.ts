@@ -8,6 +8,7 @@ const CHAVE = 'site_header_config'
 const DEFAULT_CONFIG = {
   logo_url: '',
   logo_texto: 'Pupilos da Lani',
+  favicon_url: '',
   bg_color: '#ffffff',
   text_color: '#000000',
   menu_items: [
