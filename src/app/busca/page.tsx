@@ -16,7 +16,7 @@ export default function BuscaPage() {
   const [filters, setFilters] = useState({
     especialidade: '',
     sexo: 'todos',
-    parceria: 'todos'
+    idade: 'todos'
   })
 
   useEffect(() => {
@@ -100,16 +100,21 @@ export default function BuscaPage() {
       )
     }
 
-    // TODO: Add gender filtering when database field is available
-    if (filters.sexo && filters.sexo !== 'todos') {
-      // For now, this filter won't work until sexo field is added to database
-      // filtered = filtered.filter(pessoa => pessoa.sexo === filters.sexo)
+    if (filters.sexo !== 'todos') {
+      const sexoMap: Record<string, string> = { masculino: 'Masculino', feminino: 'Feminino' }
+      filtered = filtered.filter(pessoa => pessoa.sexo === sexoMap[filters.sexo])
     }
 
-    if (filters.parceria === 'parceiro') {
-      filtered = filtered.filter(pessoa => pessoa.parceria)
-    } else if (filters.parceria === 'nao-parceiro') {
-      filtered = filtered.filter(pessoa => !pessoa.parceria)
+    if (filters.idade !== 'todos') {
+      filtered = filtered.filter(pessoa => {
+        const idade = pessoa.idade
+        if (!idade) return false
+        if (filters.idade === '0-10') return idade <= 10
+        if (filters.idade === '11-15') return idade >= 11 && idade <= 15
+        if (filters.idade === '16-18') return idade >= 16 && idade <= 18
+        if (filters.idade === '18+') return idade > 18
+        return true
+      })
     }
 
     setFilteredPessoas(filtered)
@@ -120,7 +125,7 @@ export default function BuscaPage() {
     setFilters({
       especialidade: '',
       sexo: 'todos',
-      parceria: 'todos'
+      idade: 'todos'
     })
   }
 
@@ -239,30 +244,22 @@ export default function BuscaPage() {
               </div>
             </div>
 
-            {/* Tipo de parceria */}
+            {/* Idade */}
             <div className="space-y-2">
               <label className="block text-xs font-semibold text-gray-700 uppercase tracking-widest">
-                Parceria
+                Faixa de Idade
               </label>
-              <div className="flex space-x-2">
-                {[
-                  { key: 'todos', label: 'Todos' },
-                  { key: 'parceiro', label: 'Parceiros' },
-                  { key: 'nao-parceiro', label: 'Freelancers' }
-                ].map(option => (
-                  <button
-                    key={option.key}
-                    onClick={() => setFilters(prev => ({ ...prev, parceria: option.key }))}
-                    className={`flex-1 px-4 py-3 font-medium transition-all text-sm ${
-                      filters.parceria === option.key
-                        ? 'bg-black text-white'
-                        : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
-                    }`}
-                  >
-                    {option.label}
-                  </button>
-                ))}
-              </div>
+              <select
+                value={filters.idade}
+                onChange={(e) => setFilters(prev => ({ ...prev, idade: e.target.value }))}
+                className="w-full px-4 py-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black transition-all"
+              >
+                <option value="todos">Todas as idades</option>
+                <option value="0-10">Até 10 anos</option>
+                <option value="11-15">11 a 15 anos</option>
+                <option value="16-18">16 a 18 anos</option>
+                <option value="18+">Acima de 18 anos</option>
+              </select>
             </div>
 
             {/* Quick Stats */}
@@ -272,7 +269,6 @@ export default function BuscaPage() {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {[
                     { label: 'Total', value: filteredPessoas.length },
-                    { label: 'Parceiros', value: filteredPessoas.filter(p => p.parceria).length },
                     { label: 'Com Fotos', value: filteredPessoas.filter(p => p.fotos.length > 0).length },
                     { label: 'Com Videos', value: filteredPessoas.filter(p => p.videos.length > 0).length }
                   ].map(stat => (
