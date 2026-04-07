@@ -363,8 +363,8 @@ export default function EditModelPage() {
     <div className="min-h-screen bg-white flex">
       <AdminSidebar />
       
-      <main className="flex-1 lg:ml-0 p-4 lg:p-8 pt-20 lg:pt-8">
-        <div className="max-w-7xl mx-auto">
+      <main className="flex-1 min-w-0 p-4 lg:p-8 pt-20 lg:pt-8">
+        <div className="max-w-6xl mx-auto">
           <div className="flex items-center justify-between mb-8">
             <h1 className="text-2xl font-bold text-black uppercase tracking-wide">
               Editar: {pessoa.nome}
@@ -387,9 +387,9 @@ export default function EditModelPage() {
             </div>
           )}
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="flex flex-col xl:flex-row gap-8">
             {/* Formulario de dados */}
-            <div className="lg:col-span-2 border border-gray-200 p-6">
+            <div className="flex-1 min-w-0 border border-gray-200 p-6">
               <h2 className="text-sm font-semibold text-black mb-6 uppercase tracking-widest">Informacoes Basicas</h2>
               
               <form onSubmit={handleSave} className="space-y-4">
@@ -659,22 +659,22 @@ export default function EditModelPage() {
             </div>
 
             {/* Galeria de fotos e videos */}
-            <div className="space-y-6">
+            <div className="xl:w-[380px] flex-shrink-0 space-y-6">
               {/* Fotos */}
               <div className="border border-gray-200 p-6">
                 <div className="flex justify-between items-center mb-4">
-                <h3 className="text-sm font-semibold text-black uppercase tracking-widest">
-                  Fotos ({pessoa.fotos.length})
-                </h3>
-                <span className="text-xs text-gray-400">
-                  Passe o mouse para ver opcoes
-                </span>
-              </div>
+                  <h3 className="text-sm font-semibold text-black uppercase tracking-widest">
+                    Fotos ({pessoa.fotos.length})
+                  </h3>
+                  <span className="text-xs text-gray-400 ml-2 text-right">
+                    Passe o mouse para ver opcoes
+                  </span>
+                </div>
                 
                 {pessoa.fotos.length === 0 ? (
                   <p className="text-gray-500 text-sm">Nenhuma foto cadastrada</p>
                 ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-2 gap-3">
                     {pessoa.fotos.map((foto) => (
                       <div key={foto.id} className="relative group">
                         <Image
