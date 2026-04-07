@@ -363,8 +363,8 @@ export default function EditModelPage() {
     <div className="min-h-screen bg-white flex">
       <AdminSidebar />
       
-      <main className="flex-1 lg:ml-0 p-8">
-        <div className="max-w-4xl mx-auto">
+      <main className="flex-1 lg:ml-0 p-4 lg:p-8">
+        <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between mb-8">
             <h1 className="text-2xl font-bold text-black uppercase tracking-wide">
               Editar: {pessoa.nome}
@@ -387,9 +387,9 @@ export default function EditModelPage() {
             </div>
           )}
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
             {/* Formulario de dados */}
-            <div className="lg:col-span-2 border border-gray-200 p-6">
+            <div className="xl:col-span-2 border border-gray-200 p-6">
               <h2 className="text-sm font-semibold text-black mb-6 uppercase tracking-widest">Informacoes Basicas</h2>
               
               <form onSubmit={handleSave} className="space-y-4">
