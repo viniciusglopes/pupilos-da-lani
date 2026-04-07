@@ -39,16 +39,7 @@ export default function ModelCardSimpleFixed({ pessoa, isParceiro = false }: Mod
       href={`/pupilos/${pessoa.id}`}
       className="group cursor-pointer block"
     >
-      {/* Container da imagem - ALTURA FIXA GARANTIDA */}
-      <div 
-        className="relative overflow-hidden bg-gray-100 border border-gray-200"
-        style={{ 
-          width: '100%', 
-          height: '160px',
-          minHeight: '160px', // GARANTIR altura mínima
-          maxHeight: '160px'  // GARANTIR altura máxima
-        }}
-      >
+      <div className="relative w-full aspect-[3/4] overflow-hidden bg-gray-100 border border-gray-200">
         {cacheBustUrl && !imageError ? (
           <Image
             src={cacheBustUrl}
@@ -59,7 +50,7 @@ export default function ModelCardSimpleFixed({ pessoa, isParceiro = false }: Mod
               display: imageLoaded ? 'block' : 'none' // Só mostrar quando carregada
             }}
             className="transition-transform duration-700 group-hover:scale-105"
-            sizes="160px"
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 17vw"
             quality={70}
             onLoad={() => setImageLoaded(true)}
             onError={() => {

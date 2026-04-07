@@ -159,22 +159,22 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white overflow-x-hidden">
       <Header />
 
       {/* Título dinâmico - Controlável */}
       {config.mostrar_titulo && (
-        <section className="max-w-7xl mx-auto px-6 pt-24 pb-12">
-          <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-black uppercase">
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 pt-10 sm:pt-16 pb-8 sm:pb-12">
+          <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold tracking-tight text-black uppercase leading-tight">
             {content.titulo}
           </h1>
-          <p className="mt-4 text-gray-500 text-base leading-relaxed whitespace-pre-line max-w-xl">
+          <p className="mt-3 text-gray-500 text-sm sm:text-base leading-relaxed whitespace-pre-line max-w-xl">
             {content.subtitulo}
           </p>
         </section>
       )}
 
-      <main className={`max-w-7xl mx-auto px-6 pb-24 ${!config.mostrar_titulo ? 'pt-24' : ''}`}>
+      <main className={`max-w-7xl mx-auto px-4 sm:px-6 pb-16 sm:pb-24 ${!config.mostrar_titulo ? 'pt-10 sm:pt-16' : ''}`}>
         {/* Featured Pupilos Carousel - Controlado por config */}
         {config.mostrar_destaques && destaques.length > 0 && (
           <FeaturedPupilosCarousel 
@@ -200,17 +200,17 @@ export default function HomePage() {
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 sm:gap-3">
                 {todos.slice(0, visibleCount).map((pessoa) => (
                   <ModelCardSimpleFixed key={pessoa.id} pessoa={pessoa} />
                 ))}
               </div>
 
               {visibleCount < todos.length && (
-                <div className="text-center mt-12">
+                <div className="text-center mt-8 sm:mt-12">
                   <button
                     onClick={() => setVisibleCount(prev => prev + PAGE_SIZE)}
-                    className="border border-black text-black font-semibold px-10 py-3 hover:bg-black hover:text-white transition-all uppercase tracking-widest text-sm"
+                    className="border border-black text-black font-semibold px-8 sm:px-10 py-3 hover:bg-black hover:text-white transition-all uppercase tracking-widest text-xs sm:text-sm w-full sm:w-auto"
                   >
                     Ver Mais Pupilos
                   </button>

@@ -48,15 +48,14 @@ export default function ModelCard({ pessoa, isParceiro = false }: ModelCardProps
       className="group cursor-pointer block"
       onClick={handleClick}
     >
-      <div className="relative w-full h-40 overflow-hidden bg-gray-100">
+      <div className="relative w-full aspect-[3/4] overflow-hidden bg-gray-100">
         {fotoUrl ? (
           <Image
             src={fotoUrl}
             alt={pessoa.nome}
-            width={160}
-            height={160}
-            className="object-cover w-full h-full transition-transform duration-700 group-hover:scale-105"
-            sizes="160px"
+            fill
+            className="object-cover object-top transition-transform duration-700 group-hover:scale-105"
+            sizes="(max-width: 640px) 44vw, (max-width: 768px) 30vw, (max-width: 1024px) 22vw, 18vw"
             quality={70}
             priority={false}
           />
