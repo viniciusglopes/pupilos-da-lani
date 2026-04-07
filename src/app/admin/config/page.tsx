@@ -34,8 +34,32 @@ export default function ConfigPage() {
   const [config, setConfig] = useState<SiteConfig>(DEFAULT)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [uploadingLogo, setUploadingLogo] = useState(false)
+  const [uploadingFavicon, setUploadingFavicon] = useState(false)
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
   const router = useRouter()
+
+  const handleUpload = async (file: File, name: 'logo' | 'favicon') => {
+    const setUploading = name === 'logo' ? setUploadingLogo : setUploadingFavicon
+    setUploading(true)
+    try {
+      const formData = new FormData()
+      formData.append('file', file)
+      formData.append('name', name)
+      const res = await fetch('/api/upload/asset', { method: 'POST', body: formData })
+      const data = await res.json()
+      if (data.success) {
+        if (name === 'logo') setConfig(prev => ({ ...prev, logo_url: data.url }))
+        else setConfig(prev => ({ ...prev, favicon_url: data.url }))
+      } else {
+        setMessage({ type: 'error', text: `Erro no upload: ${data.error}` })
+      }
+    } catch {
+      setMessage({ type: 'error', text: 'Erro ao fazer upload' })
+    } finally {
+      setUploading(false)
+    }
+  }
 
   useEffect(() => {
     const isAuthenticated = localStorage.getItem('admin_authenticated')
@@ -150,15 +174,34 @@ export default function ConfigPage() {
 
                 <div>
                   <label className="block text-xs font-medium text-gray-700 mb-2 uppercase tracking-wide">
-                    URL da Logo (imagem)
+                    Logo (imagem)
                   </label>
-                  <input
-                    type="url"
-                    value={config.logo_url}
-                    onChange={e => setConfig(prev => ({ ...prev, logo_url: e.target.value }))}
-                    className="w-full px-4 py-3 border border-gray-300 focus:ring-2 focus:ring-black focus:outline-none"
-                    placeholder="https://... (deixe em branco para usar texto)"
-                  />
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={config.logo_url}
+                      onChange={e => setConfig(prev => ({ ...prev, logo_url: e.target.value }))}
+                      className="flex-1 px-4 py-3 border border-gray-300 focus:ring-2 focus:ring-black focus:outline-none text-sm"
+                      placeholder="Cole uma URL ou clique em Enviar Imagem"
+                    />
+                    <label className={`px-4 py-3 border border-gray-300 text-sm font-medium cursor-pointer whitespace-nowrap transition-colors ${uploadingLogo ? 'bg-gray-100 text-gray-400' : 'bg-white hover:bg-gray-50 text-gray-700'}`}>
+                      {uploadingLogo ? 'Enviando...' : 'Enviar Imagem'}
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        disabled={uploadingLogo}
+                        onChange={e => { if (e.target.files?.[0]) handleUpload(e.target.files[0], 'logo') }}
+                      />
+                    </label>
+                  </div>
+                  {config.logo_url && (
+                    <div className="flex items-center gap-3 mt-2">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={config.logo_url} alt="Logo preview" className="h-8 w-auto object-contain border border-gray-200 bg-gray-50 px-2" />
+                      <button onClick={() => setConfig(prev => ({ ...prev, logo_url: '' }))} className="text-xs text-gray-400 hover:text-red-500">Remover</button>
+                    </div>
+                  )}
                   <p className="text-xs text-gray-400 mt-1">
                     Se preenchido, exibe a imagem no lugar do texto
                   </p>
@@ -167,20 +210,33 @@ export default function ConfigPage() {
                 {/* Favicon */}
                 <div>
                   <label className="block text-xs font-medium text-gray-700 mb-2 uppercase tracking-wide">
-                    URL do Favicon (ícone do navegador)
+                    Favicon (ícone do navegador)
                   </label>
-                  <input
-                    type="url"
-                    value={config.favicon_url}
-                    onChange={e => setConfig(prev => ({ ...prev, favicon_url: e.target.value }))}
-                    className="w-full px-4 py-3 border border-gray-300 focus:ring-2 focus:ring-black focus:outline-none"
-                    placeholder="https://... (.ico, .png ou .svg — 32x32px recomendado)"
-                  />
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={config.favicon_url}
+                      onChange={e => setConfig(prev => ({ ...prev, favicon_url: e.target.value }))}
+                      className="flex-1 px-4 py-3 border border-gray-300 focus:ring-2 focus:ring-black focus:outline-none text-sm"
+                      placeholder="Cole uma URL ou clique em Enviar Imagem (.ico, .png, .svg)"
+                    />
+                    <label className={`px-4 py-3 border border-gray-300 text-sm font-medium cursor-pointer whitespace-nowrap transition-colors ${uploadingFavicon ? 'bg-gray-100 text-gray-400' : 'bg-white hover:bg-gray-50 text-gray-700'}`}>
+                      {uploadingFavicon ? 'Enviando...' : 'Enviar Imagem'}
+                      <input
+                        type="file"
+                        accept="image/*,.ico"
+                        className="hidden"
+                        disabled={uploadingFavicon}
+                        onChange={e => { if (e.target.files?.[0]) handleUpload(e.target.files[0], 'favicon') }}
+                      />
+                    </label>
+                  </div>
                   {config.favicon_url && (
                     <div className="flex items-center gap-3 mt-2">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img src={config.favicon_url} alt="Favicon preview" className="w-8 h-8 object-contain border border-gray-200" />
                       <span className="text-xs text-gray-400">Preview do favicon</span>
+                      <button onClick={() => setConfig(prev => ({ ...prev, favicon_url: '' }))} className="text-xs text-gray-400 hover:text-red-500">Remover</button>
                     </div>
                   )}
                 </div>
