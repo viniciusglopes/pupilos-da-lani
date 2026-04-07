@@ -37,13 +37,13 @@ export default function AdminParceriaPage() {
         const data = await res.json()
         if (data.success && data.conteudo) {
           const c = data.conteudo
-          setTitulo(c.titulo || 'Pupilos Parceiros')
-          setSubtitulo(c.subtitulo || '')
+          setTitulo(c.titulo ?? '')
+          setSubtitulo(c.subtitulo ?? '')
           if (c.conteudo) {
-            setBanner(c.conteudo.banner || '')
-            setSemParceirosTitulo(c.conteudo.sem_parceiros_titulo || '')
-            setSemParceirosTexto(c.conteudo.sem_parceiros_texto || '')
-            setSecoes(c.conteudo.secoes || [])
+            setBanner(c.conteudo.banner ?? '')
+            setSemParceirosTitulo(c.conteudo.sem_parceiros_titulo ?? '')
+            setSemParceirosTexto(c.conteudo.sem_parceiros_texto ?? '')
+            setSecoes(c.conteudo.secoes ?? [])
           }
         }
       }
