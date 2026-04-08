@@ -390,7 +390,7 @@ export default function EditModelPage() {
           <div className="flex flex-col xl:flex-row gap-8">
             {/* Formulario de dados */}
             <div className="flex-1 min-w-0 border border-gray-200 p-6">
-              <h2 className="text-sm font-semibold text-black mb-6 uppercase tracking-widest">Informacoes Basicas</h2>
+              <h2 className="text-sm font-semibold text-black mb-4 uppercase tracking-wide">Informacoes Basicas</h2>
               
               <form onSubmit={handleSave} className="space-y-4">
                 {/* Nome e detalhes básicos */}
@@ -428,7 +428,7 @@ export default function EditModelPage() {
                 {/* Altura e idade */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1 uppercase tracking-widest">
+                    <label className="block text-xs font-medium text-gray-600 mb-1 uppercase tracking-wide">
                       Altura (cm)
                     </label>
                     <input
@@ -440,7 +440,7 @@ export default function EditModelPage() {
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1 uppercase tracking-widest">
+                    <label className="block text-xs font-medium text-gray-600 mb-1 uppercase tracking-wide">
                       Idade
                     </label>
                     <input
@@ -455,7 +455,7 @@ export default function EditModelPage() {
 
                 {/* Descricao */}
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1 uppercase tracking-widest">
+                  <label className="block text-xs font-medium text-gray-600 mb-1 uppercase tracking-wide">
                     Descricao
                   </label>
                   <textarea
@@ -470,34 +470,48 @@ export default function EditModelPage() {
                 {/* Caracteristicas fisicas */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1 uppercase tracking-widest">
+                    <label className="block text-xs font-medium text-gray-600 mb-1 uppercase tracking-wide">
                       Cor dos Olhos
                     </label>
-                    <input
-                      type="text"
+                    <select
                       name="cor_olhos"
                       value={pessoa.cor_olhos || ''}
                       onChange={handleInputChange}
                       className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black"
-                    />
+                    >
+                      <option value="">Selecione...</option>
+                      <option value="Castanhos">Castanhos</option>
+                      <option value="Azuis">Azuis</option>
+                      <option value="Verdes">Verdes</option>
+                      <option value="Pretos">Pretos</option>
+                      <option value="Mel">Mel</option>
+                      <option value="Avela">Avela</option>
+                    </select>
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1 uppercase tracking-widest">
+                    <label className="block text-xs font-medium text-gray-600 mb-1 uppercase tracking-wide">
                       Cor do Cabelo
                     </label>
-                    <input
-                      type="text"
+                    <select
                       name="cor_cabelo"
                       value={pessoa.cor_cabelo || ''}
                       onChange={handleInputChange}
                       className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black"
-                    />
+                    >
+                      <option value="">Selecione...</option>
+                      <option value="Preto">Preto</option>
+                      <option value="Castanho">Castanho</option>
+                      <option value="Loiro">Loiro</option>
+                      <option value="Ruivo">Ruivo</option>
+                      <option value="Grisalho">Grisalho</option>
+                      <option value="Colorido">Colorido</option>
+                    </select>
                   </div>
                 </div>
 
                 {/* Medidas */}
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-2 uppercase tracking-widest">
+                  <label className="block text-xs font-medium text-gray-600 mb-1 uppercase tracking-wide">
                     Medidas (cm)
                   </label>
                   <div className="grid grid-cols-3 gap-4">
@@ -536,7 +550,7 @@ export default function EditModelPage() {
 
                 {/* Especialidades */}
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1 uppercase tracking-widest">
+                  <label className="block text-xs font-medium text-gray-600 mb-1 uppercase tracking-wide">
                     Especialidades
                   </label>
                   <input
@@ -551,7 +565,7 @@ export default function EditModelPage() {
 
                 {/* Localizacao */}
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-1 uppercase tracking-widest">
+                  <label className="block text-xs font-medium text-gray-600 mb-1 uppercase tracking-wide">
                     Localizacao
                   </label>
                   <input
@@ -574,12 +588,12 @@ export default function EditModelPage() {
                       className="mr-2"
                     />
                     <label className="text-sm text-gray-700">
-                      Consentimento para contato publico
+                      Consentimento para contato público (LGPD)
                     </label>
                   </div>
 
                   <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1 uppercase tracking-widest">
+                    <label className="block text-xs font-medium text-gray-600 mb-1 uppercase tracking-wide">
                       Instagram
                     </label>
                     <input
@@ -588,35 +602,37 @@ export default function EditModelPage() {
                       value={pessoa.instagram_url || ''}
                       onChange={handleInputChange}
                       className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black"
+                      placeholder="https://instagram.com/usuario"
                     />
                   </div>
 
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1 uppercase tracking-widest">
-                      Email
-                    </label>
-                    <input
-                      type="email"
-                      name="email"
-                      value={pessoa.email || ''}
-                      onChange={handleInputChange}
-                      disabled={!pessoa.consentimento_contato}
-                      className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black disabled:bg-gray-50"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1 uppercase tracking-widest">
-                      WhatsApp
-                    </label>
-                    <input
-                      type="tel"
-                      name="telefone"
-                      value={pessoa.telefone || ''}
-                      onChange={handleInputChange}
-                      disabled={!pessoa.consentimento_contato}
-                      className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black disabled:bg-gray-50"
-                    />
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 mb-1 uppercase tracking-wide">
+                        Email
+                      </label>
+                      <input
+                        type="email"
+                        name="email"
+                        value={pessoa.email || ''}
+                        onChange={handleInputChange}
+                        disabled={!pessoa.consentimento_contato}
+                        className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black disabled:bg-gray-50"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-gray-600 mb-1 uppercase tracking-wide">
+                        WhatsApp
+                      </label>
+                      <input
+                        type="tel"
+                        name="telefone"
+                        value={pessoa.telefone || ''}
+                        onChange={handleInputChange}
+                        disabled={!pessoa.consentimento_contato}
+                        className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black disabled:bg-gray-50"
+                      />
+                    </div>
                   </div>
                 </div>
 
@@ -720,7 +736,7 @@ export default function EditModelPage() {
 
                 {/* Upload de novas fotos */}
                 <div className="mt-6 border-t border-gray-200 pt-6">
-                  <h4 className="text-xs font-semibold text-black mb-3 uppercase tracking-widest">
+                  <h4 className="text-xs font-semibold text-black mb-2 uppercase tracking-wide">
                     Adicionar Novas Fotos
                   </h4>
                   
@@ -813,7 +829,7 @@ export default function EditModelPage() {
 
                 {/* Upload de novos videos */}
                 <div className="mt-6 border-t border-gray-200 pt-6">
-                  <h4 className="text-xs font-semibold text-black mb-3 uppercase tracking-widest">
+                  <h4 className="text-xs font-semibold text-black mb-2 uppercase tracking-wide">
                     Adicionar Novos Videos
                   </h4>
                   
