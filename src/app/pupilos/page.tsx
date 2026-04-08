@@ -195,7 +195,7 @@ export default function PupilosPage() {
             </p>
           </div>
         ) : (
-          <div className={viewMode === 'grid' ? 'grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6' : 'space-y-4'}>
+          <div className={viewMode === 'grid' ? 'grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 items-start' : 'space-y-4'}>
             {filteredPessoas.map((pessoa) => (
               <ModelCard key={pessoa.id} pessoa={pessoa} />
             ))}

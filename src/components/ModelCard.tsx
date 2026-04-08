@@ -55,7 +55,7 @@ export default function ModelCard({ pessoa, isParceiro = false, source = 'direct
             src={fotoUrl}
             alt={pessoa.nome}
             fill
-            className="object-cover object-top transition-transform duration-700 group-hover:scale-105"
+            className="object-cover object-center transition-transform duration-700 group-hover:scale-105"
             sizes="(max-width: 640px) 44vw, (max-width: 768px) 30vw, (max-width: 1024px) 22vw, 18vw"
             quality={70}
             priority={false}

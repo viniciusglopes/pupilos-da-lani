@@ -35,7 +35,7 @@ export default function ModelCardSimpleFixed({ pessoa, source = 'homepage' }: Mo
             src={fotoUrl}
             alt={pessoa.nome}
             fill
-            className="object-cover object-top transition-all duration-700 group-hover:scale-105"
+            className="object-cover object-center transition-all duration-700 group-hover:scale-105"
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 17vw"
             quality={75}
             priority={false}
