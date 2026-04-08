@@ -70,7 +70,7 @@ export default function Footer() {
             <ul className="space-y-3">
               {[
                 { href: '/', label: 'Início' },
-                { href: '/busca', label: 'Talentos' },
+                { href: '/pupilos', label: 'Talentos' },
                 ...(privacyContent ? [{ href: privacyContent.link_url || '/privacidade', label: privacyContent.title || 'Privacidade' }] : []),
               ].map((link) => (
                 <li key={link.href}>

@@ -30,7 +30,7 @@ export default function FeaturedPupilosCarousel({
           </p>
         </div>
         <Link
-          href="/busca"
+          href="/pupilos"
           className="text-xs font-medium uppercase tracking-widest text-gray-400 hover:text-black transition-colors hidden sm:block"
         >
           Ver Todos →
@@ -50,7 +50,7 @@ export default function FeaturedPupilosCarousel({
       </div>
 
       <Link
-        href="/busca"
+        href="/pupilos"
         className="mt-4 text-xs font-medium uppercase tracking-widest text-gray-400 hover:text-black transition-colors sm:hidden block text-center"
       >
         Ver Todos →

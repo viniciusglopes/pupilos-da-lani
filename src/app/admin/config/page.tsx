@@ -26,7 +26,7 @@ const DEFAULT: SiteConfig = {
   text_color: '#000000',
   menu_items: [
     { label: 'Início', href: '/' },
-    { label: 'Talentos', href: '/busca' },
+    { label: 'Talentos', href: '/pupilos' },
   ]
 }
 
