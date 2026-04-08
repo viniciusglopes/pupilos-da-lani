@@ -32,7 +32,12 @@ export async function GET(request: Request) {
     // Se não existe, retornar configurações padrão
     const config = data || DEFAULT_CONFIG
 
-    return NextResponse.json({ success: true, config })
+    return NextResponse.json({ success: true, config }, {
+      headers: {
+        'Cache-Control': 'no-store, no-cache, must-revalidate',
+        'Pragma': 'no-cache',
+      }
+    })
   } catch (error: any) {
     console.error('Homepage config GET error:', error)
     return NextResponse.json({ error: error.message }, { status: 500 })
