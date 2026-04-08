@@ -7,6 +7,7 @@ import FeaturedPupilosCarousel from '@/components/FeaturedPupilosCarousel'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import Link from 'next/link'
+import { supabase } from '@/lib/supabase'
 
 // NOTA: Configurações anti-cache removidas (incompatíveis com 'use client')
 // Client Components controlam cache via fetch() headers
@@ -90,17 +91,15 @@ export default function HomePage() {
     try {
       const cacheBust = Date.now()
       
-      // Load homepage config first
-      const configRes = await fetch(`/api/config/homepage?t=${cacheBust}`, {
-        cache: 'no-store',
-        headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate' }
-      })
-      if (configRes.ok) {
-        const configData = await configRes.json()
-        // console.log('⚙️ Config carregado:', configData.config)
-        if (configData.success && configData.config) {
-          setConfig(configData.config)
-        }
+      // Load homepage config direto do Supabase (sem cache de proxy)
+      const { data: configData } = await supabase
+        .from('homepage_config')
+        .select('mostrar_titulo, mostrar_destaques')
+        .order('updated_at', { ascending: false })
+        .limit(1)
+        .maybeSingle()
+      if (configData) {
+        setConfig({ mostrar_titulo: configData.mostrar_titulo, mostrar_destaques: configData.mostrar_destaques })
       }
       
       // Load content with cache bust
