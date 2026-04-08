@@ -13,6 +13,7 @@ export default function CadastroPage() {
   const [videos, setVideos] = useState<File[]>([])
   const [formData, setFormData] = useState<PessoaForm>({
     nome: '',
+    sexo: '',
     descricao: '',
     altura: undefined,
     idade: undefined,
@@ -171,6 +172,7 @@ export default function CadastroPage() {
       
       setFormData({
         nome: '',
+        sexo: '',
         descricao: '',
         altura: undefined,
         idade: undefined,
@@ -251,7 +253,24 @@ export default function CadastroPage() {
             </div>
 
             {/* Informacoes Basicas */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+              <div>
+                <label className="block text-xs font-medium text-gray-700 mb-2 uppercase tracking-widest">
+                  Sexo *
+                </label>
+                <select
+                  name="sexo"
+                  value={(formData as any).sexo || ''}
+                  onChange={handleInputChange}
+                  className="w-full px-4 py-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black"
+                  required
+                >
+                  <option value="">Selecione...</option>
+                  <option value="Masculino">Masculino</option>
+                  <option value="Feminino">Feminino</option>
+                </select>
+              </div>
+
               <div>
                 <label className="block text-xs font-medium text-gray-700 mb-2 uppercase tracking-widest">
                   Altura (cm)
@@ -277,7 +296,7 @@ export default function CadastroPage() {
                   value={formData.idade || ''}
                   onChange={handleInputChange}
                   className="w-full px-4 py-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black"
-                  min="16"
+                  min="0"
                   max="65"
                 />
               </div>
