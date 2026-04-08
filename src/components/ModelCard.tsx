@@ -49,7 +49,7 @@ export default function ModelCard({ pessoa, isParceiro = false, source = 'direct
       className="group cursor-pointer block min-w-0"
       onClick={handleClick}
     >
-      <div className="relative w-full overflow-hidden bg-gray-100" style={{paddingBottom: '133.33%'}}>
+      <div className="relative w-full aspect-[3/4] overflow-hidden bg-gray-100">
         {fotoUrl ? (
           <Image
             src={fotoUrl}
