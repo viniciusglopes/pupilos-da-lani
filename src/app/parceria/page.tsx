@@ -91,14 +91,6 @@ export default function ParceriaPage() {
           <p className="text-base text-gray-500 max-w-2xl mx-auto mt-4">
             {content.subtitulo}
           </p>
-          <div className="mt-6">
-            <Link
-              href="/"
-              className="text-xs text-gray-400 hover:text-black font-medium uppercase tracking-widest transition-colors"
-            >
-              Ver todos os pupilos
-            </Link>
-          </div>
         </div>
 
         {/* Dynamic sections */}
@@ -144,11 +136,6 @@ export default function ParceriaPage() {
           </>
         )}
 
-        <div className="text-center mt-16">
-          <p className="text-gray-400 text-xs uppercase tracking-widest">
-            {pessoas.length} pupilo{pessoas.length !== 1 ? 's' : ''} parceiro{pessoas.length !== 1 ? 's' : ''}
-          </p>
-        </div>
       </main>
 
       <Footer />
