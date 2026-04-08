@@ -30,12 +30,7 @@ export default function AdminSidebar() {
       href: '/admin/homepage-config',
       description: 'Controlar secoes da pagina inicial'
     },
-    {
-      title: 'Pagina Principal',
-      href: '/admin/homepage',
-      description: 'Editar textos da home'
-    },
-    {
+{
       title: 'Pagina Parceria',
       href: '/admin/parceria',
       description: 'Editar textos da parceria'
