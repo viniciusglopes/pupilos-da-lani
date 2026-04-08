@@ -213,14 +213,13 @@ export default function CadastroPage() {
     <div className="min-h-screen bg-white flex">
       <AdminSidebar />
       
-      <main className="flex-1 lg:ml-0 p-8">
-        <div className="max-w-4xl mx-auto">
-        <div className="max-w-2xl mx-auto border border-gray-200 p-8">
-          <div className="text-center mb-8">
-            <h1 className="text-2xl font-bold text-black mb-2 uppercase tracking-wide">
+      <main className="flex-1 lg:ml-0 p-6">
+        <div className="max-w-4xl mx-auto border border-gray-200 p-8">
+          <div className="mb-6">
+            <h1 className="text-xl font-bold text-black uppercase tracking-wide">
               Cadastro de Pupilo
             </h1>
-            <p className="text-gray-500 text-sm">
+            <p className="text-gray-500 text-sm mt-1">
               Adicione um novo pupilo ao portfolio
             </p>
           </div>
@@ -235,10 +234,10 @@ export default function CadastroPage() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-4">
             {/* Nome (campo expandido) */}
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-2 uppercase tracking-widest">
+              <label className="block text-xs font-medium text-gray-600 mb-1 uppercase tracking-wide">
                 Nome Completo *
               </label>
               <input
@@ -246,23 +245,23 @@ export default function CadastroPage() {
                 name="nome"
                 value={formData.nome}
                 onChange={handleInputChange}
-                className="w-full px-4 py-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black text-lg"
+                className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black"
                 required
                 placeholder="Digite o nome completo do pupilo"
               />
             </div>
 
             {/* Informacoes Basicas */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            <div className="grid grid-cols-3 gap-4">
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-2 uppercase tracking-widest">
+                <label className="block text-xs font-medium text-gray-600 mb-1 uppercase tracking-wide">
                   Sexo *
                 </label>
                 <select
                   name="sexo"
                   value={(formData as any).sexo || ''}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black"
+                  className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black"
                   required
                 >
                   <option value="">Selecione...</option>
@@ -272,7 +271,7 @@ export default function CadastroPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-2 uppercase tracking-widest">
+                <label className="block text-xs font-medium text-gray-600 mb-1 uppercase tracking-wide">
                   Altura (cm)
                 </label>
                 <input
@@ -280,14 +279,14 @@ export default function CadastroPage() {
                   name="altura"
                   value={formData.altura || ''}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black"
+                  className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black"
                   min="100"
                   max="250"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-2 uppercase tracking-widest">
+                <label className="block text-xs font-medium text-gray-600 mb-1 uppercase tracking-wide">
                   Idade (anos)
                 </label>
                 <input
@@ -295,7 +294,7 @@ export default function CadastroPage() {
                   name="idade"
                   value={formData.idade || ''}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black"
+                  className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black"
                   min="0"
                   max="65"
                 />
@@ -303,7 +302,7 @@ export default function CadastroPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-2 uppercase tracking-widest">
+              <label className="block text-xs font-medium text-gray-600 mb-1 uppercase tracking-wide">
                 Descricao
               </label>
               <textarea
@@ -317,9 +316,9 @@ export default function CadastroPage() {
             </div>
 
             {/* Caracteristicas Fisicas */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-2 uppercase tracking-widest">
+                <label className="block text-xs font-medium text-gray-600 mb-1 uppercase tracking-wide">
                   Cor dos Olhos
                 </label>
                 <select
@@ -339,7 +338,7 @@ export default function CadastroPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-2 uppercase tracking-widest">
+                <label className="block text-xs font-medium text-gray-600 mb-1 uppercase tracking-wide">
                   Cor do Cabelo
                 </label>
                 <select
@@ -406,7 +405,7 @@ export default function CadastroPage() {
 
             {/* Especialidades */}
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-2 uppercase tracking-widest">
+              <label className="block text-xs font-medium text-gray-600 mb-1 uppercase tracking-wide">
                 Especialidades
               </label>
               <input
@@ -450,7 +449,7 @@ export default function CadastroPage() {
 
             {/* Localizacao */}
             <div>
-              <label className="block text-xs font-medium text-gray-700 mb-2 uppercase tracking-widest">
+              <label className="block text-xs font-medium text-gray-600 mb-1 uppercase tracking-wide">
                 Localizacao
               </label>
               <input
@@ -483,9 +482,9 @@ export default function CadastroPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-2 uppercase tracking-widest">
+                  <label className="block text-xs font-medium text-gray-600 mb-1 uppercase tracking-wide">
                     Instagram
                   </label>
                   <input
@@ -499,7 +498,7 @@ export default function CadastroPage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-gray-700 mb-2 uppercase tracking-widest">
+                  <label className="block text-xs font-medium text-gray-600 mb-1 uppercase tracking-wide">
                     Email (opcional)
                   </label>
                   <input
@@ -515,7 +514,7 @@ export default function CadastroPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-2 uppercase tracking-widest">
+                <label className="block text-xs font-medium text-gray-600 mb-1 uppercase tracking-wide">
                   WhatsApp (opcional)
                 </label>
                 <input
@@ -567,7 +566,7 @@ export default function CadastroPage() {
               <h3 className="text-sm font-medium text-black uppercase tracking-wide">Portfolio</h3>
               
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-2 uppercase tracking-widest">
+                <label className="block text-xs font-medium text-gray-600 mb-1 uppercase tracking-wide">
                   Fotos (maximo 10)
                 </label>
                 <input
@@ -585,7 +584,7 @@ export default function CadastroPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-gray-700 mb-2 uppercase tracking-widest">
+                <label className="block text-xs font-medium text-gray-600 mb-1 uppercase tracking-wide">
                   Videos (maximo 5)
                 </label>
                 <input
@@ -625,7 +624,6 @@ export default function CadastroPage() {
               Voltar ao Dashboard
             </button>
           </div>
-        </div>
         </div>
       </main>
     </div>
