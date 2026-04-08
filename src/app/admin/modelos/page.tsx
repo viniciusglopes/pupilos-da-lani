@@ -38,12 +38,22 @@ export default function ModelosPage() {
   }
 
   const toggleAtivo = async (id: string, ativo: boolean) => {
-    await supabase.from('pessoas').update({ ativo: !ativo }).eq('id', id)
+    const res = await fetch(`/api/admin/pessoas/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ativo: !ativo })
+    })
+    if (!res.ok) { alert('Erro ao atualizar status'); return }
     setPessoas(prev => prev.map(p => p.id === id ? { ...p, ativo: !ativo } : p))
   }
 
   const toggleDestaque = async (id: string, destaque: boolean) => {
-    await supabase.from('pessoas').update({ destaque: !destaque }).eq('id', id)
+    const res = await fetch(`/api/admin/pessoas/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ destaque: !destaque })
+    })
+    if (!res.ok) { alert('Erro ao atualizar destaque'); return }
     setPessoas(prev => prev.map(p => p.id === id ? { ...p, destaque: !destaque } : p))
   }
 
