@@ -12,17 +12,13 @@ export default function ModelosPage() {
   const [pessoas, setPessoas] = useState<PessoaCompleta[]>([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<'todos' | 'ativo' | 'inativo' | 'parceiro' | 'destaque'>('todos')
+  const [search, setSearch] = useState('')
   const [selectedPessoa, setSelectedPessoa] = useState<PessoaCompleta | null>(null)
-  const [showModal, setShowModal] = useState(false)
   const router = useRouter()
 
   useEffect(() => {
     const isAuthenticated = localStorage.getItem('admin_authenticated')
-    if (!isAuthenticated) {
-      router.push('/login')
-      return
-    }
-    
+    if (!isAuthenticated) { router.push('/login'); return }
     loadPessoas()
   }, [router])
 
@@ -30,13 +26,8 @@ export default function ModelosPage() {
     try {
       const { data, error } = await supabase
         .from('pessoas')
-        .select(`
-          *,
-          fotos (*),
-          videos (*)
-        `)
+        .select('*, fotos(*), videos(*)')
         .order('created_at', { ascending: false })
-
       if (error) throw error
       setPessoas(data as PessoaCompleta[])
     } catch (error) {
@@ -47,129 +38,34 @@ export default function ModelosPage() {
   }
 
   const toggleAtivo = async (id: string, ativo: boolean) => {
-    try {
-      const { error } = await supabase
-        .from('pessoas')
-        .update({ ativo: !ativo })
-        .eq('id', id)
-
-      if (error) throw error
-      
-      setPessoas(prev => prev.map(p => 
-        p.id === id ? { ...p, ativo: !ativo } : p
-      ))
-    } catch (error) {
-      console.error('Erro ao alterar status:', error)
-    }
+    await supabase.from('pessoas').update({ ativo: !ativo }).eq('id', id)
+    setPessoas(prev => prev.map(p => p.id === id ? { ...p, ativo: !ativo } : p))
   }
 
   const toggleDestaque = async (id: string, destaque: boolean) => {
-    try {
-      const { error } = await supabase
-        .from('pessoas')
-        .update({ destaque: !destaque })
-        .eq('id', id)
-
-      if (error) throw error
-      
-      setPessoas(prev => prev.map(p => 
-        p.id === id ? { ...p, destaque: !destaque } : p
-      ))
-    } catch (error) {
-      console.error('Erro ao alterar destaque:', error)
-    }
-  }
-
-  const deleteFoto = async (fotoId: string, caminho: string | null) => {
-    if (!confirm('Tem certeza que deseja excluir esta foto?')) {
-      return
-    }
-
-    try {
-      if (caminho && caminho.trim() !== '') {
-        await supabase.storage.from('fotos').remove([caminho])
-      }
-
-      const { error } = await supabase
-        .from('fotos')
-        .delete()
-        .eq('id', fotoId)
-
-      if (error) throw error
-
-      if (selectedPessoa) {
-        const updatedPessoa = {
-          ...selectedPessoa,
-          fotos: selectedPessoa.fotos.filter(f => f.id !== fotoId)
-        }
-        setSelectedPessoa(updatedPessoa)
-        setPessoas(prev => prev.map(p => 
-          p.id === selectedPessoa.id ? updatedPessoa : p
-        ))
-      }
-      
-      alert('Foto excluida com sucesso!')
-    } catch (error) {
-      console.error('Erro ao deletar foto:', error)
-      alert('Erro ao excluir foto')
-    }
+    await supabase.from('pessoas').update({ destaque: !destaque }).eq('id', id)
+    setPessoas(prev => prev.map(p => p.id === id ? { ...p, destaque: !destaque } : p))
   }
 
   const deletePessoa = async (id: string, nome: string) => {
-    if (!confirm(`Tem certeza que deseja excluir ${nome}? Esta acao nao pode ser desfeita.`)) {
-      return
-    }
-
+    if (!confirm(`Excluir ${nome}? Esta ação não pode ser desfeita.`)) return
     try {
       const pessoa = pessoas.find(p => p.id === id)
       if (pessoa) {
         for (const foto of pessoa.fotos) {
-          if (foto.caminho_storage) {
-            await supabase.storage
-              .from('fotos')
-              .remove([foto.caminho_storage])
-          }
+          if (foto.caminho_storage) await supabase.storage.from('fotos').remove([foto.caminho_storage])
         }
-        
         for (const video of pessoa.videos) {
-          if (video.caminho_storage) {
-            await supabase.storage
-              .from('videos')
-              .remove([video.caminho_storage])
-          }
+          if (video.caminho_storage) await supabase.storage.from('videos').remove([video.caminho_storage])
         }
       }
-
-      const { error } = await supabase
-        .from('pessoas')
-        .delete()
-        .eq('id', id)
-
-      if (error) throw error
-      
+      await supabase.from('pessoas').delete().eq('id', id)
       setPessoas(prev => prev.filter(p => p.id !== id))
-      setShowModal(false)
-      alert('Pupilo excluido com sucesso!')
+      if (selectedPessoa?.id === id) setSelectedPessoa(null)
     } catch (error) {
-      console.error('Erro ao deletar:', error)
       alert('Erro ao excluir pupilo')
     }
   }
-
-  const openModal = (pessoa: PessoaCompleta) => {
-    setSelectedPessoa(pessoa)
-    setShowModal(true)
-  }
-
-  const filteredPessoas = pessoas.filter(pessoa => {
-    switch (filter) {
-      case 'ativo': return pessoa.ativo
-      case 'inativo': return !pessoa.ativo
-      case 'parceiro': return pessoa.parceria
-      case 'destaque': return pessoa.destaque
-      default: return true
-    }
-  })
 
   const stats = {
     total: pessoas.length,
@@ -179,15 +75,22 @@ export default function ModelosPage() {
     destaques: pessoas.filter(p => p.destaque).length
   }
 
+  const filteredPessoas = pessoas.filter(p => {
+    const matchFilter = filter === 'todos' ? true
+      : filter === 'ativo' ? p.ativo
+      : filter === 'inativo' ? !p.ativo
+      : filter === 'parceiro' ? p.parceria
+      : p.destaque
+    const matchSearch = search === '' || p.nome.toLowerCase().includes(search.toLowerCase())
+    return matchFilter && matchSearch
+  })
+
   if (loading) {
     return (
       <div className="min-h-screen bg-white flex">
         <AdminSidebar />
         <div className="flex-1 flex items-center justify-center">
-          <div className="text-center">
-            <div className="animate-spin h-12 w-12 border-2 border-black border-t-transparent mx-auto"></div>
-            <p className="mt-4 text-gray-500 text-sm uppercase tracking-wide">Carregando...</p>
-          </div>
+          <div className="animate-spin h-8 w-8 border-2 border-black border-t-transparent" />
         </div>
       </div>
     )
@@ -196,234 +99,169 @@ export default function ModelosPage() {
   return (
     <div className="min-h-screen bg-white flex">
       <AdminSidebar />
-      
-      <main className="flex-1 lg:ml-0 p-8">
+
+      <main className="flex-1 p-6 lg:p-8">
         <div className="max-w-7xl mx-auto">
-          <div className="flex justify-between items-center mb-8">
+
+          {/* Header */}
+          <div className="flex items-center justify-between mb-6">
             <div>
-              <h1 className="text-2xl font-bold text-black uppercase tracking-wide">
-                Gerenciar Pupilos
-              </h1>
-              <p className="text-gray-500 mt-2 text-sm">
-                Visualize, edite e gerencie todos os pupilos cadastrados
-              </p>
+              <h1 className="text-xl font-bold text-black uppercase tracking-wide">Gerenciar Pupilos</h1>
+              <p className="text-gray-400 text-sm mt-0.5">{stats.total} pupilos cadastrados</p>
             </div>
-            <Link
-              href="/admin/cadastro"
-              className="bg-black text-white px-4 py-2 hover:bg-gray-800 transition-colors flex items-center space-x-2 text-sm uppercase tracking-wide"
-            >
-              <span>+ Novo Pupilo</span>
+            <Link href="/admin/cadastro"
+              className="bg-black text-white px-5 py-2 text-sm uppercase tracking-wide hover:bg-gray-800 transition-colors">
+              + Novo Pupilo
             </Link>
           </div>
 
-          {/* Estatisticas */}
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+          {/* Stats */}
+          <div className="grid grid-cols-5 gap-3 mb-6">
             {[
-              { label: 'Total', value: stats.total },
-              { label: 'Ativos', value: stats.ativos },
-              { label: 'Inativos', value: stats.inativos },
-              { label: 'Parceiros', value: stats.parceiros },
-              { label: 'Destaques', value: stats.destaques }
-            ].map(({ label, value }) => (
-              <div key={label} className="border border-gray-200 p-4">
-                <div className="text-2xl font-bold text-black">{value}</div>
-                <div className="text-xs text-gray-500 uppercase tracking-widest">{label}</div>
-              </div>
+              { label: 'Total', value: stats.total, key: 'todos' },
+              { label: 'Ativos', value: stats.ativos, key: 'ativo' },
+              { label: 'Inativos', value: stats.inativos, key: 'inativo' },
+              { label: 'Parceiros', value: stats.parceiros, key: 'parceiro' },
+              { label: 'Destaques', value: stats.destaques, key: 'destaque' },
+            ].map(({ label, value, key }) => (
+              <button key={key} onClick={() => setFilter(key as any)}
+                className={`p-4 border text-left transition-colors ${filter === key ? 'border-black bg-black text-white' : 'border-gray-200 hover:border-gray-400'}`}>
+                <div className={`text-2xl font-bold ${filter === key ? 'text-white' : 'text-black'}`}>{value}</div>
+                <div className={`text-xs uppercase tracking-wide mt-0.5 ${filter === key ? 'text-gray-300' : 'text-gray-500'}`}>{label}</div>
+              </button>
             ))}
           </div>
 
-          {/* Filtros */}
-          <div className="border border-gray-200 p-4 mb-6">
-            <div className="flex flex-wrap gap-2">
-              {[
-                { key: 'todos', label: 'Todos', count: stats.total },
-                { key: 'ativo', label: 'Ativos', count: stats.ativos },
-                { key: 'inativo', label: 'Inativos', count: stats.inativos },
-                { key: 'parceiro', label: 'Parceiros', count: stats.parceiros },
-                { key: 'destaque', label: 'Destaques', count: stats.destaques }
-              ].map(({ key, label, count }) => (
-                <button
-                  key={key}
-                  onClick={() => setFilter(key as any)}
-                  className={`px-3 py-1 text-sm transition-colors ${
-                    filter === key 
-                      ? 'bg-black text-white' 
-                      : 'border border-gray-300 text-gray-700 hover:bg-gray-50'
-                  }`}
-                >
-                  {label} ({count})
-                </button>
-              ))}
-            </div>
+          {/* Search */}
+          <div className="mb-4">
+            <input
+              type="text"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Buscar por nome..."
+              className="w-full max-w-sm px-4 py-2 border border-gray-300 text-sm focus:outline-none focus:border-black"
+            />
           </div>
 
-          {/* Grid de pupilos */}
+          {/* Lista */}
           {filteredPessoas.length === 0 ? (
-            <div className="border border-gray-200 p-8 text-center">
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                Nenhum pupilo encontrado
-              </h3>
-              <p className="text-gray-600 mb-4">
-                {filter === 'todos' 
-                  ? 'Cadastre o primeiro pupilo para comecar.'
-                  : `Nao ha pupilos ${filter} no momento.`
-                }
-              </p>
-              <Link
-                href="/admin/cadastro"
-                className="inline-flex items-center px-4 py-2 bg-black text-white hover:bg-gray-800 transition-colors text-sm uppercase tracking-wide"
-              >
-                Cadastrar Pupilo
-              </Link>
+            <div className="border border-gray-200 p-12 text-center">
+              <p className="text-gray-400 text-sm uppercase tracking-wide">Nenhum pupilo encontrado</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredPessoas.map((pessoa) => (
-                <div key={pessoa.id} className="border border-gray-200 overflow-hidden">
-                  <div className="relative h-48">
-                    {pessoa.foto_principal || pessoa.fotos[0] ? (
-                      <Image
-                        src={pessoa.foto_principal || pessoa.fotos[0].url_arquivo}
-                        alt={pessoa.nome}
-                        fill
-                        className="object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full bg-gray-100 flex items-center justify-center">
-                        <div className="text-center text-gray-400">
-                          <p className="text-sm uppercase tracking-wide">Sem fotos</p>
-                        </div>
-                      </div>
-                    )}
-                    
-                    {/* Status badges */}
-                    <div className="absolute top-2 left-2 space-y-1">
-                      {pessoa.destaque && (
-                        <span className="bg-black text-white px-2 py-1 text-xs font-bold uppercase tracking-wide">
-                          DESTAQUE
-                        </span>
-                      )}
-                      {pessoa.parceria && (
-                        <span className="bg-white text-black px-2 py-1 text-xs font-bold border border-black uppercase tracking-wide">
-                          PARCEIRO
-                        </span>
-                      )}
-                    </div>
-
-                    <div className="absolute top-2 right-2">
-                      <span className={`px-2 py-1 text-xs font-medium border ${
-                        pessoa.ativo 
-                          ? 'bg-white border-gray-300 text-gray-700' 
-                          : 'bg-gray-100 border-gray-300 text-gray-400'
-                      }`}>
-                        {pessoa.ativo ? 'Ativo' : 'Inativo'}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="p-4">
-                    <h3 className="font-bold text-lg mb-2">{pessoa.nome}</h3>
-                    
-                    <div className="grid grid-cols-2 gap-2 text-sm text-gray-600 mb-3">
-                      <div>
-                        <span className="font-medium">Local:</span>
-                        <br />
-                        {pessoa.localizacao || 'N/A'}
-                      </div>
-                      <div>
-                        <span className="font-medium">Altura:</span>
-                        <br />
-                        {pessoa.altura ? `${pessoa.altura}cm` : 'N/A'}
-                      </div>
-                    </div>
-
-                    <div className="flex justify-between items-center text-sm text-gray-500 mb-4">
-                      <span>{pessoa.fotos.length} fotos</span>
-                      <span>{pessoa.videos.length} videos</span>
-                    </div>
-
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      <button
-                        onClick={() => openModal(pessoa)}
-                        className="border border-gray-300 text-gray-700 px-3 py-1 text-sm hover:bg-gray-50 transition-colors"
-                      >
-                        Ver Detalhes
-                      </button>
-                      <Link
-                        href={`/admin/cadastro/${pessoa.id}/edit`}
-                        className="border border-black text-black px-3 py-1 text-sm hover:bg-black hover:text-white transition-colors"
-                      >
-                        Editar
-                      </Link>
-                      <button
-                        onClick={() => toggleDestaque(pessoa.id, pessoa.destaque)}
-                        className={`px-3 py-1 text-sm transition-colors ${
-                          pessoa.destaque
-                            ? 'bg-black text-white'
-                            : 'border border-gray-300 text-gray-700 hover:bg-gray-50'
-                        }`}
-                      >
-                        {pessoa.destaque ? 'Remover' : 'Destacar'}
-                      </button>
-                    </div>
-
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => toggleAtivo(pessoa.id, pessoa.ativo)}
-                        className="flex-1 px-3 py-2 text-sm transition-colors border border-gray-300 text-gray-700 hover:bg-gray-50"
-                      >
-                        {pessoa.ativo ? 'Desativar' : 'Ativar'}
-                      </button>
-                      <button
-                        onClick={() => deletePessoa(pessoa.id, pessoa.nome)}
-                        className="border border-gray-300 text-gray-700 px-3 py-2 text-sm hover:bg-gray-50 transition-colors"
-                      >
-                        Excluir
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Modal de detalhes */}
-        {showModal && selectedPessoa && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white max-w-4xl max-h-[90vh] w-full mx-4 overflow-hidden">
-              <div className="flex justify-between items-center p-6 border-b border-gray-200">
-                <h2 className="text-xl font-bold uppercase tracking-wide">{selectedPessoa.nome}</h2>
-                <button
-                  onClick={() => setShowModal(false)}
-                  className="text-gray-400 hover:text-gray-600 text-2xl"
-                >
-                  X
-                </button>
+            <div className="border border-gray-200 divide-y divide-gray-100">
+              {/* Header da lista */}
+              <div className="grid grid-cols-[56px_1fr_120px_80px_140px] gap-4 px-4 py-2 bg-gray-50">
+                <div />
+                <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Pupilo</div>
+                <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</div>
+                <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Mídia</div>
+                <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide text-right">Ações</div>
               </div>
 
-              <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
+              {filteredPessoas.map((pessoa) => {
+                const fotoUrl = pessoa.foto_principal || pessoa.fotos[0]?.url_arquivo
+                return (
+                  <div key={pessoa.id}
+                    className={`grid grid-cols-[56px_1fr_120px_80px_140px] gap-4 px-4 py-3 items-center hover:bg-gray-50 transition-colors ${!pessoa.ativo ? 'opacity-60' : ''}`}>
+
+                    {/* Thumbnail */}
+                    <div className="w-14 h-14 flex-shrink-0 bg-gray-100 overflow-hidden cursor-pointer"
+                      onClick={() => setSelectedPessoa(selectedPessoa?.id === pessoa.id ? null : pessoa)}>
+                      {fotoUrl ? (
+                        <Image src={fotoUrl} alt={pessoa.nome} width={56} height={56}
+                          className="w-full h-full object-cover object-top" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-gray-300 text-xs">--</div>
+                      )}
+                    </div>
+
+                    {/* Info */}
+                    <div>
+                      <div className="font-semibold text-black text-sm leading-tight">{pessoa.nome}</div>
+                      <div className="text-xs text-gray-400 mt-0.5">
+                        {[pessoa.sexo, pessoa.idade ? `${pessoa.idade} anos` : null, pessoa.localizacao].filter(Boolean).join(' · ')}
+                      </div>
+                    </div>
+
+                    {/* Badges */}
+                    <div className="flex flex-wrap gap-1">
+                      <span className={`px-2 py-0.5 text-xs font-medium ${pessoa.ativo ? 'bg-gray-100 text-gray-700' : 'bg-gray-100 text-gray-400 line-through'}`}>
+                        {pessoa.ativo ? 'Ativo' : 'Inativo'}
+                      </span>
+                      {pessoa.destaque && <span className="px-2 py-0.5 text-xs bg-black text-white">Dest.</span>}
+                      {pessoa.parceria && <span className="px-2 py-0.5 text-xs border border-black text-black">Parc.</span>}
+                    </div>
+
+                    {/* Mídia */}
+                    <div className="text-xs text-gray-500">
+                      <div>{pessoa.fotos.length} foto{pessoa.fotos.length !== 1 ? 's' : ''}</div>
+                      <div>{pessoa.videos.length} vídeo{pessoa.videos.length !== 1 ? 's' : ''}</div>
+                    </div>
+
+                    {/* Ações */}
+                    <div className="flex gap-1 justify-end">
+                      <Link href={`/admin/cadastro/${pessoa.id}/edit`}
+                        className="px-3 py-1.5 text-xs bg-black text-white hover:bg-gray-800 transition-colors uppercase tracking-wide">
+                        Editar
+                      </Link>
+                      <button onClick={() => toggleDestaque(pessoa.id, pessoa.destaque)}
+                        title={pessoa.destaque ? 'Remover destaque' : 'Marcar destaque'}
+                        className={`px-3 py-1.5 text-xs transition-colors border ${pessoa.destaque ? 'bg-black text-white border-black' : 'border-gray-300 text-gray-600 hover:border-black'}`}>
+                        ★
+                      </button>
+                      <button onClick={() => toggleAtivo(pessoa.id, pessoa.ativo)}
+                        title={pessoa.ativo ? 'Desativar' : 'Ativar'}
+                        className={`px-3 py-1.5 text-xs transition-colors border ${pessoa.ativo ? 'border-gray-300 text-gray-600 hover:bg-gray-100' : 'border-gray-300 text-gray-400 hover:bg-gray-100'}`}>
+                        {pessoa.ativo ? 'Off' : 'On'}
+                      </button>
+                      <button onClick={() => deletePessoa(pessoa.id, pessoa.nome)}
+                        title="Excluir"
+                        className="px-3 py-1.5 text-xs border border-gray-200 text-gray-400 hover:border-red-400 hover:text-red-500 transition-colors">
+                        ✕
+                      </button>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          )}
+
+          {/* Painel de detalhes */}
+          {selectedPessoa && (
+            <div className="mt-6 border border-gray-200 p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="font-bold text-black uppercase tracking-wide">{selectedPessoa.nome}</h2>
+                <div className="flex gap-2">
+                  <Link href={`/admin/cadastro/${selectedPessoa.id}/edit`}
+                    className="px-4 py-2 bg-black text-white text-sm uppercase tracking-wide hover:bg-gray-800">
+                    Editar
+                  </Link>
+                  <button onClick={() => setSelectedPessoa(null)}
+                    className="px-4 py-2 border border-gray-300 text-sm text-gray-600 hover:bg-gray-50">
+                    Fechar
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 {/* Fotos */}
-                <div className="mb-8">
-                  <h3 className="text-sm font-semibold mb-4 uppercase tracking-widest text-gray-500">
+                <div>
+                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
                     Fotos ({selectedPessoa.fotos.length})
-                  </h3>
+                  </p>
                   {selectedPessoa.fotos.length > 0 ? (
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-3 gap-2">
                       {selectedPessoa.fotos.map((foto) => (
-                        <div key={foto.id} className="relative group">
-                          <Image
-                            src={foto.url_arquivo}
-                            alt={`Foto de ${selectedPessoa.nome}`}
-                            width={300}
-                            height={300}
-                            className="w-full h-48 object-cover"
-                          />
-                          <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                            <button
-                              onClick={() => deleteFoto(foto.id, foto.caminho_storage || '')}
-                              className="bg-white text-black px-3 py-1 text-sm hover:bg-gray-100"
-                            >
+                        <div key={foto.id} className="relative group aspect-square">
+                          <Image src={foto.url_arquivo} alt="" fill className="object-cover object-top" />
+                          <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                            <button onClick={async () => {
+                              if (!confirm('Excluir esta foto?')) return
+                              if (foto.caminho_storage) await supabase.storage.from('fotos').remove([foto.caminho_storage])
+                              await supabase.from('fotos').delete().eq('id', foto.id)
+                              setSelectedPessoa(prev => prev ? { ...prev, fotos: prev.fotos.filter(f => f.id !== foto.id) } : prev)
+                            }} className="bg-white text-black px-2 py-1 text-xs">
                               Excluir
                             </button>
                           </div>
@@ -431,62 +269,60 @@ export default function ModelosPage() {
                       ))}
                     </div>
                   ) : (
-                    <p className="text-gray-500 text-center py-8">
-                      Nenhuma foto cadastrada
-                    </p>
+                    <p className="text-gray-400 text-sm">Nenhuma foto</p>
                   )}
                 </div>
 
-                {/* Informacoes */}
-                <div className="grid grid-cols-2 gap-6">
+                {/* Informações */}
+                <div className="space-y-4">
                   <div>
-                    <h4 className="font-semibold mb-2 text-xs uppercase tracking-widest text-gray-500">Informacoes Basicas</h4>
-                    <div className="space-y-2 text-sm">
-                      <p><strong>Localizacao:</strong> {selectedPessoa.localizacao || 'Nao informado'}</p>
-                      <p><strong>Altura:</strong> {selectedPessoa.altura ? `${selectedPessoa.altura}cm` : 'Nao informado'}</p>
-                      <p><strong>Telefone:</strong> {selectedPessoa.telefone || 'Nao informado'}</p>
-                      <p><strong>Email:</strong> {selectedPessoa.email || 'Nao informado'}</p>
-                      <p><strong>Instagram:</strong> {selectedPessoa.instagram_url || 'Nao informado'}</p>
+                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Dados</p>
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
+                      {[
+                        ['Sexo', selectedPessoa.sexo],
+                        ['Idade', selectedPessoa.idade ? `${selectedPessoa.idade} anos` : null],
+                        ['Altura', selectedPessoa.altura ? `${selectedPessoa.altura}cm` : null],
+                        ['Local', selectedPessoa.localizacao],
+                        ['Olhos', selectedPessoa.cor_olhos],
+                        ['Cabelo', selectedPessoa.cor_cabelo],
+                      ].map(([label, val]) => val ? (
+                        <div key={label}><span className="text-gray-400">{label}:</span> <span className="text-black">{val}</span></div>
+                      ) : null)}
                     </div>
                   </div>
 
+                  {selectedPessoa.especializacoes?.length > 0 && (
+                    <div>
+                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Especialidades</p>
+                      <div className="flex flex-wrap gap-1">
+                        {selectedPessoa.especializacoes.map((esp, i) => (
+                          <span key={i} className="border border-gray-200 text-gray-600 px-2 py-0.5 text-xs">{esp}</span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {selectedPessoa.descricao && (
+                    <div>
+                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Descrição</p>
+                      <p className="text-sm text-gray-700">{selectedPessoa.descricao}</p>
+                    </div>
+                  )}
+
                   <div>
-                    <h4 className="font-semibold mb-2 text-xs uppercase tracking-widest text-gray-500">Status</h4>
-                    <div className="space-y-2 text-sm">
-                      <p><strong>Ativo:</strong> {selectedPessoa.ativo ? 'Sim' : 'Nao'}</p>
-                      <p><strong>Destaque:</strong> {selectedPessoa.destaque ? 'Sim' : 'Nao'}</p>
-                      <p><strong>Parceiro:</strong> {selectedPessoa.parceria ? 'Sim' : 'Nao'}</p>
-                      <p><strong>Cadastro:</strong> {new Date(selectedPessoa.created_at).toLocaleDateString('pt-BR')}</p>
+                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Contato</p>
+                    <div className="text-sm space-y-0.5">
+                      {selectedPessoa.email && <div><span className="text-gray-400">Email:</span> {selectedPessoa.email}</div>}
+                      {selectedPessoa.telefone && <div><span className="text-gray-400">WhatsApp:</span> {selectedPessoa.telefone}</div>}
+                      {selectedPessoa.instagram_url && <div><span className="text-gray-400">Instagram:</span> <a href={selectedPessoa.instagram_url} target="_blank" rel="noopener noreferrer" className="underline">{selectedPessoa.instagram_url}</a></div>}
                     </div>
                   </div>
                 </div>
-
-                {selectedPessoa.descricao && (
-                  <div className="mt-6">
-                    <h4 className="font-semibold mb-2 text-xs uppercase tracking-widest text-gray-500">Descricao</h4>
-                    <p className="text-sm text-gray-700">{selectedPessoa.descricao}</p>
-                  </div>
-                )}
-
-                {selectedPessoa.especializacoes && selectedPessoa.especializacoes.length > 0 && (
-                  <div className="mt-6">
-                    <h4 className="font-semibold mb-2 text-xs uppercase tracking-widest text-gray-500">Especializacoes</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {selectedPessoa.especializacoes.map((esp, index) => (
-                        <span 
-                          key={index}
-                          className="border border-gray-300 text-gray-700 px-2 py-1 text-sm"
-                        >
-                          {esp}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
               </div>
             </div>
-          </div>
-        )}
+          )}
+
+        </div>
       </main>
     </div>
   )
