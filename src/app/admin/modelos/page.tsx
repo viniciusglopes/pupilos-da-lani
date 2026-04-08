@@ -291,7 +291,7 @@ export default function ModelosPage() {
                     </div>
                   </div>
 
-                  {selectedPessoa.especializacoes?.length > 0 && (
+                  {(selectedPessoa.especializacoes?.length ?? 0) > 0 && (
                     <div>
                       <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Especialidades</p>
                       <div className="flex flex-wrap gap-1">
