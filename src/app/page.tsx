@@ -185,9 +185,7 @@ export default function HomePage() {
         )}
 
         {/* Catalogo */}
-        <section>
-          <div className="mb-6">
-
+        <section className="mt-0">
           {todos.length === 0 ? (
             <div className="text-center py-24">
               <p className="text-gray-400 text-sm tracking-widest uppercase">
