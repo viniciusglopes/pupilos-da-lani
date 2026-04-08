@@ -393,63 +393,31 @@ export default function EditModelPage() {
               <h2 className="text-sm font-semibold text-black mb-4 uppercase tracking-wide">Informacoes Basicas</h2>
               
               <form onSubmit={handleSave} className="space-y-4">
-                {/* Nome e detalhes básicos */}
-                <div className="grid grid-cols-[3fr_1fr] gap-4">
+                {/* Nome + Sexo + Altura + Idade em uma linha */}
+                <div className="grid grid-cols-[2fr_1fr_1fr_1fr] gap-3">
                   <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1 uppercase tracking-wide">
-                      Nome Completo *
-                    </label>
-                    <input
-                      type="text"
-                      name="nome"
-                      value={pessoa.nome}
-                      onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black"
-                      required
-                    />
+                    <label className="block text-xs font-medium text-gray-600 mb-1 uppercase tracking-wide">Nome *</label>
+                    <input type="text" name="nome" value={pessoa.nome} onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black" required />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-700 mb-1 uppercase tracking-wide">
-                      Sexo
-                    </label>
-                    <select
-                      name="sexo"
-                      value={pessoa.sexo || ''}
-                      onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black"
-                    >
-                      <option value="">Selecione...</option>
+                    <label className="block text-xs font-medium text-gray-600 mb-1 uppercase tracking-wide">Sexo</label>
+                    <select name="sexo" value={pessoa.sexo || ''} onChange={handleInputChange}
+                      className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black">
+                      <option value="">--</option>
                       <option value="Feminino">Feminino</option>
                       <option value="Masculino">Masculino</option>
                     </select>
                   </div>
-                </div>
-
-                {/* Altura e idade */}
-                <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1 uppercase tracking-wide">
-                      Altura (cm)
-                    </label>
-                    <input
-                      type="number"
-                      name="altura"
-                      value={pessoa.altura || ''}
-                      onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black"
-                    />
+                    <label className="block text-xs font-medium text-gray-600 mb-1 uppercase tracking-wide">Altura</label>
+                    <input type="number" name="altura" value={pessoa.altura || ''} onChange={handleInputChange}
+                      placeholder="cm" className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black" />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1 uppercase tracking-wide">
-                      Idade
-                    </label>
-                    <input
-                      type="number"
-                      name="idade"
-                      value={pessoa.idade || ''}
-                      onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black"
-                    />
+                    <label className="block text-xs font-medium text-gray-600 mb-1 uppercase tracking-wide">Idade</label>
+                    <input type="number" name="idade" value={pessoa.idade || ''} onChange={handleInputChange}
+                      placeholder="anos" className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black" />
                   </div>
                 </div>
 
@@ -470,9 +438,7 @@ export default function EditModelPage() {
                 {/* Caracteristicas fisicas */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1 uppercase tracking-wide">
-                      Cor dos Olhos
-                    </label>
+                    <label className="block text-xs font-medium text-gray-600 mb-1 uppercase tracking-wide">Olhos</label>
                     <select
                       name="cor_olhos"
                       value={pessoa.cor_olhos || ''}
@@ -489,9 +455,7 @@ export default function EditModelPage() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1 uppercase tracking-wide">
-                      Cor do Cabelo
-                    </label>
+                    <label className="block text-xs font-medium text-gray-600 mb-1 uppercase tracking-wide">Cabelo</label>
                     <select
                       name="cor_cabelo"
                       value={pessoa.cor_cabelo || ''}
