@@ -24,12 +24,10 @@ export default function ModelosPage() {
 
   const loadPessoas = async () => {
     try {
-      const { data, error } = await supabase
-        .from('pessoas')
-        .select('*, fotos(*), videos(*)')
-        .order('created_at', { ascending: false })
-      if (error) throw error
-      setPessoas(data as PessoaCompleta[])
+      const res = await fetch('/api/admin/pessoas')
+      if (!res.ok) throw new Error('Erro ao carregar')
+      const data = await res.json()
+      setPessoas(data.pessoas as PessoaCompleta[])
     } catch (error) {
       console.error('Erro ao carregar pessoas:', error)
     } finally {
