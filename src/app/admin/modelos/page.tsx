@@ -295,7 +295,7 @@ export default function ModelosPage() {
                     <div>
                       <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Especialidades</p>
                       <div className="flex flex-wrap gap-1">
-                        {selectedPessoa.especializacoes.map((esp, i) => (
+                        {selectedPessoa.especializacoes?.map((esp, i) => (
                           <span key={i} className="border border-gray-200 text-gray-600 px-2 py-0.5 text-xs">{esp}</span>
                         ))}
                       </div>
