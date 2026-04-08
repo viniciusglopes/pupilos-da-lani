@@ -393,13 +393,15 @@ export default function EditModelPage() {
               <h2 className="text-sm font-semibold text-black mb-4 uppercase tracking-wide">Informacoes Basicas</h2>
               
               <form onSubmit={handleSave} className="space-y-4">
-                {/* Nome + Sexo + Altura + Idade em uma linha */}
-                <div className="grid grid-cols-[2fr_1fr_1fr_1fr] gap-3">
-                  <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1 uppercase tracking-wide">Nome *</label>
-                    <input type="text" name="nome" value={pessoa.nome} onChange={handleInputChange}
-                      className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black" required />
-                  </div>
+                {/* Nome */}
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 mb-1 uppercase tracking-wide">Nome *</label>
+                  <input type="text" name="nome" value={pessoa.nome} onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black" required />
+                </div>
+
+                {/* Sexo + Altura + Idade */}
+                <div className="grid grid-cols-3 gap-3">
                   <div>
                     <label className="block text-xs font-medium text-gray-600 mb-1 uppercase tracking-wide">Sexo</label>
                     <select name="sexo" value={pessoa.sexo || ''} onChange={handleInputChange}
