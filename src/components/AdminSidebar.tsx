@@ -11,11 +11,6 @@ export default function AdminSidebar() {
 
   const menuItems = [
     {
-      title: 'Dashboard',
-      href: '/admin',
-      description: 'Visao geral'
-    },
-    {
       title: 'Gerenciar Pupilos',
       href: '/admin/modelos',
       description: 'Ver e editar cadastros'
