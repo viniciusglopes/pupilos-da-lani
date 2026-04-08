@@ -38,6 +38,9 @@ export default function PupiloPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
+  const from = searchParams.get('from')
+  const backUrl = from === 'parceria' ? '/parceria' : from === 'busca' ? '/pupilos' : '/'
+
   useEffect(() => {
     if (params.id) {
       loadPupilo(params.id as string)
@@ -125,7 +128,7 @@ export default function PupiloPage() {
           <h1 className="text-2xl font-bold text-black mb-4">Pupilo não encontrado</h1>
           <p className="text-gray-600 mb-6">{error}</p>
           <Link
-            href="/"
+            href={backUrl}
             className="bg-black text-white px-6 py-3 hover:bg-gray-800 transition-colors text-sm uppercase tracking-wide"
           >
             Voltar ao Início
@@ -153,7 +156,7 @@ export default function PupiloPage() {
             Pupilos da Lani
           </Link>
           <Link
-            href="/"
+            href={backUrl}
             className="text-sm text-gray-300 hover:text-white transition-colors uppercase tracking-wide"
           >
             ← Voltar
