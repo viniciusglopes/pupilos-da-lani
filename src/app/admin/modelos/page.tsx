@@ -180,7 +180,7 @@ export default function ModelosPage() {
                     <div>
                       <div className="font-semibold text-black text-sm leading-tight">{pessoa.nome}</div>
                       <div className="text-xs text-gray-400 mt-0.5">
-                        {[pessoa.sexo, pessoa.idade ? `${pessoa.idade} anos` : null, pessoa.localizacao].filter(Boolean).join(' · ')}
+                        {[pessoa.sexo, pessoa.idade ? `${pessoa.idade} anos` : null].filter(Boolean).join(' · ')}
                       </div>
                     </div>
 
