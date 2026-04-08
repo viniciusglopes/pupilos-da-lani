@@ -9,7 +9,16 @@ interface PupiloClicks {
   nome: string
   foto: string
   total: number
-  por_dia: { data: string; cliques: number }[]
+  por_origem: Record<string, number>
+  por_dia: { data: string; cliques: number; source: string }[]
+}
+
+const SOURCE_LABELS: Record<string, string> = {
+  homepage: 'Página Principal',
+  busca: 'Busca',
+  parceria: 'Parceria',
+  destaque: 'Destaques',
+  direct: 'Acesso Direto'
 }
 
 export default function AdminAnalyticsPage() {
@@ -176,6 +185,7 @@ export default function AdminAnalyticsPage() {
                       <thead className="bg-gray-50">
                         <tr>
                           <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Data</th>
+                          <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Origem</th>
                           <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Cliques</th>
                         </tr>
                       </thead>
@@ -183,6 +193,7 @@ export default function AdminAnalyticsPage() {
                         {pupiloDetalhado.por_dia.map((dia, i) => (
                           <tr key={i} className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
                             <td className="px-6 py-3 text-sm text-gray-700">{formatDate(dia.data)}</td>
+                            <td className="px-6 py-3 text-sm text-gray-500">{SOURCE_LABELS[dia.source] || dia.source}</td>
                             <td className="px-6 py-3 text-sm font-medium text-black">{dia.cliques}</td>
                           </tr>
                         ))}
@@ -207,7 +218,8 @@ export default function AdminAnalyticsPage() {
                           <tr>
                             <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">#</th>
                             <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Pupilo</th>
-                            <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Total de Cliques</th>
+                            <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Total</th>
+                            <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Por Origem</th>
                             <th className="px-6 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Detalhar</th>
                           </tr>
                         </thead>
@@ -217,6 +229,11 @@ export default function AdminAnalyticsPage() {
                               <td className="px-6 py-3 text-sm text-gray-400 font-medium">{i + 1}</td>
                               <td className="px-6 py-3 text-sm font-semibold text-black">{p.nome}</td>
                               <td className="px-6 py-3 text-sm text-black">{p.total.toLocaleString('pt-BR')}</td>
+                              <td className="px-6 py-3 text-xs text-gray-500 space-y-0.5">
+                                {p.por_origem && Object.entries(p.por_origem).sort((a, b) => b[1] - a[1]).map(([src, count]) => (
+                                  <div key={src}>{SOURCE_LABELS[src] || src}: <span className="font-medium text-black">{count}</span></div>
+                                ))}
+                              </td>
                               <td className="px-6 py-3">
                                 <button
                                   onClick={() => setPupiloFiltro(p.pupilo_id)}

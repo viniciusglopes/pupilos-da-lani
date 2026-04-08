@@ -44,7 +44,7 @@ export default function FeaturedPupilosCarousel({
             key={pessoa.id}
             className="snap-start flex-none w-[44vw] sm:w-[30vw] md:w-[22vw] lg:w-[18vw] xl:w-[15vw]"
           >
-            <ModelCard pessoa={pessoa} />
+            <ModelCard pessoa={pessoa} source="destaque" />
           </div>
         ))}
       </div>

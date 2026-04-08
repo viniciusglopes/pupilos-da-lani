@@ -7,9 +7,10 @@ import Link from 'next/link'
 
 interface ModelCardProps {
   pessoa: PessoaCompleta
+  source?: string
 }
 
-export default function ModelCardSimpleFixed({ pessoa }: ModelCardProps) {
+export default function ModelCardSimpleFixed({ pessoa, source = 'homepage' }: ModelCardProps) {
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0)
 
   // Auto-rotate photos every 5 seconds
@@ -27,7 +28,7 @@ export default function ModelCardSimpleFixed({ pessoa }: ModelCardProps) {
     : pessoa.foto_principal
 
   return (
-    <Link href={`/pupilos/${pessoa.id}`} className="group cursor-pointer block">
+    <Link href={`/pupilos/${pessoa.id}?from=${source}`} className="group cursor-pointer block">
       <div className="relative w-full aspect-[3/4] overflow-hidden bg-gray-100 border border-gray-200">
         {fotoUrl ? (
           <Image

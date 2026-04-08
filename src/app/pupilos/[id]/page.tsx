@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { PessoaCompleta } from '@/types/database'
 import Link from 'next/link'
@@ -20,6 +20,7 @@ interface CamposVisibilidade {
 export default function PupiloPage() {
   const params = useParams()
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [pupilo, setPupilo] = useState<PessoaCompleta | null>(null)
   const [campos, setCampos] = useState<CamposVisibilidade>({
     mostrar_altura: true,
@@ -41,11 +42,12 @@ export default function PupiloPage() {
     if (params.id) {
       loadPupilo(params.id as string)
       loadCamposVisibilidade()
-      // Registrar clique/visualização
+      // Registrar clique/visualização com origem
+      const source = searchParams.get('from') || 'direct'
       fetch('/api/analytics/click', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ pupilo_id: params.id })
+        body: JSON.stringify({ pupilo_id: params.id, source })
       }).catch(() => {})
     }
   }, [params.id])

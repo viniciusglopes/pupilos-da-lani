@@ -15,10 +15,9 @@ export async function GET(request: Request) {
     const fromDate = date_from || new Date(Date.now() - days * 86400000).toISOString().split('T')[0]
     const toDate = date_to || new Date().toISOString().split('T')[0]
 
-    // Totais por pupilo
     let totalsQuery = supabaseAdmin
       .from('pupilo_clicks')
-      .select('pupilo_id, click_count, click_date, pessoas!inner(nome, foto_principal)')
+      .select('pupilo_id, click_count, click_date, source, pessoas!inner(nome, foto_principal)')
       .gte('click_date', fromDate)
       .lte('click_date', toDate)
       .order('click_date', { ascending: false })
@@ -31,8 +30,15 @@ export async function GET(request: Request) {
 
     if (error) throw error
 
-    // Agrupa por pupilo
-    const byPupilo: Record<string, { pupilo_id: string; nome: string; foto: string; total: number; por_dia: { data: string; cliques: number }[] }> = {}
+    // Agrupa por pupilo com breakdown por origem
+    const byPupilo: Record<string, {
+      pupilo_id: string
+      nome: string
+      foto: string
+      total: number
+      por_origem: Record<string, number>
+      por_dia: { data: string; cliques: number; source: string }[]
+    }> = {}
 
     for (const row of (clicksRaw || [])) {
       const pessoa = row.pessoas as any
@@ -42,18 +48,21 @@ export async function GET(request: Request) {
           nome: pessoa?.nome || 'Desconhecido',
           foto: pessoa?.foto_principal || '',
           total: 0,
+          por_origem: {},
           por_dia: []
         }
       }
+      const source = (row as any).source || 'direct'
       byPupilo[row.pupilo_id].total += row.click_count
+      byPupilo[row.pupilo_id].por_origem[source] = (byPupilo[row.pupilo_id].por_origem[source] || 0) + row.click_count
       byPupilo[row.pupilo_id].por_dia.push({
         data: row.click_date,
-        cliques: row.click_count
+        cliques: row.click_count,
+        source
       })
     }
 
-    const ranking = Object.values(byPupilo)
-      .sort((a, b) => b.total - a.total)
+    const ranking = Object.values(byPupilo).sort((a, b) => b.total - a.total)
 
     return NextResponse.json({ success: true, ranking, periodo: { from: fromDate, to: toDate } })
   } catch (error: any) {

@@ -9,9 +9,10 @@ import Link from 'next/link'
 interface ModelCardProps {
   pessoa: PessoaCompleta
   isParceiro?: boolean
+  source?: string
 }
 
-export default function ModelCard({ pessoa, isParceiro = false }: ModelCardProps) {
+export default function ModelCard({ pessoa, isParceiro = false, source = 'direct' }: ModelCardProps) {
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0)
 
   // Auto-rotate photos every 5 seconds
@@ -44,7 +45,7 @@ export default function ModelCard({ pessoa, isParceiro = false }: ModelCardProps
 
   return (
     <Link
-      href={`/pupilos/${pessoa.id}`}
+      href={`/pupilos/${pessoa.id}?from=${source}`}
       className="group cursor-pointer block"
       onClick={handleClick}
     >
