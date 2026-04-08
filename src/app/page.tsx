@@ -102,22 +102,18 @@ export default function HomePage() {
         setConfig({ mostrar_titulo: configData.mostrar_titulo, mostrar_destaques: configData.mostrar_destaques })
       }
       
-      // Load content with cache bust
-      const contentRes = await fetch(`/api/paginas?pagina=home&t=${cacheBust}`, {
-        cache: 'no-store',
-        headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate' }
-      })
-      if (contentRes.ok) {
-        const contentData = await contentRes.json()
-        // console.log('📄 Content carregado:', contentData.conteudo?.titulo)
-        if (contentData.success && contentData.conteudo) {
-          const c = contentData.conteudo
-          setContent({
-            titulo: c.titulo ?? DEFAULTS.titulo,
-            subtitulo: c.subtitulo ?? DEFAULTS.subtitulo,
-            conteudo: { ...DEFAULTS.conteudo, ...c.conteudo }
-          })
-        }
+      // Load content direto do Supabase (sem cache de proxy)
+      const { data: contentData } = await supabase
+        .from('paginas_conteudo')
+        .select('titulo, subtitulo, conteudo')
+        .eq('pagina', 'home')
+        .maybeSingle()
+      if (contentData) {
+        setContent({
+          titulo: contentData.titulo ?? DEFAULTS.titulo,
+          subtitulo: contentData.subtitulo ?? DEFAULTS.subtitulo,
+          conteudo: { ...DEFAULTS.conteudo, ...contentData.conteudo }
+        })
       }
 
       // Load models with cache bust
