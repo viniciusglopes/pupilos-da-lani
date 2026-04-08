@@ -162,35 +162,29 @@ export default function HomePage() {
     <div className="min-h-screen bg-white overflow-x-hidden">
       <Header />
 
-      {/* Título dinâmico - Controlável */}
-      {config.mostrar_titulo && (
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 pt-10 sm:pt-16 pb-8 sm:pb-12">
-          <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold tracking-tight text-black uppercase leading-tight">
-            {content.titulo}
-          </h1>
-          <p className="mt-3 text-gray-500 text-sm sm:text-base leading-relaxed whitespace-pre-line max-w-xl">
-            {content.subtitulo}
-          </p>
-        </section>
-      )}
+      {/* Título */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 pt-10 sm:pt-16 pb-8 sm:pb-12">
+        <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold tracking-tight text-black uppercase leading-tight">
+          {content.titulo}
+        </h1>
+        <p className="mt-3 text-gray-500 text-sm sm:text-base leading-relaxed whitespace-pre-line max-w-xl">
+          {content.subtitulo}
+        </p>
+      </section>
 
-      <main className={`max-w-7xl mx-auto px-4 sm:px-6 pb-16 sm:pb-24 ${!config.mostrar_titulo ? 'pt-10 sm:pt-16' : ''}`}>
-        {/* Featured Pupilos Carousel - Controlado por config */}
-        {config.mostrar_destaques && destaques.length > 0 && (
-          <FeaturedPupilosCarousel 
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 pb-16 sm:pb-24">
+        {/* Featured Pupilos Carousel */}
+        {destaques.length > 0 && (
+          <FeaturedPupilosCarousel
             pupilos={destaques}
             title={content.conteudo.destaques_label}
             subtitle={content.conteudo.destaques_titulo}
           />
         )}
 
-        {/* Catalogo - Sempre visível, spacing dinâmico */}
-        <section className={config.mostrar_destaques ? "" : "mt-0"}>
-          <div className="mb-10">
-            <h2 className="text-xs font-semibold tracking-widest uppercase text-gray-400">
-              {content.conteudo.catalogo_label}
-            </h2>
-          </div>
+        {/* Catalogo */}
+        <section>
+          <div className="mb-6">
 
           {todos.length === 0 ? (
             <div className="text-center py-24">
