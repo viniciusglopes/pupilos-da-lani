@@ -28,8 +28,8 @@ export default function ModelCardSimpleFixed({ pessoa, source = 'homepage' }: Mo
     : pessoa.foto_principal
 
   return (
-    <Link href={`/pupilos/${pessoa.id}?from=${source}`} className="group cursor-pointer block">
-      <div className="relative w-full aspect-[3/4] overflow-hidden bg-gray-100 border border-gray-200">
+    <Link href={`/pupilos/${pessoa.id}?from=${source}`} className="group cursor-pointer block min-w-0">
+      <div className="relative w-full overflow-hidden bg-gray-100 border border-gray-200" style={{paddingBottom: '133.33%'}}>
         {fotoUrl ? (
           <Image
             src={fotoUrl}

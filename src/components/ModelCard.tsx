@@ -46,10 +46,10 @@ export default function ModelCard({ pessoa, isParceiro = false, source = 'direct
   return (
     <Link
       href={`/pupilos/${pessoa.id}?from=${source}`}
-      className="group cursor-pointer block"
+      className="group cursor-pointer block min-w-0"
       onClick={handleClick}
     >
-      <div className="relative w-full aspect-[3/4] overflow-hidden bg-gray-100">
+      <div className="relative w-full overflow-hidden bg-gray-100" style={{paddingBottom: '133.33%'}}>
         {fotoUrl ? (
           <Image
             src={fotoUrl}
