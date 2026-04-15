@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { PessoaCompleta } from '@/types/database'
@@ -8,31 +8,65 @@ import AdminSidebar from '@/components/AdminSidebar'
 import Image from 'next/image'
 import Link from 'next/link'
 
+const PAGE_SIZE = 48
+
 export default function ModelosPage() {
   const [pessoas, setPessoas] = useState<PessoaCompleta[]>([])
+  const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState<'todos' | 'ativo' | 'inativo' | 'parceiro' | 'destaque'>('todos')
   const [search, setSearch] = useState('')
+  const [searchInput, setSearchInput] = useState('')
+  const [pagina, setPagina] = useState(0)
+  const [layout, setLayout] = useState<'lista' | 'grid'>('lista')
   const [selectedPessoa, setSelectedPessoa] = useState<PessoaCompleta | null>(null)
   const router = useRouter()
 
   useEffect(() => {
     const isAuthenticated = localStorage.getItem('admin_authenticated')
     if (!isAuthenticated) { router.push('/login'); return }
-    loadPessoas()
   }, [router])
 
-  const loadPessoas = async () => {
+  const loadPessoas = useCallback(async (pg = 0, s = search, f = filter) => {
+    setLoading(true)
     try {
-      const res = await fetch('/api/admin/pessoas')
+      const res = await fetch('/api/admin/pessoas', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          limit: PAGE_SIZE,
+          offset: pg * PAGE_SIZE,
+          status: f === 'todos' ? '' : f,
+          search: s,
+        }),
+      })
       if (!res.ok) throw new Error('Erro ao carregar')
       const data = await res.json()
       setPessoas(data.pessoas as PessoaCompleta[])
+      setTotal(data.total || 0)
     } catch (error) {
       console.error('Erro ao carregar pessoas:', error)
     } finally {
       setLoading(false)
     }
+  }, [search, filter])
+
+  useEffect(() => {
+    loadPessoas(0, search, filter)
+    setPagina(0)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filter])
+
+  const handleSearch = () => {
+    setSearch(searchInput)
+    setPagina(0)
+    loadPessoas(0, searchInput, filter)
+  }
+
+  const irPagina = (pg: number) => {
+    setPagina(pg)
+    loadPessoas(pg, search, filter)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   const toggleAtivo = async (id: string, ativo: boolean) => {
@@ -68,32 +102,16 @@ export default function ModelosPage() {
         }
       }
       await supabase.from('pessoas').delete().eq('id', id)
-      setPessoas(prev => prev.filter(p => p.id !== id))
       if (selectedPessoa?.id === id) setSelectedPessoa(null)
-    } catch (error) {
+      loadPessoas(pagina, search, filter)
+    } catch {
       alert('Erro ao excluir pupilo')
     }
   }
 
-  const stats = {
-    total: pessoas.length,
-    ativos: pessoas.filter(p => p.ativo).length,
-    inativos: pessoas.filter(p => !p.ativo).length,
-    parceiros: pessoas.filter(p => p.parceria).length,
-    destaques: pessoas.filter(p => p.destaque).length
-  }
+  const totalPaginas = Math.ceil(total / PAGE_SIZE)
 
-  const filteredPessoas = pessoas.filter(p => {
-    const matchFilter = filter === 'todos' ? true
-      : filter === 'ativo' ? p.ativo
-      : filter === 'inativo' ? !p.ativo
-      : filter === 'parceiro' ? p.parceria
-      : p.destaque
-    const matchSearch = search === '' || p.nome.toLowerCase().includes(search.toLowerCase())
-    return matchFilter && matchSearch
-  })
-
-  if (loading) {
+  if (loading && pessoas.length === 0) {
     return (
       <div className="min-h-screen bg-white flex">
         <AdminSidebar />
@@ -115,7 +133,7 @@ export default function ModelosPage() {
           <div className="flex items-center justify-between mb-6">
             <div>
               <h1 className="text-xl font-bold text-black uppercase tracking-wide">Gerenciar Pupilos</h1>
-              <p className="text-gray-400 text-sm mt-0.5">{stats.total} pupilos cadastrados</p>
+              <p className="text-gray-400 text-sm mt-0.5">{total} pupilos cadastrados</p>
             </div>
             <Link href="/admin/cadastro"
               className="bg-black text-white px-5 py-2 text-sm uppercase tracking-wide hover:bg-gray-800 transition-colors">
@@ -123,42 +141,67 @@ export default function ModelosPage() {
             </Link>
           </div>
 
-          {/* Stats */}
+          {/* Filtros de status */}
           <div className="grid grid-cols-5 gap-3 mb-6">
             {[
-              { label: 'Total', value: stats.total, key: 'todos' },
-              { label: 'Ativos', value: stats.ativos, key: 'ativo' },
-              { label: 'Inativos', value: stats.inativos, key: 'inativo' },
-              { label: 'Parceiros', value: stats.parceiros, key: 'parceiro' },
-              { label: 'Destaques', value: stats.destaques, key: 'destaque' },
-            ].map(({ label, value, key }) => (
+              { label: 'Total', key: 'todos' },
+              { label: 'Ativos', key: 'ativo' },
+              { label: 'Inativos', key: 'inativo' },
+              { label: 'Parceiros', key: 'parceiro' },
+              { label: 'Destaques', key: 'destaque' },
+            ].map(({ label, key }) => (
               <button key={key} onClick={() => setFilter(key as any)}
                 className={`p-4 border text-left transition-colors ${filter === key ? 'border-black bg-black text-white' : 'border-gray-200 hover:border-gray-400'}`}>
-                <div className={`text-2xl font-bold ${filter === key ? 'text-white' : 'text-black'}`}>{value}</div>
-                <div className={`text-xs uppercase tracking-wide mt-0.5 ${filter === key ? 'text-gray-300' : 'text-gray-500'}`}>{label}</div>
+                <div className={`text-xs uppercase tracking-wide ${filter === key ? 'text-gray-300' : 'text-gray-500'}`}>{label}</div>
               </button>
             ))}
           </div>
 
-          {/* Search */}
-          <div className="mb-4">
-            <input
-              type="text"
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              placeholder="Buscar por nome..."
-              className="w-full max-w-sm px-4 py-2 border border-gray-300 text-sm focus:outline-none focus:border-black"
-            />
+          {/* Busca + layout toggle */}
+          <div className="flex items-center gap-3 mb-4">
+            <div className="flex flex-1 max-w-sm">
+              <input
+                type="text"
+                value={searchInput}
+                onChange={e => setSearchInput(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && handleSearch()}
+                placeholder="Buscar por nome..."
+                className="flex-1 px-4 py-2 border border-gray-300 text-sm focus:outline-none focus:border-black"
+              />
+              <button onClick={handleSearch}
+                className="px-4 py-2 bg-black text-white text-sm hover:bg-gray-800 transition-colors">
+                Buscar
+              </button>
+            </div>
+            {search && (
+              <button onClick={() => { setSearchInput(''); setSearch(''); setPagina(0); loadPessoas(0, '', filter) }}
+                className="text-xs text-gray-400 hover:text-black underline">
+                Limpar busca
+              </button>
+            )}
+            <div className="ml-auto flex border border-gray-200">
+              <button onClick={() => setLayout('lista')}
+                className={`px-3 py-2 text-xs transition-colors ${layout === 'lista' ? 'bg-black text-white' : 'text-gray-500 hover:bg-gray-50'}`}>
+                ☰ Lista
+              </button>
+              <button onClick={() => setLayout('grid')}
+                className={`px-3 py-2 text-xs transition-colors ${layout === 'grid' ? 'bg-black text-white' : 'text-gray-500 hover:bg-gray-50'}`}>
+                ⊞ Grid
+              </button>
+            </div>
           </div>
 
+          {loading && (
+            <div className="text-center py-4 text-gray-400 text-sm">Carregando...</div>
+          )}
+
           {/* Lista */}
-          {filteredPessoas.length === 0 ? (
+          {!loading && pessoas.length === 0 ? (
             <div className="border border-gray-200 p-12 text-center">
               <p className="text-gray-400 text-sm uppercase tracking-wide">Nenhum pupilo encontrado</p>
             </div>
-          ) : (
+          ) : layout === 'lista' ? (
             <div className="border border-gray-200 divide-y divide-gray-100">
-              {/* Header da lista */}
               <div className="grid grid-cols-[56px_1fr_120px_80px_140px] gap-4 px-4 py-2 bg-gray-50">
                 <div />
                 <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Pupilo</div>
@@ -167,13 +210,11 @@ export default function ModelosPage() {
                 <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide text-right">Ações</div>
               </div>
 
-              {filteredPessoas.map((pessoa) => {
+              {pessoas.map((pessoa) => {
                 const fotoUrl = pessoa.foto_principal || pessoa.fotos[0]?.url_arquivo
                 return (
                   <div key={pessoa.id}
                     className={`grid grid-cols-[56px_1fr_120px_80px_140px] gap-4 px-4 py-3 items-center hover:bg-gray-50 transition-colors ${!pessoa.ativo ? 'opacity-60' : ''}`}>
-
-                    {/* Thumbnail */}
                     <div className="w-14 h-14 flex-shrink-0 bg-gray-100 overflow-hidden cursor-pointer"
                       onClick={() => setSelectedPessoa(selectedPessoa?.id === pessoa.id ? null : pessoa)}>
                       {fotoUrl ? (
@@ -183,16 +224,12 @@ export default function ModelosPage() {
                         <div className="w-full h-full flex items-center justify-center text-gray-300 text-xs">--</div>
                       )}
                     </div>
-
-                    {/* Info */}
                     <div>
                       <div className="font-semibold text-black text-sm leading-tight">{pessoa.nome}</div>
                       <div className="text-xs text-gray-400 mt-0.5">
                         {[pessoa.sexo, pessoa.idade ? `${pessoa.idade} anos` : null].filter(Boolean).join(' · ')}
                       </div>
                     </div>
-
-                    {/* Badges */}
                     <div className="flex flex-wrap gap-1">
                       <span className={`px-2 py-0.5 text-xs font-medium ${pessoa.ativo ? 'bg-gray-100 text-gray-700' : 'bg-gray-100 text-gray-400 line-through'}`}>
                         {pessoa.ativo ? 'Ativo' : 'Inativo'}
@@ -200,31 +237,24 @@ export default function ModelosPage() {
                       {pessoa.destaque && <span className="px-2 py-0.5 text-xs bg-black text-white">Dest.</span>}
                       {pessoa.parceria && <span className="px-2 py-0.5 text-xs border border-black text-black">Parc.</span>}
                     </div>
-
-                    {/* Mídia */}
                     <div className="text-xs text-gray-500">
                       <div>{pessoa.fotos.length} foto{pessoa.fotos.length !== 1 ? 's' : ''}</div>
                       <div>{pessoa.videos.length} vídeo{pessoa.videos.length !== 1 ? 's' : ''}</div>
                     </div>
-
-                    {/* Ações */}
                     <div className="flex gap-1 justify-end">
                       <Link href={`/admin/cadastro/${pessoa.id}/edit`}
                         className="px-3 py-1.5 text-xs bg-black text-white hover:bg-gray-800 transition-colors uppercase tracking-wide">
                         Editar
                       </Link>
                       <button onClick={() => toggleDestaque(pessoa.id, pessoa.destaque)}
-                        title={pessoa.destaque ? 'Remover destaque' : 'Marcar destaque'}
                         className={`px-3 py-1.5 text-xs transition-colors border ${pessoa.destaque ? 'bg-black text-white border-black' : 'border-gray-300 text-gray-600 hover:border-black'}`}>
                         ★
                       </button>
                       <button onClick={() => toggleAtivo(pessoa.id, pessoa.ativo)}
-                        title={pessoa.ativo ? 'Desativar' : 'Ativar'}
-                        className={`px-3 py-1.5 text-xs transition-colors border ${pessoa.ativo ? 'border-gray-300 text-gray-600 hover:bg-gray-100' : 'border-gray-300 text-gray-400 hover:bg-gray-100'}`}>
+                        className="px-3 py-1.5 text-xs transition-colors border border-gray-300 text-gray-600 hover:bg-gray-100">
                         {pessoa.ativo ? 'Off' : 'On'}
                       </button>
                       <button onClick={() => deletePessoa(pessoa.id, pessoa.nome)}
-                        title="Excluir"
                         className="px-3 py-1.5 text-xs border border-gray-200 text-gray-400 hover:border-red-400 hover:text-red-500 transition-colors">
                         ✕
                       </button>
@@ -233,10 +263,88 @@ export default function ModelosPage() {
                 )
               })}
             </div>
+          ) : (
+            /* Grid */
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+              {pessoas.map((pessoa) => {
+                const fotoUrl = pessoa.foto_principal || pessoa.fotos[0]?.url_arquivo
+                return (
+                  <div key={pessoa.id} className={`group relative border border-gray-200 hover:border-black transition-colors ${!pessoa.ativo ? 'opacity-50' : ''}`}>
+                    <div className="aspect-[3/4] bg-gray-100 overflow-hidden">
+                      {fotoUrl ? (
+                        <Image src={fotoUrl} alt={pessoa.nome} fill
+                          className="object-cover object-top" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-gray-300 text-2xl">—</div>
+                      )}
+                      {/* Overlay de ações */}
+                      <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2 p-2">
+                        <Link href={`/admin/cadastro/${pessoa.id}/edit`}
+                          className="w-full text-center px-2 py-1.5 bg-white text-black text-xs uppercase tracking-wide hover:bg-gray-100">
+                          Editar
+                        </Link>
+                        <button onClick={() => toggleDestaque(pessoa.id, pessoa.destaque)}
+                          className={`w-full px-2 py-1.5 text-xs border ${pessoa.destaque ? 'bg-yellow-400 text-black border-yellow-400' : 'border-white text-white hover:bg-white/10'}`}>
+                          {pessoa.destaque ? '★ Destaque' : '☆ Destacar'}
+                        </button>
+                        <button onClick={() => toggleAtivo(pessoa.id, pessoa.ativo)}
+                          className="w-full px-2 py-1.5 border border-white text-white text-xs hover:bg-white/10">
+                          {pessoa.ativo ? 'Desativar' : 'Ativar'}
+                        </button>
+                        <button onClick={() => deletePessoa(pessoa.id, pessoa.nome)}
+                          className="w-full px-2 py-1.5 border border-red-400 text-red-400 text-xs hover:bg-red-400/10">
+                          Excluir
+                        </button>
+                      </div>
+                    </div>
+                    <div className="p-2">
+                      <div className="text-xs font-semibold text-black truncate">{pessoa.nome}</div>
+                      <div className="text-xs text-gray-400">{pessoa.fotos.length}f · {pessoa.videos.length}v</div>
+                      {(pessoa.destaque || pessoa.parceria) && (
+                        <div className="flex gap-1 mt-1">
+                          {pessoa.destaque && <span className="text-xs bg-black text-white px-1">D</span>}
+                          {pessoa.parceria && <span className="text-xs border border-black px-1">P</span>}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
           )}
 
-          {/* Painel de detalhes */}
-          {selectedPessoa && (
+          {/* Paginação */}
+          {totalPaginas > 1 && (
+            <div className="flex items-center justify-center gap-3 mt-6">
+              <button onClick={() => irPagina(pagina - 1)} disabled={pagina === 0}
+                className="px-4 py-2 border border-gray-300 text-sm text-gray-600 hover:border-black disabled:opacity-40 disabled:cursor-not-allowed transition-colors uppercase tracking-wide">
+                ← Anterior
+              </button>
+              <div className="flex gap-1">
+                {Array.from({ length: totalPaginas }, (_, i) => i)
+                  .filter(i => i === 0 || i === totalPaginas - 1 || Math.abs(i - pagina) <= 2)
+                  .map((i, idx, arr) => (
+                    <span key={i}>
+                      {idx > 0 && arr[idx - 1] !== i - 1 && <span className="px-2 text-gray-400">…</span>}
+                      <button onClick={() => irPagina(i)}
+                        className={`w-9 h-9 text-sm border transition-colors ${pagina === i ? 'bg-black text-white border-black' : 'border-gray-300 text-gray-600 hover:border-black'}`}>
+                        {i + 1}
+                      </button>
+                    </span>
+                  ))}
+              </div>
+              <button onClick={() => irPagina(pagina + 1)} disabled={pagina >= totalPaginas - 1}
+                className="px-4 py-2 border border-gray-300 text-sm text-gray-600 hover:border-black disabled:opacity-40 disabled:cursor-not-allowed transition-colors uppercase tracking-wide">
+                Próxima →
+              </button>
+            </div>
+          )}
+          <p className="text-center text-xs text-gray-400 mt-2">
+            Página {pagina + 1} de {totalPaginas} · {total} pupilos
+          </p>
+
+          {/* Painel de detalhes (lista) */}
+          {selectedPessoa && layout === 'lista' && (
             <div className="mt-6 border border-gray-200 p-6">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="font-bold text-black uppercase tracking-wide">{selectedPessoa.nome}</h2>
@@ -251,9 +359,7 @@ export default function ModelosPage() {
                   </button>
                 </div>
               </div>
-
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* Fotos */}
                 <div>
                   <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
                     Fotos ({selectedPessoa.fotos.length})
@@ -280,8 +386,6 @@ export default function ModelosPage() {
                     <p className="text-gray-400 text-sm">Nenhuma foto</p>
                   )}
                 </div>
-
-                {/* Informações */}
                 <div className="space-y-4">
                   <div>
                     <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Dados</p>
@@ -298,7 +402,6 @@ export default function ModelosPage() {
                       ) : null)}
                     </div>
                   </div>
-
                   {(selectedPessoa.especializacoes?.length ?? 0) > 0 && (
                     <div>
                       <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Especialidades</p>
@@ -309,14 +412,12 @@ export default function ModelosPage() {
                       </div>
                     </div>
                   )}
-
                   {selectedPessoa.descricao && (
                     <div>
                       <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Descrição</p>
                       <p className="text-sm text-gray-700">{selectedPessoa.descricao}</p>
                     </div>
                   )}
-
                   <div>
                     <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Contato</p>
                     <div className="text-sm space-y-0.5">
