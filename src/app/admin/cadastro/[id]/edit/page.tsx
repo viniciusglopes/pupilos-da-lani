@@ -146,21 +146,13 @@ export default function EditModelPage() {
     if (!confirm('Tem certeza que deseja excluir esta foto?')) return
 
     try {
-      if (caminhoStorage) {
-        const fileName = caminhoStorage.split('/').pop()
-        if (fileName) {
-          await supabase.storage
-            .from('fotos')
-            .remove([fileName])
-        }
-      }
-
-      const { error } = await supabase
-        .from('fotos')
-        .delete()
-        .eq('id', fotoId)
-
-      if (error) throw error
+      const res = await fetch('/api/fotos', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: fotoId, caminho_storage: caminhoStorage }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error)
 
       setPessoa(prev => prev ? {
         ...prev,
@@ -178,21 +170,13 @@ export default function EditModelPage() {
     if (!confirm('Tem certeza que deseja excluir este video?')) return
 
     try {
-      if (caminhoStorage) {
-        const fileName = caminhoStorage.split('/').pop()
-        if (fileName) {
-          await supabase.storage
-            .from('videos')
-            .remove([fileName])
-        }
-      }
-
-      const { error } = await supabase
-        .from('videos')
-        .delete()
-        .eq('id', videoId)
-
-      if (error) throw error
+      const res = await fetch('/api/videos', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: videoId, caminho_storage: caminhoStorage }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error)
 
       setPessoa(prev => prev ? {
         ...prev,
