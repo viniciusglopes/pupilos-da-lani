@@ -246,7 +246,11 @@ export default function EditModelPage() {
 
   const handleNovasFotos = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      const arquivos = Array.from(e.target.files)
+      const permitidos = ['image/jpeg', 'image/png', 'image/webp']
+      const arquivos = Array.from(e.target.files).filter(f => permitidos.includes(f.type))
+      if (arquivos.length < e.target.files.length) {
+        setMessage({ type: 'error', text: 'Formatos como HEIC não são suportados. Use JPEG, PNG ou WebP.' })
+      }
       setNovasFotos(prev => [...prev, ...arquivos])
     }
   }
@@ -694,13 +698,13 @@ export default function EditModelPage() {
                     <div>
                       <input
                         type="file"
-                        accept="image/*"
+                        accept="image/jpeg,image/png,image/webp"
                         multiple
                         onChange={handleNovasFotos}
                         className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black"
                       />
                       <p className="text-xs text-gray-400 mt-1">
-                        Selecione multiplas fotos (JPEG, PNG, etc.)
+                        Selecione multiplas fotos (JPEG, PNG ou WebP)
                       </p>
                     </div>
 
