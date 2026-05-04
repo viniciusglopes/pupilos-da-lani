@@ -11,7 +11,7 @@ export default function PupilosPage() {
   const [filteredPessoas, setFilteredPessoas] = useState<PessoaCompleta[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
+  const viewMode = 'grid'
   const [filters, setFilters] = useState({
     sexo: 'todos',
     idade: 'todos'
@@ -170,21 +170,6 @@ export default function PupilosPage() {
             </p>
           </div>
 
-          {/* Toggle Grid/List */}
-          <div className="flex border border-gray-300">
-            <button
-              onClick={() => setViewMode('grid')}
-              className={`px-4 py-2 text-sm ${viewMode === 'grid' ? 'bg-black text-white' : 'bg-white text-black'}`}
-            >
-              Grid
-            </button>
-            <button
-              onClick={() => setViewMode('list')}
-              className={`px-4 py-2 text-sm ${viewMode === 'list' ? 'bg-black text-white' : 'bg-white text-black'}`}
-            >
-              Lista
-            </button>
-          </div>
         </div>
 
         {/* Resultados */}
@@ -195,7 +180,7 @@ export default function PupilosPage() {
             </p>
           </div>
         ) : (
-          <div className={viewMode === 'grid' ? 'grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 items-start [&>*]:min-w-0' : 'space-y-4'}>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 items-start [&>*]:min-w-0">
             {filteredPessoas.map((pessoa) => (
               <ModelCard key={pessoa.id} pessoa={pessoa} />
             ))}
