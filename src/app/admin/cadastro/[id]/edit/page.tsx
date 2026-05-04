@@ -301,7 +301,32 @@ export default function EditModelPage() {
 
     try {
       for (const video of novosVideos) {
-        await uploadArquivoViaAPI(video, 'video')
+        const fileExt = video.name.split('.').pop()?.toLowerCase() || 'mp4'
+        const fileName = `${id}/${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`
+
+        const { error: uploadError } = await supabase.storage
+          .from('videos')
+          .upload(fileName, video, { contentType: video.type || 'video/mp4', upsert: false })
+
+        if (uploadError) throw new Error(`Upload falhou: ${uploadError.message}`)
+
+        const { data: { publicUrl } } = supabase.storage.from('videos').getPublicUrl(fileName)
+
+        const res = await fetch('/api/videos', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            pessoa_id: id,
+            url_arquivo: publicUrl,
+            caminho_storage: fileName,
+            eh_principal: false,
+            ordem: 999
+          })
+        })
+        if (!res.ok) {
+          const data = await res.json()
+          throw new Error(data.error || 'Erro ao registrar video')
+        }
       }
 
       await loadPessoa()
@@ -310,7 +335,7 @@ export default function EditModelPage() {
 
     } catch (error: any) {
       console.error('Erro ao fazer upload:', error)
-      setMessage({ type: 'error', text: 'Erro ao fazer upload dos videos' })
+      setMessage({ type: 'error', text: error.message || 'Erro ao fazer upload dos videos' })
     } finally {
       setUploadingFiles(false)
     }
