@@ -219,7 +219,7 @@ export default function PupiloPage() {
                   <img
                     src={fotos[currentFoto].url_arquivo}
                     alt={`${pupilo.nome} - ${currentFoto + 1}`}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover object-[center_20%]"
                     onError={(e) => {
                       const target = e.target as HTMLImageElement
                       target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iI2Y5ZmFmYiIvPgo8dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzM3NDE1MSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkVycm8gYW8gY2FycmVnYXI8L3RleHQ+Cjwvc3ZnPg=='
@@ -261,7 +261,7 @@ export default function PupiloPage() {
                         <img
                           src={foto.url_arquivo}
                           alt={`${index + 1}`}
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-cover object-[center_20%]"
                           loading="lazy"
                         />
                       </button>
