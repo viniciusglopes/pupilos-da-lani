@@ -15,6 +15,7 @@ interface CamposVisibilidade {
   mostrar_especializacoes: boolean
   mostrar_descricao: boolean
   mostrar_contatos: boolean
+  mostrar_destaque: boolean
 }
 
 export default function PupiloPage() {
@@ -30,7 +31,8 @@ export default function PupiloPage() {
     mostrar_localizacao: true,
     mostrar_especializacoes: true,
     mostrar_descricao: true,
-    mostrar_contatos: true
+    mostrar_contatos: true,
+    mostrar_destaque: true
   })
   const [currentFoto, setCurrentFoto] = useState(0)
   const [currentVideo, setCurrentVideo] = useState(0)
@@ -178,7 +180,7 @@ export default function PupiloPage() {
             {videos.length > 0 && (
               <span>🎥 {videos.length} vídeo{videos.length !== 1 ? 's' : ''}</span>
             )}
-            {pupilo.destaque && (
+            {campos.mostrar_destaque && pupilo.destaque && (
               <span className="bg-black text-white px-2 py-1 text-xs uppercase tracking-wide">
                 Destaque
               </span>
@@ -376,7 +378,7 @@ export default function PupiloPage() {
                   <span className="text-gray-600">Vídeos</span>
                   <span className="font-medium">{videos.length}</span>
                 </div>
-                {pupilo.destaque && (
+                {campos.mostrar_destaque && pupilo.destaque && (
                   <div className="flex justify-between border-b border-gray-100 pb-2">
                     <span className="text-gray-600">Status</span>
                     <span className="font-medium">Destaque</span>

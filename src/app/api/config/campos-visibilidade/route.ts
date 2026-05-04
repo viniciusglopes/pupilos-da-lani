@@ -13,7 +13,8 @@ const DEFAULT_CAMPOS = {
   mostrar_localizacao: true,
   mostrar_especializacoes: true,
   mostrar_descricao: true,
-  mostrar_contatos: true
+  mostrar_contatos: true,
+  mostrar_destaque: true
 }
 
 export async function GET() {

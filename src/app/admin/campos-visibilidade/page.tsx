@@ -13,6 +13,7 @@ interface CamposVisibilidade {
   mostrar_especializacoes: boolean
   mostrar_descricao: boolean
   mostrar_contatos: boolean
+  mostrar_destaque: boolean
 }
 
 export default function AdminCamposVisibilidadePage() {
@@ -27,7 +28,8 @@ export default function AdminCamposVisibilidadePage() {
     mostrar_localizacao: true,
     mostrar_especializacoes: true,
     mostrar_descricao: true,
-    mostrar_contatos: true
+    mostrar_contatos: true,
+    mostrar_destaque: true
   })
   const router = useRouter()
 
@@ -121,6 +123,10 @@ export default function AdminCamposVisibilidadePage() {
     mostrar_contatos: {
       title: 'Botões de Contato',
       description: 'Exibir WhatsApp, Instagram e Email'
+    },
+    mostrar_destaque: {
+      title: 'Badge de Destaque',
+      description: 'Exibir selo "Destaque" na página do pupilo'
     }
   }
 
@@ -218,7 +224,7 @@ export default function AdminCamposVisibilidadePage() {
                   Informações Pessoais e Contato
                 </h3>
                 <div className="space-y-4">
-                  {(['mostrar_descricao', 'mostrar_contatos'] as const).map((campo) => (
+                  {(['mostrar_descricao', 'mostrar_contatos', 'mostrar_destaque'] as const).map((campo) => (
                     <label key={campo} className="flex items-start space-x-3 p-4 border border-gray-100 hover:bg-gray-50 transition-colors">
                       <input
                         type="checkbox"
