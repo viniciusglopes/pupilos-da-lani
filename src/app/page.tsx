@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { PessoaCompleta } from '@/types/database'
 import ModelCardSimpleFixed from '@/components/ModelCardSimpleFixed'
 import FeaturedPupilosCarousel from '@/components/FeaturedPupilosCarousel'
@@ -140,6 +140,25 @@ export default function HomePage() {
     }
   }
 
+  const sentinelRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const sentinel = sentinelRef.current
+    if (!sentinel) return
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setVisibleCount(prev => prev + PAGE_SIZE)
+        }
+      },
+      { rootMargin: '200px' }
+    )
+
+    observer.observe(sentinel)
+    return () => observer.disconnect()
+  }, [loading])
+
   const heroModel = destaques.find(d => d.fotos.length > 0)
   const titleParts = content.titulo.split(/\s+/)
   const titleLine1 = titleParts.slice(0, Math.ceil(titleParts.length / 2)).join(' ')
@@ -196,16 +215,8 @@ export default function HomePage() {
               </div>
 
               {visibleCount < todos.length && (
-                <div className="text-center mt-8 sm:mt-12">
-                  <button
-                    onClick={() => setVisibleCount(prev => prev + PAGE_SIZE)}
-                    className="border border-black text-black font-semibold px-8 sm:px-10 py-3 hover:bg-black hover:text-white transition-all uppercase tracking-widest text-xs sm:text-sm w-full sm:w-auto"
-                  >
-                    Ver Mais Pupilos
-                  </button>
-                  <p className="text-xs text-gray-400 mt-3">
-                    Exibindo {Math.min(visibleCount, todos.length)} de {todos.length}
-                  </p>
+                <div ref={sentinelRef} className="flex justify-center py-8">
+                  <div className="animate-spin h-6 w-6 border-2 border-black border-t-transparent rounded-full"></div>
                 </div>
               )}
             </>
