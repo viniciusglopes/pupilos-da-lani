@@ -69,28 +69,13 @@ export default function HomePage() {
     mostrar_destaques: true
   })
   const [loading, setLoading] = useState(true)
-  const [timestamp] = useState(Date.now()) // Cache bust timestamp
 
   useEffect(() => {
     loadData()
-    
-    // Track page visit - TEMPORARIAMENTE DESABILITADO
-    // fetch('/api/analytics/visit', {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //   },
-    //   body: JSON.stringify({
-    //     page_path: '/',
-    //     referrer: document.referrer
-    //   }),
-    // }).catch(err => console.warn('Analytics tracking failed:', err))
   }, [])
 
   const loadData = async () => {
     try {
-      const cacheBust = Date.now()
-      
       // Load homepage config direto do Supabase (sem cache de proxy)
       const { data: configData } = await supabase
         .from('homepage_config')
@@ -116,22 +101,22 @@ export default function HomePage() {
         })
       }
 
-      // Load models with cache bust
-      const res = await fetch(`/api/modelos?t=${cacheBust}`, {
-        cache: 'no-store',
-        headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate' }
-      })
-      if (res.ok) {
-        const data = await res.json()
-        // console.log('👥 Models carregados:', data.modelos?.length)
-        if (data.success) {
-          const all = data.modelos
-            .filter((m: any) => m.ativo)
-            .map((m: any) => ({ ...m, fotos: m.fotos || [], videos: m.videos || [] })) as PessoaCompleta[]
-          setTodos(all)
-          setDestaques(shuffle(all.filter(p => p.destaque))) // Show ALL destaques, not just 4
-          setOutros(shuffle(all.filter(p => !p.destaque)))
-        }
+      // Load models direto do Supabase (evita cache do proxy Coolify)
+      const { data: modelosData } = await supabase
+        .from('pessoas')
+        .select('*, fotos(*), videos(*)')
+        .eq('ativo', true)
+        .order('created_at', { ascending: false })
+
+      if (modelosData) {
+        const all = modelosData.map((m: any) => ({
+          ...m,
+          fotos: m.fotos || [],
+          videos: m.videos || []
+        })) as PessoaCompleta[]
+        setTodos(all)
+        setDestaques(shuffle(all.filter(p => p.destaque)))
+        setOutros(shuffle(all.filter(p => !p.destaque)))
       }
     } catch (err) {
       // console.error('Error:', err)

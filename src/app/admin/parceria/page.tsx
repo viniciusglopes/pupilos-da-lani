@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import AdminSidebar from '@/components/AdminSidebar'
+import { supabase } from '@/lib/supabase'
 
 interface Secao {
   titulo: string
@@ -32,19 +33,20 @@ export default function AdminParceriaPage() {
 
   const loadContent = async () => {
     try {
-      const res = await fetch('/api/paginas?pagina=parceria')
-      if (res.ok) {
-        const data = await res.json()
-        if (data.success && data.conteudo) {
-          const c = data.conteudo
-          setTitulo(c.titulo ?? '')
-          setSubtitulo(c.subtitulo ?? '')
-          if (c.conteudo) {
-            setBanner(c.conteudo.banner ?? '')
-            setSemParceirosTitulo(c.conteudo.sem_parceiros_titulo ?? '')
-            setSemParceirosTexto(c.conteudo.sem_parceiros_texto ?? '')
-            setSecoes(c.conteudo.secoes ?? [])
-          }
+      // Ler direto do Supabase (evita cache do proxy Coolify)
+      const { data } = await supabase
+        .from('paginas_conteudo')
+        .select('titulo, subtitulo, conteudo')
+        .eq('pagina', 'parceria')
+        .maybeSingle()
+      if (data) {
+        setTitulo(data.titulo ?? '')
+        setSubtitulo(data.subtitulo ?? '')
+        if (data.conteudo) {
+          setBanner(data.conteudo.banner ?? '')
+          setSemParceirosTitulo(data.conteudo.sem_parceiros_titulo ?? '')
+          setSemParceirosTexto(data.conteudo.sem_parceiros_texto ?? '')
+          setSecoes(data.conteudo.secoes ?? [])
         }
       }
     } catch (err) {

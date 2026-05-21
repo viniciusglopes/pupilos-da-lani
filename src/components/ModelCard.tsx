@@ -31,16 +31,11 @@ export default function ModelCard({ pessoa, isParceiro = false, source = 'direct
     : pessoa.foto_principal
 
   const handleClick = () => {
-    // Track click analytics - TEMPORARIAMENTE DESABILITADO
-    // fetch('/api/analytics/click', {
-    //   method: 'POST',
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //   },
-    //   body: JSON.stringify({
-    //     pupilo_id: pessoa.id
-    //   }),
-    // }).catch(err => console.warn('Click tracking failed:', err))
+    fetch('/api/analytics/click', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pupilo_id: pessoa.id, source }),
+    }).catch(() => {})
   }
 
   return (

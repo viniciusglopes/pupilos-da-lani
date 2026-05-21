@@ -16,7 +16,6 @@ export async function GET(
         videos(*)
       `)
       .eq('id', params.id)
-      .eq('ativo', true)
       .single()
 
     if (error) {

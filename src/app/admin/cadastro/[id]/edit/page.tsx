@@ -35,18 +35,12 @@ export default function EditModelPage() {
 
   const loadPessoa = async () => {
     try {
-      const { data, error } = await supabase
-        .from('pessoas')
-        .select(`
-          *,
-          fotos (*),
-          videos (*)
-        `)
-        .eq('id', id)
-        .single()
-
-      if (error) throw error
-      setPessoa(data as PessoaCompleta)
+      // Usar API admin para carregar inclusive inativos (anon key bloqueado por RLS)
+      const res = await fetch(`/api/admin/pessoas/${id}`)
+      if (!res.ok) throw new Error('Pupilo não encontrado')
+      const data = await res.json()
+      if (!data.success) throw new Error(data.error || 'Erro ao carregar')
+      setPessoa(data.pessoa as PessoaCompleta)
     } catch (error) {
       console.error('Erro ao carregar pessoa:', error)
       setMessage({ type: 'error', text: 'Pupilo nao encontrado' })

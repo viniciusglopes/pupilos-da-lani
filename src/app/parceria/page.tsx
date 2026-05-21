@@ -6,6 +6,7 @@ import ModelCard from '@/components/ModelCard'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import Link from 'next/link'
+import { supabase } from '@/lib/supabase'
 
 interface ParceriaContent {
   titulo: string
@@ -40,29 +41,28 @@ export default function ParceriaPage() {
 
   const loadData = async () => {
     try {
-      // Load content
-      const contentRes = await fetch('/api/paginas?pagina=parceria')
-      if (contentRes.ok) {
-        const contentData = await contentRes.json()
-        if (contentData.success && contentData.conteudo) {
-          setContent({
-            titulo: contentData.conteudo.titulo ?? DEFAULTS.titulo,
-            subtitulo: contentData.conteudo.subtitulo ?? DEFAULTS.subtitulo,
-            conteudo: { ...DEFAULTS.conteudo, ...contentData.conteudo.conteudo }
-          })
-        }
+      // Ler direto do Supabase (evita cache do proxy Coolify)
+      const { data: contentData } = await supabase
+        .from('paginas_conteudo')
+        .select('titulo, subtitulo, conteudo')
+        .eq('pagina', 'parceria')
+        .maybeSingle()
+      if (contentData) {
+        setContent({
+          titulo: contentData.titulo ?? DEFAULTS.titulo,
+          subtitulo: contentData.subtitulo ?? DEFAULTS.subtitulo,
+          conteudo: { ...DEFAULTS.conteudo, ...contentData.conteudo }
+        })
       }
 
-      // Load models
-      const res = await fetch('/api/modelos')
-      if (res.ok) {
-        const data = await res.json()
-        if (data.success) {
-          const parceiros = data.modelos
-            .filter((m: any) => m.parceria && m.ativo)
-            .map((m: any) => ({ ...m, fotos: m.fotos || [], videos: m.videos || [] }))
-          setPessoas(parceiros)
-        }
+      const { data: modelosData } = await supabase
+        .from('pessoas')
+        .select('*, fotos(*), videos(*)')
+        .eq('ativo', true)
+        .eq('parceria', true)
+        .order('created_at', { ascending: false })
+      if (modelosData) {
+        setPessoas(modelosData.map((m: any) => ({ ...m, fotos: m.fotos || [], videos: m.videos || [] })))
       }
     } catch (err) {
       console.error('Error loading:', err)

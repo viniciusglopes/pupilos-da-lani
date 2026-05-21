@@ -5,6 +5,7 @@ import { PessoaCompleta } from '@/types/database'
 import ModelCard from '@/components/ModelCard'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
+import { supabase } from '@/lib/supabase'
 
 export default function PupilosPage() {
   const [pessoas, setPessoas] = useState<PessoaCompleta[]>([])
@@ -27,28 +28,21 @@ export default function PupilosPage() {
 
   const loadPessoas = async () => {
     try {
-      console.log('Carregando pessoas via API...')
-      
-      const response = await fetch('/api/modelos')
-      
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`)
-      }
-      
-      const result = await response.json()
-      
-      if (!result.success) {
-        throw new Error(result.error || 'Erro na API')
-      }
-      
-      console.log(`${result.modelos.length} pupilos carregados`)
-      
-      const modelosCompletos = result.modelos.map((modelo: any) => ({
+      // Ler direto do Supabase para evitar cache do proxy Coolify
+      const { data, error } = await supabase
+        .from('pessoas')
+        .select('*, fotos(*), videos(*)')
+        .eq('ativo', true)
+        .order('created_at', { ascending: false })
+
+      if (error) throw error
+
+      const modelosCompletos = (data || []).map((modelo: any) => ({
         ...modelo,
         fotos: modelo.fotos || [],
         videos: modelo.videos || []
       })) as PessoaCompleta[]
-      
+
       setPessoas(modelosCompletos)
     } catch (error) {
       console.error('Erro ao carregar pessoas:', error)
