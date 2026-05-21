@@ -36,9 +36,14 @@ export default function AdminSidebar() {
       description: 'Personalizar rodape'
     },
     {
-      title: 'Analytics',
+      title: 'Analytics Pupilos',
       href: '/admin/analytics',
-      description: 'Estatisticas e metricas'
+      description: 'Cliques por pupilo'
+    },
+    {
+      title: 'Visitas do Site',
+      href: '/admin/visitas',
+      description: 'Acessos, paginas e trafego'
     },
     {
       title: 'Debug Portal',

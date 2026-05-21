@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import "./globals.css"
 import FaviconUpdater from "@/components/FaviconUpdater"
+import VisitTracker from "@/components/VisitTracker"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -23,6 +24,7 @@ export default function RootLayout({
       </head>
       <body className={inter.className}>
         <FaviconUpdater />
+        <VisitTracker />
         {children}
       </body>
     </html>
