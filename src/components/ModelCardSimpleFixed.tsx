@@ -1,6 +1,7 @@
 'use client'
 
 import { PessoaCompleta } from '@/types/database'
+import { idadeTexto } from '@/utils/idade'
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
@@ -59,6 +60,9 @@ export default function ModelCardSimpleFixed({ pessoa, source = 'homepage' }: Mo
         <h3 className="text-xs font-semibold text-black tracking-wide uppercase truncate">
           {pessoa.nome}
         </h3>
+        {idadeTexto(pessoa) && (
+          <div className="mt-1 text-xs text-gray-500">{idadeTexto(pessoa)}</div>
+        )}
       </div>
     </Link>
   )

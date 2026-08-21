@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { PessoaCompleta } from '@/types/database'
+import { idadeTexto } from '@/utils/idade'
 import Link from 'next/link'
 
 interface CamposVisibilidade {
@@ -173,6 +174,10 @@ export default function PupiloPage() {
             {pupilo.nome}
           </h1>
           <div className="flex flex-wrap gap-4 text-sm text-gray-600">
+            {/* A idade sai da data de nascimento e se atualiza sozinha; nao tem
+                toggle em campos-visibilidade porque e a informacao que o cliente
+                procura primeiro. */}
+            {idadeTexto(pupilo) && <span>🎂 {idadeTexto(pupilo)}</span>}
             {campos.mostrar_localizacao && pupilo.localizacao && (
               <span>📍 {pupilo.localizacao}</span>
             )}
@@ -299,12 +304,18 @@ export default function PupiloPage() {
           {/* Info Sidebar */}
           <div className="space-y-8">
             {/* Physical Details */}
-            {(campos.mostrar_altura || campos.mostrar_medidas || campos.mostrar_olhos || campos.mostrar_cabelo) && (
+            {(idadeTexto(pupilo) || campos.mostrar_altura || campos.mostrar_medidas || campos.mostrar_olhos || campos.mostrar_cabelo) && (
               <div>
                 <h3 className="text-lg font-bold tracking-tight uppercase text-black mb-4">
                   Características
                 </h3>
                 <div className="space-y-3 text-sm">
+                  {idadeTexto(pupilo) && (
+                    <div className="flex justify-between border-b border-gray-100 pb-2">
+                      <span className="text-gray-600">Idade</span>
+                      <span className="font-medium">{idadeTexto(pupilo)}</span>
+                    </div>
+                  )}
                   {campos.mostrar_altura && pupilo.altura && (
                     <div className="flex justify-between border-b border-gray-100 pb-2">
                       <span className="text-gray-600">Altura</span>
