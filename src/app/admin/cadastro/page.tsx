@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { idadeTexto } from '@/utils/idade'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import AdminSidebar from '@/components/AdminSidebar'
@@ -16,7 +17,7 @@ export default function CadastroPage() {
     sexo: '',
     descricao: '',
     altura: undefined,
-    idade: undefined,
+    data_nascimento: '',
     cor_olhos: '',
     cor_cabelo: '',
     medidas_busto: undefined,
@@ -175,7 +176,7 @@ export default function CadastroPage() {
         sexo: '',
         descricao: '',
         altura: undefined,
-        idade: undefined,
+        data_nascimento: '',
         cor_olhos: '',
         cor_cabelo: '',
         medidas_busto: undefined,
@@ -287,17 +288,23 @@ export default function CadastroPage() {
 
               <div>
                 <label className="block text-xs font-medium text-gray-600 mb-1 uppercase tracking-wide">
-                  Idade (anos)
+                  Data de nascimento
                 </label>
                 <input
-                  type="number"
-                  name="idade"
-                  value={formData.idade || ''}
+                  type="date"
+                  name="data_nascimento"
+                  value={formData.data_nascimento || ''}
                   onChange={handleInputChange}
                   className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black"
-                  min="0"
-                  max="65"
+                  max={new Date().toISOString().slice(0, 10)}
                 />
+                {/* A data nao vai pra tela publica — o site mostra so a idade,
+                    calculada a partir dela, e por isso nunca fica velha. */}
+                <p className="mt-1 text-xs text-gray-500">
+                  {idadeTexto({ data_nascimento: formData.data_nascimento })
+                    ? `No site vai aparecer: ${idadeTexto({ data_nascimento: formData.data_nascimento })}`
+                    : 'No site aparece só a idade, nunca a data.'}
+                </p>
               </div>
             </div>
 

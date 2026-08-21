@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { idadeTexto } from '@/utils/idade'
 import { useRouter, useParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { PessoaCompleta, Foto, Video } from '@/types/database'
@@ -92,6 +93,7 @@ export default function EditModelPage() {
           descricao: pessoa.descricao,
           altura: pessoa.altura,
           idade: pessoa.idade,
+          data_nascimento: pessoa.data_nascimento || null,
           sexo: pessoa.sexo,
           cor_olhos: pessoa.cor_olhos,
           cor_cabelo: pessoa.cor_cabelo,
@@ -424,9 +426,14 @@ export default function EditModelPage() {
                       placeholder="cm" className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black" />
                   </div>
                   <div>
-                    <label className="block text-xs font-medium text-gray-600 mb-1 uppercase tracking-wide">Idade</label>
-                    <input type="number" name="idade" value={pessoa.idade || ''} onChange={handleInputChange}
-                      placeholder="anos" className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black" />
+                    <label className="block text-xs font-medium text-gray-600 mb-1 uppercase tracking-wide">Data de nascimento</label>
+                    <input type="date" name="data_nascimento" value={pessoa.data_nascimento || ''} onChange={handleInputChange}
+                      max={new Date().toISOString().slice(0, 10)}
+                      className="w-full px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-black" />
+                    {/* Só a idade vai pro site. A data fica interna. */}
+                    <p className="mt-1 text-xs text-gray-500">
+                      {idadeTexto(pessoa) ? `No site: ${idadeTexto(pessoa)}` : 'No site aparece só a idade.'}
+                    </p>
                   </div>
                 </div>
 

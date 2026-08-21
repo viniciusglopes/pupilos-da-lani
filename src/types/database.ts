@@ -5,7 +5,10 @@ export interface Pessoa {
   nome: string;
   descricao?: string;
   altura?: number;
-  idade?: number;  // NOVO: Campo idade
+  /** LEGADO: idade digitada, envelhece errado. Só vale sem data_nascimento. */
+  idade?: number;
+  /** Uso INTERNO. A tela pública mostra só a idade calculada a partir daqui. */
+  data_nascimento?: string | null;
   cor_olhos?: string;
   cor_cabelo?: string;
   medidas_busto?: number;
@@ -58,7 +61,8 @@ export interface PessoaForm {
   nome: string;
   descricao?: string;
   altura?: number;
-  idade?: number;  // NOVO: Campo idade no form
+  idade?: number;
+  data_nascimento?: string | null;
   cor_olhos?: string;
   cor_cabelo?: string;
   medidas_busto?: number;

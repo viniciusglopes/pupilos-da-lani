@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { idadeTexto } from '@/utils/idade'
 import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { PessoaCompleta } from '@/types/database'
@@ -227,7 +228,7 @@ export default function ModelosPage() {
                     <div>
                       <div className="font-semibold text-black text-sm leading-tight">{pessoa.nome}</div>
                       <div className="text-xs text-gray-400 mt-0.5">
-                        {[pessoa.sexo, pessoa.idade ? `${pessoa.idade} anos` : null].filter(Boolean).join(' · ')}
+                        {[pessoa.sexo, idadeTexto(pessoa)].filter(Boolean).join(' · ')}
                       </div>
                     </div>
                     <div className="flex flex-wrap gap-1">
@@ -392,7 +393,7 @@ export default function ModelosPage() {
                     <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
                       {[
                         ['Sexo', selectedPessoa.sexo],
-                        ['Idade', selectedPessoa.idade ? `${selectedPessoa.idade} anos` : null],
+                        ['Idade', idadeTexto(selectedPessoa)],
                         ['Altura', selectedPessoa.altura ? `${selectedPessoa.altura}cm` : null],
                         ['Local', selectedPessoa.localizacao],
                         ['Olhos', selectedPessoa.cor_olhos],

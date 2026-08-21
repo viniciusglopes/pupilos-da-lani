@@ -1,6 +1,7 @@
 'use client'
 
 import { PessoaCompleta } from '@/types/database'
+import { idadeTexto } from '@/utils/idade'
 import Image from 'next/image'
 import OptimizedImage from './OptimizedImage'
 import { useState, useEffect } from 'react'
@@ -79,7 +80,7 @@ export default function ModelCard({ pessoa, isParceiro = false, source = 'direct
           {pessoa.nome}
         </h3>
         <div className="mt-1 text-xs text-gray-500">
-          {pessoa.idade && <span>{pessoa.idade} anos</span>}
+          {idadeTexto(pessoa) && <span>{idadeTexto(pessoa)}</span>}
         </div>
       </div>
     </Link>

@@ -1,6 +1,7 @@
 'use client'
 
 import { PessoaCompleta } from '@/types/database'
+import { idadeTexto } from '@/utils/idade'
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
@@ -74,7 +75,7 @@ export default function ModelCardSimple({ pessoa, isParceiro = false }: ModelCar
           {pessoa.nome}
         </h3>
         <div className="mt-1 text-xs text-gray-500">
-          {pessoa.idade ? `${pessoa.idade} anos` : 'Idade não informada'}
+          {idadeTexto(pessoa) ?? 'Idade não informada'}
         </div>
       </div>
     </Link>
