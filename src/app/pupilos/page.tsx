@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { idadeDe } from '@/utils/idade'
 import { PessoaCompleta } from '@/types/database'
 import ModelCard from '@/components/ModelCard'
 import Header from '@/components/Header'
@@ -61,7 +62,10 @@ export default function PupilosPage() {
         pessoa.nome.toLowerCase().includes(searchLower) ||
         pessoa.descricao?.toLowerCase().includes(searchLower) ||
         pessoa.especializacoes?.some(esp => esp.toLowerCase().includes(searchLower)) ||
-        pessoa.localizacao?.toLowerCase().includes(searchLower)
+        pessoa.localizacao?.toLowerCase().includes(searchLower) ||
+        // digitar "12" ou "12 anos" acha quem tem 12 — é o jeito que a pessoa
+        // procura de verdade, sem abrir o seletor de faixa
+        (/^\d{1,2}( anos?)?$/.test(searchLower) && idadeDe(pessoa) === parseInt(searchLower, 10))
       )
     }
 
@@ -71,10 +75,13 @@ export default function PupilosPage() {
     }
 
     // Filtro por idade
+    // ⚠️ Lê a idade CALCULADA da data de nascimento, não a coluna `idade`, que é
+    // legado e está vazia na maioria. Usando a coluna crua, este filtro passaria
+    // a devolver lista vazia — o filtro parece funcionar e some com todo mundo.
     if (filters.idade !== 'todos') {
       filtered = filtered.filter(pessoa => {
-        const idade = pessoa.idade
-        if (!idade) return false
+        const idade = idadeDe(pessoa)
+        if (idade === null) return false
         if (filters.idade === '0-10') return idade <= 10
         if (filters.idade === '11-15') return idade >= 11 && idade <= 15
         if (filters.idade === '16-18') return idade >= 16 && idade <= 18
@@ -119,7 +126,7 @@ export default function PupilosPage() {
             <div>
               <input
                 type="text"
-                placeholder="Buscar por nome, descrição..."
+                placeholder="Buscar por nome, descrição ou idade..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 text-sm focus:outline-none focus:border-black"
