@@ -61,6 +61,8 @@ export default function ParceriaPage() {
         .eq('ativo', true)
         .eq('parceria', true)
         .order('created_at', { ascending: false })
+        .order('eh_principal', { referencedTable: 'fotos', ascending: false })
+        .order('ordem', { referencedTable: 'fotos', ascending: true })
       if (modelosData) {
         setPessoas(modelosData.map((m: any) => ({ ...m, fotos: m.fotos || [], videos: m.videos || [] })))
       }

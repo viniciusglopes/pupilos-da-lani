@@ -35,6 +35,8 @@ export default function PupilosPage() {
         .select('*, fotos(*), videos(*)')
         .eq('ativo', true)
         .order('created_at', { ascending: false })
+        .order('eh_principal', { referencedTable: 'fotos', ascending: false })
+        .order('ordem', { referencedTable: 'fotos', ascending: true })
 
       if (error) throw error
 
